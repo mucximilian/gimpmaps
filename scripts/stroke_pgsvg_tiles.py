@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from gimpfu import *
 
-from PgsvgTiles.TileRendererGimp import TileRendererGimp
+from GimpTiles.TileRendererGimp import TileRendererGimp
 
 def run():
 	zoom_min = 12
@@ -15,25 +15,13 @@ def run():
 	bbox = [bbox_ul, bbox_lr]
 
 	tile_size = 256
-	# Brush Settings
-	# Brush size is needed to calculate the tile buffer (half of size)
-	# Should be an even number for better calculcation results
-	brush_size = 8
-	brush = "GIMP Brush #7"
-	#brush_dynamics = "Dynamics Off"
-	brush_dynamics = "Det1"
-
-	brush_settings = [brush, brush_size, brush_dynamics]
-
-	print brush_settings
 
 	out_dir = ( "/media/data/daten/studium/master/module/master_thesis/data" 
-                + "/rendering/results/")
+                + "/rendering/results/20150413/")
 
 	tile_renderer = TileRendererGimp(
 		bbox, 
 		zoom_levels,
-		brush_settings,
 		tile_size,
 		out_dir
 	)
@@ -45,7 +33,7 @@ register(
 	"Max Hartl", 
 	"Max Hartl", 
 	"2015",
-	"<Toolbox>/Scripts/StrokePostGISSvgTiles", "",
+	"<Toolbox>/Scripts/StrokePgsvgTiles", "",
 	[],
 	[],
 	run

@@ -82,7 +82,7 @@ def run():
 	print "END"
 
 register(
-	"stroke_path_test", 
+	"stroke_path_test_neu", 
 	"", 
 	"", 
 	"Max Hartl", 

@@ -1,0 +1,256 @@
+INFO:root:  row 1/2 (2178)
+INFO:root:    tile 2178/1421
+INFO:root:vectors: 180
+INFO:root:vectors: 224
+INFO:root:vectors: 512
+INFO:root:    tile 2178/1422
+INFO:root:  row 2/2 (2179)
+INFO:root:    tile 2179/1421
+INFO:root:    tile 2179/1422
+INFO:root:  row 1/4 (4356)
+INFO:root:    tile 4356/2842
+INFO:root:vectors: 57
+INFO:root:vectors: 57
+INFO:root:vectors: 155
+INFO:root:    tile 4356/2843
+INFO:root:    tile 4356/2844
+INFO:root:    tile 4356/2845
+INFO:root:  row 2/4 (4357)
+INFO:root:    tile 4357/2842
+INFO:root:    tile 4357/2843
+INFO:root:    tile 4357/2844
+INFO:root:    tile 4357/2845
+INFO:root:  row 3/4 (4358)
+INFO:root:    tile 4358/2842
+INFO:root:    tile 4358/2843
+INFO:root:    tile 4358/2844
+INFO:root:    tile 4358/2845
+INFO:root:  row 4/4 (4359)
+INFO:root:    tile 4359/2842
+INFO:root:    tile 4359/2843
+INFO:root:    tile 4359/2844
+INFO:root:    tile 4359/2845
+INFO:root:  row 1/7 (8713)
+INFO:root:    tile 8713/5685
+INFO:root:vectors: 31
+INFO:root:vectors: 31
+INFO:root:vectors: 72
+INFO:root:    tile 8713/5686
+INFO:root:    tile 8713/5687
+INFO:root:    tile 8713/5688
+INFO:root:    tile 8713/5689
+INFO:root:    tile 8713/5690
+INFO:root:  row 2/7 (8714)
+INFO:root:    tile 8714/5685
+INFO:root:    tile 8714/5686
+INFO:root:    tile 8714/5687
+INFO:root:    tile 8714/5688
+INFO:root:    tile 8714/5689
+INFO:root:    tile 8714/5690
+INFO:root:  row 3/7 (8715)
+INFO:root:    tile 8715/5685
+INFO:root:    tile 8715/5686
+INFO:root:    tile 8715/5687
+INFO:root:    tile 8715/5688
+INFO:root:    tile 8715/5689
+INFO:root:    tile 8715/5690
+INFO:root:  row 4/7 (8716)
+INFO:root:    tile 8716/5685
+INFO:root:    tile 8716/5686
+INFO:root:    tile 8716/5687
+INFO:root:    tile 8716/5688
+INFO:root:    tile 8716/5689
+INFO:root:    tile 8716/5690
+INFO:root:  row 5/7 (8717)
+INFO:root:    tile 8717/5685
+INFO:root:    tile 8717/5686
+INFO:root:    tile 8717/5687
+INFO:root:    tile 8717/5688
+INFO:root:    tile 8717/5689
+INFO:root:    tile 8717/5690
+INFO:root:  row 6/7 (8718)
+INFO:root:    tile 8718/5685
+INFO:root:    tile 8718/5686
+INFO:root:    tile 8718/5687
+INFO:root:    tile 8718/5688
+INFO:root:    tile 8718/5689
+INFO:root:    tile 8718/5690
+INFO:root:  row 7/7 (8719)
+INFO:root:    tile 8719/5685
+INFO:root:    tile 8719/5686
+INFO:root:    tile 8719/5687
+INFO:root:    tile 8719/5688
+INFO:root:    tile 8719/5689
+INFO:root:    tile 8719/5690
+INFO:root:  row 1/13 (17426)
+INFO:root:    tile 17426/11370
+INFO:root:vectors: 20
+INFO:root:vectors: 20
+INFO:root:vectors: 43
+INFO:root:    tile 17426/11371
+INFO:root:    tile 17426/11372
+INFO:root:    tile 17426/11373
+INFO:root:    tile 17426/11374
+INFO:root:    tile 17426/11375
+INFO:root:    tile 17426/11376
+INFO:root:    tile 17426/11377
+INFO:root:    tile 17426/11378
+INFO:root:    tile 17426/11379
+INFO:root:    tile 17426/11380
+INFO:root:    tile 17426/11381
+INFO:root:  row 2/13 (17427)
+INFO:root:    tile 17427/11370
+INFO:root:    tile 17427/11371
+INFO:root:    tile 17427/11372
+INFO:root:    tile 17427/11373
+INFO:root:    tile 17427/11374
+INFO:root:    tile 17427/11375
+INFO:root:    tile 17427/11376
+INFO:root:    tile 17427/11377
+INFO:root:    tile 17427/11378
+INFO:root:    tile 17427/11379
+INFO:root:    tile 17427/11380
+INFO:root:    tile 17427/11381
+INFO:root:  row 3/13 (17428)
+INFO:root:    tile 17428/11370
+INFO:root:    tile 17428/11371
+INFO:root:    tile 17428/11372
+INFO:root:    tile 17428/11373
+INFO:root:    tile 17428/11374
+INFO:root:    tile 17428/11375
+INFO:root:    tile 17428/11376
+INFO:root:    tile 17428/11377
+INFO:root:    tile 17428/11378
+INFO:root:    tile 17428/11379
+INFO:root:    tile 17428/11380
+INFO:root:    tile 17428/11381
+INFO:root:  row 4/13 (17429)
+INFO:root:    tile 17429/11370
+INFO:root:    tile 17429/11371
+INFO:root:    tile 17429/11372
+INFO:root:    tile 17429/11373
+INFO:root:    tile 17429/11374
+INFO:root:    tile 17429/11375
+INFO:root:    tile 17429/11376
+INFO:root:    tile 17429/11377
+INFO:root:    tile 17429/11378
+INFO:root:    tile 17429/11379
+INFO:root:    tile 17429/11380
+INFO:root:    tile 17429/11381
+INFO:root:  row 5/13 (17430)
+INFO:root:    tile 17430/11370
+INFO:root:    tile 17430/11371
+INFO:root:    tile 17430/11372
+INFO:root:    tile 17430/11373
+INFO:root:    tile 17430/11374
+INFO:root:    tile 17430/11375
+INFO:root:    tile 17430/11376
+INFO:root:    tile 17430/11377
+INFO:root:    tile 17430/11378
+INFO:root:    tile 17430/11379
+INFO:root:    tile 17430/11380
+INFO:root:    tile 17430/11381
+INFO:root:  row 6/13 (17431)
+INFO:root:    tile 17431/11370
+INFO:root:    tile 17431/11371
+INFO:root:    tile 17431/11372
+INFO:root:    tile 17431/11373
+INFO:root:    tile 17431/11374
+INFO:root:    tile 17431/11375
+INFO:root:    tile 17431/11376
+INFO:root:    tile 17431/11377
+INFO:root:    tile 17431/11378
+INFO:root:    tile 17431/11379
+INFO:root:    tile 17431/11380
+INFO:root:    tile 17431/11381
+INFO:root:  row 7/13 (17432)
+INFO:root:    tile 17432/11370
+INFO:root:    tile 17432/11371
+INFO:root:    tile 17432/11372
+INFO:root:    tile 17432/11373
+INFO:root:    tile 17432/11374
+INFO:root:    tile 17432/11375
+INFO:root:    tile 17432/11376
+INFO:root:    tile 17432/11377
+INFO:root:    tile 17432/11378
+INFO:root:    tile 17432/11379
+INFO:root:    tile 17432/11380
+INFO:root:    tile 17432/11381
+INFO:root:  row 8/13 (17433)
+INFO:root:    tile 17433/11370
+INFO:root:    tile 17433/11371
+INFO:root:    tile 17433/11372
+INFO:root:    tile 17433/11373
+INFO:root:    tile 17433/11374
+INFO:root:    tile 17433/11375
+INFO:root:    tile 17433/11376
+INFO:root:    tile 17433/11377
+INFO:root:    tile 17433/11378
+INFO:root:    tile 17433/11379
+INFO:root:    tile 17433/11380
+INFO:root:    tile 17433/11381
+INFO:root:  row 9/13 (17434)
+INFO:root:    tile 17434/11370
+INFO:root:    tile 17434/11371
+INFO:root:    tile 17434/11372
+INFO:root:    tile 17434/11373
+INFO:root:    tile 17434/11374
+INFO:root:    tile 17434/11375
+INFO:root:    tile 17434/11376
+INFO:root:    tile 17434/11377
+INFO:root:    tile 17434/11378
+INFO:root:    tile 17434/11379
+INFO:root:    tile 17434/11380
+INFO:root:    tile 17434/11381
+INFO:root:  row 10/13 (17435)
+INFO:root:    tile 17435/11370
+INFO:root:    tile 17435/11371
+INFO:root:    tile 17435/11372
+INFO:root:    tile 17435/11373
+INFO:root:    tile 17435/11374
+INFO:root:    tile 17435/11375
+INFO:root:    tile 17435/11376
+INFO:root:    tile 17435/11377
+INFO:root:    tile 17435/11378
+INFO:root:    tile 17435/11379
+INFO:root:    tile 17435/11380
+INFO:root:    tile 17435/11381
+INFO:root:  row 11/13 (17436)
+INFO:root:    tile 17436/11370
+INFO:root:    tile 17436/11371
+INFO:root:    tile 17436/11372
+INFO:root:    tile 17436/11373
+INFO:root:    tile 17436/11374
+INFO:root:    tile 17436/11375
+INFO:root:    tile 17436/11376
+INFO:root:    tile 17436/11377
+INFO:root:    tile 17436/11378
+INFO:root:    tile 17436/11379
+INFO:root:    tile 17436/11380
+INFO:root:    tile 17436/11381
+INFO:root:  row 12/13 (17437)
+INFO:root:    tile 17437/11370
+INFO:root:    tile 17437/11371
+INFO:root:    tile 17437/11372
+INFO:root:    tile 17437/11373
+INFO:root:    tile 17437/11374
+INFO:root:    tile 17437/11375
+INFO:root:    tile 17437/11376
+INFO:root:    tile 17437/11377
+INFO:root:    tile 17437/11378
+INFO:root:    tile 17437/11379
+INFO:root:    tile 17437/11380
+INFO:root:    tile 17437/11381
+INFO:root:  row 13/13 (17438)
+INFO:root:    tile 17438/11370
+INFO:root:    tile 17438/11371
+INFO:root:    tile 17438/11372
+INFO:root:    tile 17438/11373
+INFO:root:    tile 17438/11374
+INFO:root:    tile 17438/11375
+INFO:root:    tile 17438/11376
+INFO:root:    tile 17438/11377
+INFO:root:    tile 17438/11378
+INFO:root:    tile 17438/11379
+INFO:root:    tile 17438/11380
+INFO:root:    tile 17438/11381

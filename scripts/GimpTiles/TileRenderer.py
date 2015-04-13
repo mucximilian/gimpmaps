@@ -11,15 +11,23 @@ class TileRenderer(object):
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0    
     
-    def __init__(self, bbox, zoom_levels, brush_size, tile_size, out_dir):
+    def __init__(self, bbox, zoom_levels, tile_size, out_dir):
+        self.bbox = bbox
+        self.zoom_levels = zoom_levels
+        self.tile_size = tile_size
+        self.out_dir = out_dir
         
-        for zoom in zoom_levels:
+    def create_tiles(self):
+        
+        for zoom in self.zoom_levels:
             
-            tiling_data = self.get_tiling_data(bbox, zoom)
+            tiling_data = self.get_tiling_data(self.bbox, zoom)
             
             print tiling_data
+            
+            brush_size = 12
     
-            out_dir_zoom = out_dir + str(zoom) + "/"
+            out_dir_zoom = self.out_dir + str(zoom) + "/"
             if not os.path.exists(out_dir_zoom):
                 os.makedirs(out_dir_zoom)
             
@@ -71,18 +79,18 @@ class TileRenderer(object):
                         lr_x,
                         lr_y,
                         brush_size,
-                        tile_size
+                        self.tile_size
                         )
                     )
     
                     # Assign the Y value as the file name
                     out_path = out_dir_zoom_x + str(y)
-                    self.save_svg_tiles(out_path, tile_size, curs)
+                    self.save_svg_tiles(out_path, self.tile_size, curs)
                         
                 curs.close()
                 conn.close()
     
-    ################################################################################
+    ############################################################################
     # Get UL and LR coordinates of tile containing a given point at zoom level 
     def get_tile_of_point(self, point_ul, zoom):
         
@@ -99,7 +107,7 @@ class TileRenderer(object):
         
         return tile_ul_lr
         
-    ################################################################################
+    ############################################################################
     # Get UL and LR coordinates of tile containing a given point at zoom level 
     def get_tiling_data(self, bbox, zoom):
         
@@ -134,7 +142,10 @@ class TileRenderer(object):
         return tiling_data
         
     def save_svg_tiles(self, out_file, tile_size, curs):
-        dwg = svgwrite.Drawing(out_file + ".svg", height=tile_size, width=tile_size)
+        dwg = svgwrite.Drawing(
+            out_file + ".svg",
+            height = tile_size,
+            width = tile_size)
     
         i = 1
         for row in curs.fetchall():
@@ -144,3 +155,16 @@ class TileRenderer(object):
             
         dwg.save()
         print "        vectors = " + str(i)
+        
+    ############################################################################
+    # Get UL and LR coordinates of tile containing a given point at zoom level 
+    def get_selection_tags(self, tags):
+        selection_string = ""
+        count = 0
+        for tag in tags:
+            if count > 0:
+                selection_string += " OR "
+            selection_string += tag
+            count += 1
+            
+        return selection_string

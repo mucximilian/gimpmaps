@@ -2,19 +2,25 @@
 import psycopg2
 import svgwrite
 import os
+import logging
 
 from gimpfu import *
 from TileRenderer import TileRenderer
 
 class TileRendererGimp(TileRenderer):
-    def __init__(self, bbox, zoom_levels, brush_settings, tile_size, out_dir):
+    def __init__(self, bbox, zoom_levels, tile_size, out_dir):
         
-        conn_zoom = psycopg2.connect('dbname=gimp_osm_styles'
-                	'user=gis '
-                	'password=gis'
-                	'host=localhost '
-                	'port=5432')    
-        curs_zoom = conn_zoom.cursor()
+        logging.basicConfig(
+            filename = os.getcwd() + '/gimp_rendering.log',
+            filemode='w',
+            level=logging.INFO)
+        
+        # Defining database connection parameters
+        conn_zoom = psycopg2.connect('dbname=gimp_osm_styles '
+            'user=gis '
+            'password=gis '
+            'host=localhost '
+            'port=5432')
         
         ########################################################################
         # Zoom level loop
@@ -28,23 +34,22 @@ class TileRendererGimp(TileRenderer):
                 os.makedirs(out_dir_zoom)
             
             # Get OSM tags and styles for zoom level
+            curs_zoom = conn_zoom.cursor()
             sql = """
                 SELECT * FROM get_line_tags_and_style(%s)
             """                        
-            curs_zoom.execute(
-                sql, (
-                    zoom
-                )
-            )
+            curs_zoom.execute(sql, (zoom,))
             
             ####################################################################            
             # X-direction loop
             for x in range(tiling_data[0][0], tiling_data[1][0] + 1):
                 
                 indent = "  "
-                print (indent + "row " 
+                out = (indent + "row " 
                     + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
                     + str(tiling_data[2][0]) + " (" + str(x) + ")")
+                print out
+                logging.info(out)
                 
                 out_dir_zoom_x = out_dir_zoom + str(x) + "/"
                 if not os.path.exists(out_dir_zoom_x):
@@ -59,7 +64,9 @@ class TileRendererGimp(TileRenderer):
                     lr_x = ul_x + tiling_data[3]
                     lr_y = ul_y - tiling_data[3]
                                     
-                    print indent + indent + "tile " + str(x) + "/" + str(y)
+                    out = indent + indent + "tile " + str(x) + "/" + str(y)
+                    print out
+                    logging.info(out)
 
                     # Create GIMP image with white background layer
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
@@ -76,26 +83,27 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_image_insert_layer(image, background, None, 0)    				
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
-                    # Get svg tiles from database                    
                     conn_osm = psycopg2.connect('dbname=osm_muc '
                         'user=gis '
-                        'password=gis'
+                        'password=gis '
                         'host=localhost '
-                        'port=5432')    
-                    curs_osm = conn_osm.cursor()
+                        'port=5432')
 
                     ############################################################
                     # Geometry feature loop START
                     for row in curs_zoom.fetchall():
-                        sql_selection = get_selection_tags(row[1])
-                        line_style = {
+                        
+                        sql_selection = self.get_selection_tags(row[1])
+                        line_style = [
                             row[3],
                             row[4],
                             row[5],
                             row[6],
                             row[7]
-                        }
+                        ]
                         
+                        # Get svg tiles from database                    
+                        curs_osm = conn_osm.cursor()
                         sql = """
                             SELECT 
                             	ROW_NUMBER() OVER (ORDER BY osm_id) AS id,
@@ -174,7 +182,7 @@ class TileRendererGimp(TileRenderer):
                     
                         # Import SVG data into SVG drawing from database
                         for row in curs_osm.fetchall():
-                            path = dwg.path(d=row[3])
+                            path = dwg.path(d=row[1])
                             path_str = path.tostring()
                     
                             pdb.gimp_vectors_import_from_string(
@@ -183,7 +191,9 @@ class TileRendererGimp(TileRenderer):
                                 -1, 1, 1,
                             )
                     
-                        print "vectors: " + str(len(image.vectors))
+                        out = "vectors: " + str(len(image.vectors))
+                        print out
+                        logging.info(out)
                         
                         # Draw vectors into GIMP image layer
                         # TO DO: emulate brush dynamics?????
@@ -197,7 +207,9 @@ class TileRendererGimp(TileRenderer):
                     
                     # Assign the Y value as the file name
                     out_path = out_dir_zoom_x + str(y) + ".png"        
-                    print "saving file: " + out_path
+                    out = "saving file: " + out_path
+                    print out
+                    # logging.info(out)
                     
                     pdb.file_png_save_defaults(
                         image, 
@@ -205,11 +217,11 @@ class TileRendererGimp(TileRenderer):
                         out_path,
                         out_path
                     )
+
+                    conn_osm.close()
                      
                 # Y-direction loop END
                 ################################################################
-                
-                conn_osm.close()
             
             # Y-direction loop END
             ####################################################################

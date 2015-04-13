@@ -240,6 +240,110 @@ class ZoomSelection(object):
     def printPt(self):
         print self.roads
         
+class ZoomSelectionLinesType(object):    
+    def __init__(self):
+        
+        self.roads = {
+        5: """
+            line_type=motorway,
+            line_type=motorway_link
+            """,
+        6: """
+            line_type=motorway,
+            line_type=motorway_link
+            """,
+        7: """
+            line_type=motorway,
+            line_type=motorway_link
+            """,
+        8: """
+            line_type=motorway,
+            line_type=motorway_link
+            """,
+        9: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            """,
+        10: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            """,
+        11: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            """,
+        12: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary'
+            """,
+        13: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary'
+            """,
+        14: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary'
+            """,
+        15: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary' OR 
+            line_type = 'tertiary' OR 
+            line_type = 'residential'
+            """,
+        16: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary' OR 
+            line_type = 'tertiary' OR 
+            line_type = 'residential' OR 
+            line_type = 'service'
+            """,
+        17: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary' OR 
+            line_type = 'tertiary' OR 
+            line_type = 'residential' OR 
+            line_type = 'service'
+            """,
+        18: """
+            line_type = 'motorway' OR
+            line_type = 'motorway_link' OR
+            line_type = 'primary' OR 
+            line_type = 'road' OR 
+            line_type = 'secondary' OR 
+            line_type = 'tertiary' OR 
+            line_type = 'residential' OR 
+            line_type = 'service'
+            """
+        }   
+        
+    # print the trackpoints info
+    def printPt(self):
+        print self.roads
+        
 class ZoomSelectionPolygons(object):
     def __init__(self):
         self.polygons = ""
