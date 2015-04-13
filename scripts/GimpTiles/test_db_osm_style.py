@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-from TileRenderer import TileRenderer
+import StyleObjects 
 
 zoom = 14
 
@@ -30,7 +30,13 @@ for row in cur.fetchall():
         row[7]
     ]
     
-    tile_renderer = TileRenderer(0,0,0,0)
-    selection = tile_renderer.get_selection_tags(sql_selection)
-    print selection
+    style_object = StyleObjects.StyleObjectLine(
+        "line", row[1], row[2],
+        row[3], row[4], row[5], row[6], row[7]
+    )
+    
+    style_object.print_style()
+    
+    
+    
     

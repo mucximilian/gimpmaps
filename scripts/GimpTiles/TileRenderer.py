@@ -157,7 +157,7 @@ class TileRenderer(object):
         print "        vectors = " + str(i)
         
     ############################################################################
-    # Get UL and LR coordinates of tile containing a given point at zoom level 
+    # Returns selection tags as a string suitable for a SQL 'WHERE' condition
     def get_selection_tags(self, tags):
         selection_string = ""
         count = 0

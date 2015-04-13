@@ -4,9 +4,8 @@
 TileRendererGimp
                               -------------------
         begin                : 2015-03-28
-        git sha              : $Format:%H$
-        copyright            : (C) 2015 by Max Hartl
-        email                : m@xhartl.de
+        copyright            : (C) 2015 by Maximilian Hartl
+        email                : mucximilian@gmail.com
         
     
 ********************************************************************************
@@ -61,6 +60,9 @@ class TileRendererGimp(TileRenderer):
             """                        
             curs_zoom.execute(sql, (zoom,))
             
+            for row in curs_zoom.fetchall():
+                
+            
             ####################################################################            
             # X-direction loop
             for x in range(tiling_data[0][0], tiling_data[1][0] + 1):
@@ -112,16 +114,10 @@ class TileRendererGimp(TileRenderer):
 
                     ############################################################
                     # Geometry feature loop START
-                    for row in curs_zoom.fetchall():
+                    for style_feature in style_features:
                         
-                        sql_selection = self.get_selection_tags(row[1])
-                        line_style = [
-                            row[3],
-                            row[4],
-                            row[5],
-                            row[6],
-                            row[7]
-                        ]
+                        sql_selection = style_feature.get_selection_tags()
+                        line_style = style_feature.get_line_style()
                         
                         # Get svg tiles from database                    
                         curs_osm = conn_osm.cursor()
