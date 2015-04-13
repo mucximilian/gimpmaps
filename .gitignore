@@ -1,6 +1,6 @@
 gimp/
 processing/
 results/
-scripts/GimpTiles/PgsvgTiles/ALT
 .spyderworkspace
 .spyderproject
+*.pyc
