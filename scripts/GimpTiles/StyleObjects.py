@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+################################################################################
+# 
+# StyleObject
+# Represents geometry features with assigned style
+#
 class StyleObject(object):
     def __init__(self, geom_type, tags, z_order):
         self.geom_type = geom_type
@@ -19,6 +24,11 @@ class StyleObject(object):
             
         return selection_string
         
+################################################################################
+# 
+# StyleObjectLine
+# Specification of the StyleObject class for line features
+#
 class StyleObjectLine(StyleObject):
     def __init__(
         self, 
@@ -33,6 +43,17 @@ class StyleObjectLine(StyleObject):
         self.dynamics = dynamics
         
     ############################################################################
+    # Returns line style parameters
+    def get_line_style(self):
+        return [
+            self.brush,
+            self.brush_size,
+            self.color,
+            self.opacity,
+            self.dynamics
+        ]
+        
+    ############################################################################
     # Returns selection tags as a string suitable for a SQL 'WHERE' condition
     def get_rgba(self):            
         return [
@@ -41,10 +62,11 @@ class StyleObjectLine(StyleObject):
             self.color[2],
             self.opacity
         ]
-        
+     
+    ############################################################################
+    # Prints information about the style object
     def print_style(self):
         print (
             "geometry type: " + self.geom_type + "\n" +
             "OSM tags: " + str(self.tags) + "\n"
         )
-    

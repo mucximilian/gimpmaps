@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from ZoomSelection import ZoomSelectionLinesType
+import datetime
 
-zoom_selection_lines = ZoomSelectionLinesType()
-
-print zoom_selection_lines.roads[14]
+print datetime.datetime.now()

@@ -23,17 +23,27 @@ import psycopg2
 import svgwrite
 import os
 import logging
+import datetime
 
 from gimpfu import *
 from TileRenderer import TileRenderer
 
+import  StyleObjects
+
 class TileRendererGimp(TileRenderer):
     def __init__(self, bbox, zoom_levels, tile_size, out_dir):
+        
+        t_start = datetime.datetime.now()
         
         logging.basicConfig(
             filename = os.getcwd() + '/gimp_rendering.log',
             filemode='w',
             level=logging.INFO)
+            
+        log_line = "###########################################################"
+        logging.info(log_line)
+        logging.info("Start of Gimp Tile processing at " + str(t_start))
+        logging.info(log_line)
         
         # Defining database connection
         conn_zoom = psycopg2.connect('dbname=gimp_osm_styles '
@@ -47,7 +57,13 @@ class TileRendererGimp(TileRenderer):
         for zoom in zoom_levels:
             
             tiling_data = self.get_tiling_data(bbox, zoom)            
-            print tiling_data
+
+            logging.info("zoom level: " + str(zoom))
+            logging.info("tile ul: " + str(tiling_data[0]))
+            logging.info("tile lr: " + str(tiling_data[1]))
+            logging.info("tiles in x: " + str(tiling_data[2][0]))
+            logging.info("tiles in y: " + str(tiling_data[2][1]))
+            logging.info("tiles total: " + str(tiling_data[2][0] + tiling_data[2][1]))
     
             out_dir_zoom = out_dir + str(zoom) + "/"
             if not os.path.exists(out_dir_zoom):
@@ -60,8 +76,14 @@ class TileRendererGimp(TileRenderer):
             """                        
             curs_zoom.execute(sql, (zoom,))
             
+            zoom_style_features = []
+            
             for row in curs_zoom.fetchall():
-                
+                style_object = StyleObjects.StyleObjectLine(
+                    "line", row[1], row[2],
+                    row[3], row[4], row[5], row[6], row[7]
+                )
+                zoom_style_features.append(style_object)                
             
             ####################################################################            
             # X-direction loop
@@ -114,7 +136,7 @@ class TileRendererGimp(TileRenderer):
 
                     ############################################################
                     # Geometry feature loop START
-                    for style_feature in style_features:
+                    for style_feature in zoom_style_features:
                         
                         sql_selection = style_feature.get_selection_tags()
                         line_style = style_feature.get_line_style()
@@ -208,7 +230,7 @@ class TileRendererGimp(TileRenderer):
                                 -1, 1, 1,
                             )
                     
-                        out = "vectors: " + str(len(image.vectors))
+                        out = "            vectors: " + str(len(image.vectors))
                         print out
                         logging.info(out)
                         
@@ -249,3 +271,14 @@ class TileRendererGimp(TileRenderer):
         ########################################################################
         
         conn_zoom.close()       
+        
+        t_end = datetime.datetime.now()
+        delta_t = t_end - t_start
+        
+        logging.info(log_line)
+        logging.info("End of Gimp Tile processing at " + str(t_end))
+        logging.info("processing duration: " + 
+            str(delta_t.total_seconds()) +
+            " seconds"
+        )
+        logging.info(log_line)
