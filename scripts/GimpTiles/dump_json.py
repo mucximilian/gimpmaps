@@ -3,7 +3,7 @@ import psycopg2
 
 conn = psycopg2.connect('dbname=gimp_osm_styles '
                 	'user=gis '
-                	'password=geokack '
+                	'password=gis '
                 	'host=localhost '
                 	'port=5432')
     
