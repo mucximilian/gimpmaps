@@ -28,7 +28,7 @@ import datetime
 from gimpfu import *
 from TileRenderer import TileRenderer
 
-import  StyleObjects
+import StyleObjects
 
 class TileRendererGimp(TileRenderer):
     def __init__(self, bbox, zoom_levels, tile_size, out_dir):
@@ -37,8 +37,11 @@ class TileRendererGimp(TileRenderer):
         
         logging.basicConfig(
             filename = os.getcwd() + '/gimp_rendering.log',
-            filemode='w',
-            level=logging.INFO)
+            filemode = 'w',
+            level = logging.INFO
+        )
+        
+        print os.getcwd()
             
         log_line = "###########################################################"
         logging.info(log_line)
@@ -50,7 +53,8 @@ class TileRendererGimp(TileRenderer):
             'user=gis '
             'password=gis '
             'host=localhost '
-            'port=5432')
+            'port=5432'
+        )
         
         ########################################################################
         # Zoom level loop
@@ -76,14 +80,15 @@ class TileRendererGimp(TileRenderer):
             """                        
             curs_zoom.execute(sql, (zoom,))
             
-            zoom_style_features = []
-            
+            # Get all features and styles for the zoom level in an array
+            zoom_style_features = []            
             for row in curs_zoom.fetchall():
                 style_object = StyleObjects.StyleObjectLine(
                     "line", row[1], row[2],
                     row[3], row[4], row[5], row[6], row[7]
                 )
-                zoom_style_features.append(style_object)                
+                zoom_style_features.append(style_object)
+                logging.info("selected OSM-features: " + str(row[1]))
             
             ####################################################################            
             # X-direction loop
@@ -113,10 +118,9 @@ class TileRendererGimp(TileRenderer):
                     print out
                     logging.info(out)
 
-                    # Create GIMP image with white background layer
+                    # Create GIMP image with layer group
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
-                    pdb.gimp_context_set_background((255,255,255,255))  
-                    
+                    pdb.gimp_context_set_background((255,255,255,255))                    
                     parent = pdb.gimp_layer_group_new(image)
                     pdb.gimp_image_insert_layer(image, parent, None, 0)          
                                         
@@ -124,7 +128,8 @@ class TileRendererGimp(TileRenderer):
                         'user=gis '
                         'password=gis '
                         'host=localhost '
-                        'port=5432')
+                        'port=5432'
+                    )
 
                     ############################################################
                     # Geometry feature loop START
@@ -241,8 +246,8 @@ class TileRendererGimp(TileRenderer):
                     out_path_xcf = out_dir_zoom_x + str(y) + ".xcf"   
                     out = "saving file: " + out_path
                     print out
-                    # logging.info(out)
                     
+                    # Adding a white background layer
                     background = pdb.gimp_layer_new(                    
                         image,
                         tile_size,
@@ -255,12 +260,14 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_image_insert_layer(image, background, parent, 2)    				
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
+                    # Save images as PNG and XCF
                     pdb.file_png_save_defaults(
                         image, 
                         parent,
                         out_path,
                         out_path
                     )
+                    """
                     pdb.gimp_xcf_save(
                         0,
                         image,
@@ -269,6 +276,7 @@ class TileRendererGimp(TileRenderer):
                         out_path_xcf)
 
                     conn_osm.close()
+                    """
                      
                 # Y-direction loop END
                 ################################################################

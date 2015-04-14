@@ -12,13 +12,13 @@ class StyleObject(object):
         self.z_order = z_order
     
     ############################################################################
-    # Returns selection tags as a string suitable for a SQL 'WHERE' condition
+    # Returns concatenated selection tags suitable for a SQL 'WHERE' condition
     def get_selection_tags(self):
         selection_string = ""
         count = 0
         for tag in self.tags:
             if count > 0:
-                selection_string += " OR "
+                selection_string += " AND "
             selection_string += tag
             count += 1
             
