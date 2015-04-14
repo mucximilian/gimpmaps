@@ -241,12 +241,6 @@ class TileRendererGimp(TileRenderer):
                     # Geometry feature loop END
                     ############################################################
                     
-                    # Assign the Y value as the file name
-                    out_path = out_dir_zoom_x + str(y) + ".png"
-                    out_path_xcf = out_dir_zoom_x + str(y) + ".xcf"   
-                    out = "saving file: " + out_path
-                    print out
-                    
                     # Adding a white background layer
                     background = pdb.gimp_layer_new(                    
                         image,
@@ -260,23 +254,30 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_image_insert_layer(image, background, parent, 2)    				
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
+                    # Assign the Y value as the file name
+                    out_path = out_dir_zoom_x + str(y)
+                    out = "saving file: " + out_path
+                    print out                    
+                    
                     # Save images as PNG and XCF
+                    out_path_png = out_path + ".png"
                     pdb.file_png_save_defaults(
                         image, 
                         parent,
-                        out_path,
-                        out_path
+                        out_path_png,
+                        out_path_png
                     )
                     """
+                    out_path_xcf = out_path + ".xcf"   
                     pdb.gimp_xcf_save(
                         0,
                         image,
                         parent,
                         out_path_xcf,
-                        out_path_xcf)
-
-                    conn_osm.close()
+                        out_path_xcf
+                    )
                     """
+                    conn_osm.close()
                      
                 # Y-direction loop END
                 ################################################################
