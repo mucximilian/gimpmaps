@@ -5,7 +5,7 @@ from GimpTiles.TileRendererGimp import TileRendererGimp
 
 def run():
 	zoom_min = 12
-	zoom_max = 13
+	zoom_max = 12
 
 	zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
 
@@ -17,7 +17,7 @@ def run():
 	tile_size = 256
 
 	out_dir = ( "/media/data/daten/studium/master/module/master_thesis/data" 
-                + "/rendering/results/20150413/")
+                + "/rendering/results/20150414/")
 
 	tile_renderer = TileRendererGimp(
 		bbox, 

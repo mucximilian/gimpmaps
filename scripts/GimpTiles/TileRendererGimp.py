@@ -115,19 +115,11 @@ class TileRendererGimp(TileRenderer):
 
                     # Create GIMP image with white background layer
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
-                    pdb.gimp_context_set_background((255,255,255,255))                    
-                    background = pdb.gimp_layer_new(
-                        image,
-                        tile_size,
-                        tile_size,
-                        RGBA_IMAGE,
-                        "background",
-                        100,
-                        NORMAL_MODE
-                    )    
-                    pdb.gimp_image_insert_layer(image, background, None, 0)    				
-                    pdb.gimp_edit_fill(background, BACKGROUND_FILL)
+                    pdb.gimp_context_set_background((255,255,255,255))  
                     
+                    parent = pdb.gimp_layer_group_new(image)
+                    pdb.gimp_image_insert_layer(image, parent, None, 0)          
+                                        
                     conn_osm = psycopg2.connect('dbname=osm_muc '
                         'user=gis '
                         'password=gis '
@@ -199,7 +191,7 @@ class TileRendererGimp(TileRenderer):
                             100,
                             NORMAL_MODE
                         )    
-                        pdb.gimp_image_insert_layer(image, layer, None, 0)    				
+                        pdb.gimp_image_insert_layer(image, layer, parent, 1)    				
                         
                         # Style settings
                         pdb.gimp_context_set_brush(line_style[0])
@@ -230,7 +222,7 @@ class TileRendererGimp(TileRenderer):
                                 -1, 1, 1,
                             )
                     
-                        out = "            vectors: " + str(len(image.vectors))
+                        out = "      vectors: " + str(len(image.vectors))
                         print out
                         logging.info(out)
                         
@@ -245,17 +237,36 @@ class TileRendererGimp(TileRenderer):
                     ############################################################
                     
                     # Assign the Y value as the file name
-                    out_path = out_dir_zoom_x + str(y) + ".png"        
+                    out_path = out_dir_zoom_x + str(y) + ".png"
+                    out_path_xcf = out_dir_zoom_x + str(y) + ".xcf"   
                     out = "saving file: " + out_path
                     print out
                     # logging.info(out)
                     
+                    background = pdb.gimp_layer_new(                    
+                        image,
+                        tile_size,
+                        tile_size,
+                        RGBA_IMAGE,
+                        "background",
+                        100,
+                        NORMAL_MODE
+                    )    
+                    pdb.gimp_image_insert_layer(image, background, parent, 2)    				
+                    pdb.gimp_edit_fill(background, BACKGROUND_FILL)
+                    
                     pdb.file_png_save_defaults(
                         image, 
-                        layer,
+                        parent,
                         out_path,
                         out_path
                     )
+                    pdb.gimp_xcf_save(
+                        0,
+                        image,
+                        parent,
+                        out_path_xcf,
+                        out_path_xcf)
 
                     conn_osm.close()
                      

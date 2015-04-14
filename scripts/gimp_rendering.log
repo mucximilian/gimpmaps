@@ -1,5 +1,5 @@
 INFO:root:###########################################################
-INFO:root:Start of Gimp Tile processing at 2015-04-14 01:40:58.890992
+INFO:root:Start of Gimp Tile processing at 2015-04-14 02:58:13.001078
 INFO:root:###########################################################
 INFO:root:zoom level: 12
 INFO:root:tile ul: [2178, 1421]
@@ -9,97 +9,23 @@ INFO:root:tiles in y: 2
 INFO:root:tiles total: 4
 INFO:root:  row 1/2 (2178)
 INFO:root:    tile 2178/1421
-INFO:root:vectors: 180
-INFO:root:vectors: 224
-INFO:root:vectors: 512
+INFO:root:      vectors: 180
+INFO:root:      vectors: 224
+INFO:root:      vectors: 512
 INFO:root:    tile 2178/1422
-INFO:root:vectors: 24
-INFO:root:vectors: 76
-INFO:root:vectors: 146
+INFO:root:      vectors: 24
+INFO:root:      vectors: 76
+INFO:root:      vectors: 146
 INFO:root:  row 2/2 (2179)
 INFO:root:    tile 2179/1421
-INFO:root:vectors: 126
-INFO:root:vectors: 133
-INFO:root:vectors: 558
+INFO:root:      vectors: 126
+INFO:root:      vectors: 133
+INFO:root:      vectors: 558
 INFO:root:    tile 2179/1422
-INFO:root:vectors: 102
-INFO:root:vectors: 130
-INFO:root:vectors: 301
-INFO:root:zoom level: 13
-INFO:root:tile ul: [4356, 2842]
-INFO:root:tile lr: [4359, 2845]
-INFO:root:tiles in x: 4
-INFO:root:tiles in y: 4
-INFO:root:tiles total: 8
-INFO:root:  row 1/4 (4356)
-INFO:root:    tile 4356/2842
-INFO:root:vectors: 57
-INFO:root:vectors: 57
-INFO:root:vectors: 155
-INFO:root:    tile 4356/2843
-INFO:root:vectors: 0
-INFO:root:vectors: 19
-INFO:root:vectors: 89
-INFO:root:    tile 4356/2844
-INFO:root:vectors: 0
-INFO:root:vectors: 0
-INFO:root:vectors: 3
-INFO:root:    tile 4356/2845
-INFO:root:vectors: 0
-INFO:root:vectors: 11
-INFO:root:vectors: 22
-INFO:root:  row 2/4 (4357)
-INFO:root:    tile 4357/2842
-INFO:root:vectors: 105
-INFO:root:vectors: 105
-INFO:root:vectors: 178
-INFO:root:    tile 4357/2843
-INFO:root:vectors: 20
-INFO:root:vectors: 46
-INFO:root:vectors: 92
-INFO:root:    tile 4357/2844
-INFO:root:vectors: 20
-INFO:root:vectors: 45
-INFO:root:vectors: 82
-INFO:root:    tile 4357/2845
-INFO:root:vectors: 4
-INFO:root:vectors: 25
-INFO:root:vectors: 48
-INFO:root:  row 3/4 (4358)
-INFO:root:    tile 4358/2842
-INFO:root:vectors: 66
-INFO:root:vectors: 66
-INFO:root:vectors: 167
-INFO:root:    tile 4358/2843
-INFO:root:vectors: 48
-INFO:root:vectors: 55
-INFO:root:vectors: 173
-INFO:root:    tile 4358/2844
-INFO:root:vectors: 54
-INFO:root:vectors: 57
-INFO:root:vectors: 138
-INFO:root:    tile 4358/2845
-INFO:root:vectors: 19
-INFO:root:vectors: 19
-INFO:root:vectors: 49
-INFO:root:  row 4/4 (4359)
-INFO:root:    tile 4359/2842
-INFO:root:vectors: 0
-INFO:root:vectors: 0
-INFO:root:vectors: 81
-INFO:root:    tile 4359/2843
-INFO:root:vectors: 7
-INFO:root:vectors: 7
-INFO:root:vectors: 140
-INFO:root:    tile 4359/2844
-INFO:root:vectors: 33
-INFO:root:vectors: 46
-INFO:root:vectors: 104
-INFO:root:    tile 4359/2845
-INFO:root:vectors: 0
-INFO:root:vectors: 15
-INFO:root:vectors: 29
+INFO:root:      vectors: 102
+INFO:root:      vectors: 130
+INFO:root:      vectors: 301
 INFO:root:###########################################################
-INFO:root:2015-04-14 01:40:58.890992
-INFO:root:2015-04-14 01:41:52.151226
-INFO:root:processing duration: 53.260234
+INFO:root:End of Gimp Tile processing at 2015-04-14 02:58:36.906847
+INFO:root:processing duration: 23.905769 seconds
+INFO:root:###########################################################
