@@ -14,7 +14,7 @@ def run():
     pdb.gimp_image_insert_layer(image, parent, None, 0)         
 
     # Adding a background image layer
-    layer_1 = pdb.gimp_file_load_layer(image, "img/hachure1.png")
+    layer_1 = pdb.gimp_file_load_layer(image, "scripts/img/hachure1.png")
     pdb.gimp_image_insert_layer(image, layer_1, parent, 0)
 
     # Adding layer to stroke a vector path into
