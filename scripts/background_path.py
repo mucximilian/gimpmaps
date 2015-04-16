@@ -3,8 +3,6 @@ from gimpfu import *
 import os
 import datetime
 
-path = '<path d="M 169 191 l 3 -9 3 -4 9 -10 1 -0 9 12 8 12 1 4 -2 1 -8 1 -8 -0 -16 -3 z"/>'
-
 def run():
     
     # Setting up the image and a layer group
@@ -31,43 +29,51 @@ def run():
     )
     pdb.gimp_image_insert_layer(image, layer_2, parent, -1)
     pdb.gimp_vectors_import_from_string(image,
-        path,
+        '<path d="M 100,100 120,50 170,150"/>',
         -1, 1, 1, )
     vectors = image.vectors
     print "vectors=" + str(len(vectors))
 
+    # Stroke brush settings
+    brush_size = 35
+    brush = "GIMP Brush #7"
+    brush_dynamics = "Det3"	
+    pdb.gimp_context_set_brush(brush)
+    pdb.gimp_context_set_dynamics(brush_dynamics)
+    pdb.gimp_context_set_brush_size(brush_size)
+    pdb.gimp_context_set_foreground((128,0,128,255))
+    pdb.gimp_context_push()
+
     # Stroking
     for vector in vectors:
-        print "selecting vector"
-        pdb.gimp_image_select_item(image, CHANNEL_OP_REPLACE, vector)
-        mask = pdb.gimp_layer_create_mask(layer_1, 4)
-        pdb.gimp_layer_add_mask(layer_1, mask)
+        print "stroking vector"
+        pdb.gimp_edit_stroke_vectors(layer_2, vector)
 
     # Saving
     print "saving..."
     out_dir = os.getcwd()
     out_time = datetime.datetime.now()
     date_str = out_time.strftime('%Y%m%d_%H%M')
-    out_file = "/mask_path_test_" + date_str
+    out_file = "/background_path_" + date_str + ".png"
     out_path = out_dir + out_file
-    out_path_xcf = out_path + ".xcf"
-    print "file: " + out_path_xcf
-    pdb.gimp_xcf_save(
-        0,
-        image,
+
+    print "file: " + out_path
+
+    pdb.file_png_save_defaults(
+        image, 
         parent,
-        out_path_xcf,
-        out_path_xcf
+        out_path,
+        out_path
     )
 
 register(
-    "mask_path_test", 
+    "background_test", 
     "", 
     "", 
     "Max Hartl", 
     "Max Hartl", 
     "2015",
-    "<Toolbox>/Scripts/MaskPathTest", "",
+    "<Toolbox>/Scripts/BackgroundTest", "",
     [],
     [],
     run
