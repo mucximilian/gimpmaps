@@ -1,9 +1,7 @@
-﻿SELECT * FROM (
-	(SELECT  
+﻿SELECT  
 	row_number() over (ORDER BY osm_id) AS id,  
 	highway,
 	route,
-	concat(highway, route) AS road,
 	ST_AsSVG(  
 		ST_Scale(
 			ST_Translate(
@@ -20,8 +18,10 @@
 		1, 
 		0 
 	) AS svg  
-FROM planet_osm_line  
-WHERE ST_Intersects ( 
+FROM
+	planet_osm_line  
+WHERE 
+	ST_Intersects ( 
 	way, 
 	ST_MakeEnvelope( 
 		1271912.15067 + (1/((1281696.09029-1271912.15067)/256))*(12/2),  
@@ -30,10 +30,11 @@ WHERE ST_Intersects (
 		6114962.26281 + (1/((6124746.20243-6114962.26281)/256))*(12/2),  
 		900913 
 	) 
-))) t
-WHERE
+) 
+AND (
 	highway = 'motorway' OR
 	highway = 'motorway_link' OR
 	highway = 'primary' OR 
 	route = 'road' OR 
 	highway = 'secondary'
+)
