@@ -34,89 +34,73 @@ class TileRendererGimp(TileRenderer):
     def __init__(self, bbox, zoom_levels, tile_size, out_dir):
         
         t_start = datetime.datetime.now()
+        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
+        # logging setup
         logging.basicConfig(
-            filename = os.getcwd() + '/gimp_rendering.log',
+            filename = os.getcwd() + "/log/gimp_rendering_" + t_form + ".log",
             filemode = 'w',
             level = logging.INFO
-        )
-        
-        print os.getcwd()
-            
+        )            
         log_line = "###########################################################"
         logging.info(log_line)
         logging.info("Start of Gimp Tile processing at " + str(t_start))
         logging.info(log_line)
         
-        # Defining database connection
-        conn_zoom = psycopg2.connect('dbname=gimp_osm_styles '
+        # Defining database connection for different zoom level styles
+        conn_zoom = psycopg2.connect(
+            'dbname=gimp_osm_styles '
             'user=gis '
             'password=gis '
             'host=localhost '
             'port=5432'
         )
         
+        # Create a directory containing the date and time
+        result_dir = out_dir
+        out_dir += "tiles_" + t_form + "/"
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+            
+        # Copying the HTML to view the tiles in the browser
+        os.system ("cp %s %s" % (
+                                   result_dir + "index.html",
+                                   out_dir + "index.html")
+                   )
+        
         ########################################################################
         # Zoom level loop
         for zoom in zoom_levels:
             
-            tiling_data = self.get_tiling_data(bbox, zoom)            
-
-            logging.info("zoom level: " + str(zoom))
-            logging.info("tile ul: " + str(tiling_data[0]))
-            logging.info("tile lr: " + str(tiling_data[1]))
-            logging.info("tiles in x: " + str(tiling_data[2][0]))
-            logging.info("tiles in y: " + str(tiling_data[2][1]))
-            logging.info("tiles total: " + str(tiling_data[2][0] + tiling_data[2][1]))
+            tiling_data = self.get_tiling_data(bbox, zoom)
+            self.log_tiling_data_info_zoom(zoom, tiling_data) 
     
+            # Checking for a zoom directory, creating it if not existing
             out_dir_zoom = out_dir + str(zoom) + "/"
             if not os.path.exists(out_dir_zoom):
                 os.makedirs(out_dir_zoom)
             
             # Get OSM tags and styles for zoom level
-            curs_zoom = conn_zoom.cursor()
-            sql = """
-                SELECT * FROM get_line_tags_and_style(%s)
-            """                        
-            curs_zoom.execute(sql, (zoom,))
-            
-            # Get all features and styles for the zoom level in an array
-            zoom_style_features = []            
-            for row in curs_zoom.fetchall():
-                style_object = StyleObjects.StyleObjectLine(
-                    "line", row[1], row[2],
-                    row[3], row[4], row[5], row[6], row[7]
-                )
-                zoom_style_features.append(style_object)
-                logging.info("selected OSM-features: " + str(row[1]))
+            features_line = self.get_feature_styles(zoom, conn_zoom, "line")
             
             ####################################################################            
             # X-direction loop
             for x in range(tiling_data[0][0], tiling_data[1][0] + 1):
                 
-                indent = "  "
-                out = (indent + "row " 
-                    + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
-                    + str(tiling_data[2][0]) + " (" + str(x) + ")")
-                print out
-                logging.info(out)
+                self.log_tiling_data_info_x(x, tiling_data)                
                 
+                # Checking for a X directory in zoom directory, 
+                # creating it if not existing
                 out_dir_zoom_x = out_dir_zoom + str(x) + "/"
                 if not os.path.exists(out_dir_zoom_x):
-        			os.makedirs(out_dir_zoom_x)
+                    os.makedirs(out_dir_zoom_x)
     
                 ################################################################
                 # Y-direction loop
                 for y in range(tiling_data[0][1], tiling_data[1][1] + 1):
                                     
-                    ul_x = self.origin_x + x * tiling_data[3]
-                    ul_y = self.origin_y - y * tiling_data[3]
-                    lr_x = ul_x + tiling_data[3]
-                    lr_y = ul_y - tiling_data[3]
-                                    
-                    out = indent + indent + "tile " + str(x) + "/" + str(y)
-                    print out
-                    logging.info(out)
+                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])
+                    print(tile_bbox)
 
                     # Create GIMP image with layer group
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
@@ -133,7 +117,12 @@ class TileRendererGimp(TileRenderer):
 
                     ############################################################
                     # Geometry feature loop START
-                    for style_feature in zoom_style_features:
+                    
+                    #TO DO:
+                    # draw_line_features(image, conn_osm, features_line)
+                    # draw_polygon_features(image, conn_osm, features_polygon)
+                    
+                    for style_feature in features_line:
                         
                         sql_selection = style_feature.get_selection_tags()
                         line_style = style_feature.get_line_style()
@@ -172,15 +161,15 @@ class TileRendererGimp(TileRenderer):
                             
                         # Get SVG tile geometry from database
                         curs_osm.execute(sql, (
-                            ul_x,
-                            ul_y,
-                            lr_x,
-                            lr_y,
+                            tile_bbox[0],
+                            tile_bbox[1],
+                            tile_bbox[2],
+                            tile_bbox[3],
                             tile_size,
-                            ul_x,
-                            ul_y,
-                            lr_x,
-                            lr_y,
+                            tile_bbox[0],
+                            tile_bbox[1],
+                            tile_bbox[2],
+                            tile_bbox[3],
                             tile_size,
                             line_style[1]
                             )
@@ -285,7 +274,7 @@ class TileRendererGimp(TileRenderer):
             # Y-direction loop END
             ####################################################################
                 
-            curs_zoom.close()
+            
             
         # Zoom-level loop END
         ########################################################################
@@ -302,3 +291,56 @@ class TileRendererGimp(TileRenderer):
             " seconds"
         )
         logging.info(log_line)
+        
+      
+    ############################################################################
+    # Get style and tag info of all feature of a type for a zoom level
+    def get_feature_styles(self, zoom_level, conn_zoom, feature_type):
+        curs_zoom = conn_zoom.cursor()
+        
+        sql = "SELECT * FROM get_" + feature_type + "_tags_and_style(%s)"                            
+        curs_zoom.execute(sql, (zoom_level,))
+        
+        # Store feature data in an array
+        features = []        
+        if (feature_type == "line"):        
+            for row in curs_zoom.fetchall():
+                style_object = StyleObjects.StyleObjectLine(
+                    "line", row[1], row[2],
+                    row[3], row[4], row[5], row[6], row[7]
+                )
+                features.append(style_object)
+                logging.info("selected OSM " + feature_type 
+                    + " features: " + str(row[1]))
+        elif (feature_type == "polygon"):
+            for row in curs_zoom.fetchall():
+                style_object = StyleObjects.StyleObjectPolygon(
+                    "line", row[1], row[2],
+                    row[3], row[4], row[5], row[6], row[7]
+                )
+                features.append(style_object)
+                logging.info("selected OSM " + feature_type 
+                    + " features: " + str(row[1]))
+        
+        curs_zoom.close()
+        
+        return features
+        
+    ############################################################################
+    # Logging functions
+    def log_tiling_data_info_zoom(self, zoom, tiling_data):
+        logging.info("zoom level: " + str(zoom))
+        logging.info("tile ul: " + str(tiling_data[0]))
+        logging.info("tile lr: " + str(tiling_data[1]))
+        logging.info("tiles in x: " + str(tiling_data[2][0]))
+        logging.info("tiles in y: " + str(tiling_data[2][1]))
+        logging.info("tiles total: "
+            + str(tiling_data[2][0] + tiling_data[2][1]))
+        
+    def log_tiling_data_info_x(self, x, tiling_data):
+        out = self.print_tiling_data_info_x(x, tiling_data)
+        logging.info(out)
+        
+    def log_tiling_data_info_y(self, x, y, tiling_data):
+        out = self.print_tiling_data_info_y(x, y, tiling_data)
+        logging.info(out)

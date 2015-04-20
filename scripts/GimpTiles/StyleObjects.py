@@ -70,3 +70,24 @@ class StyleObjectLine(StyleObject):
             "geometry type: " + self.geom_type + "\n" +
             "OSM tags: " + str(self.tags) + "\n"
         )
+        
+################################################################################
+# 
+# StyleObjectLine
+# Specification of the StyleObject class for line features
+#
+class StyleObjectPolygon(StyleObject):
+    def __init__(
+        self, 
+        geom_type, tags, z_order,
+        brush, brush_size, color, opacity_brush, dynamics,
+        image, opacity_image):
+            
+        StyleObject.__init__(self, geom_type, tags, z_order)
+        self.brush = brush
+        self.brush_size = brush_size
+        self.color = color
+        self.opacity_brush = opacity_brush
+        self.dynamics = dynamics
+        self.image = image
+        self.opacity_image = opacity_image

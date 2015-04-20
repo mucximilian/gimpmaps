@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
-from PgsvgTiles.TileRenderer import TileRenderer
+import datetime
+from TileRenderer import TileRenderer
 
 zoom_min = 12
-zoom_max = 14
+zoom_max = 13
 
 zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
 
@@ -18,6 +18,13 @@ brush_size = 12
 tile_size = 256
 
 out_dir = ( "/media/data/daten/studium/master/module/master_thesis/data" 
-                + "/rendering/results/")
+    + "/rendering/results/svg_" 
+    + datetime.datetime.now().strftime('%Y%m%d_%H%M') + "/")
 
-tile_renderer = TileRenderer(bbox, zoom_levels, brush_size, tile_size, out_dir)
+tile_renderer = TileRenderer(
+    bbox, 
+    zoom_levels,
+    tile_size,
+    out_dir
+)
+tile_renderer.create_tiles()

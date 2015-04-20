@@ -1,0 +1,1 @@
+﻿SELECT * FROM get_polygon_tags_and_style(12)

@@ -9,7 +9,7 @@ from ZoomSelection import ZoomSelectionLinesType
 class TileRenderer(object):
     
     origin_x = -(2 * math.pi * 6378137 / 2.0)
-    origin_y = 2 * math.pi * 6378137 / 2.0    
+    origin_y = 2 * math.pi * 6378137 / 2.0
     
     def __init__(self, bbox, zoom_levels, tile_size, out_dir):
         self.bbox = bbox
@@ -21,8 +21,7 @@ class TileRenderer(object):
         
         for zoom in self.zoom_levels:
             
-            tiling_data = self.get_tiling_data(self.bbox, zoom)
-            
+            tiling_data = self.get_tiling_data(self.bbox, zoom)            
             print tiling_data
             
             brush_size = 12
@@ -47,8 +46,7 @@ class TileRenderer(object):
                 	'user=gis '
                 	'password=gis '
                 	'host=localhost '
-                	'port=5432')
-    
+                	'port=5432')    
                 curs = conn.cursor()
                 
                 out_dir_zoom_x = out_dir_zoom + str(x) + "/"
@@ -58,10 +56,7 @@ class TileRenderer(object):
                 # Y-direction loop
                 for y in range(tiling_data[0][1], tiling_data[1][1] + 1):
                                     
-                    ul_x = self.origin_x + x * tiling_data[3]
-                    ul_y = self.origin_y - y * tiling_data[3]
-                    lr_x = ul_x + tiling_data[3]
-                    lr_y = ul_y - tiling_data[3]
+                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])    
                                     
                     print indent + indent + "tile " + str(x) + "/" + str(y)
                     
@@ -74,10 +69,10 @@ class TileRenderer(object):
                         WHERE (""" + sql_selection + ")"        
 
                     curs.execute(sql, (
-                        ul_x,
-                        ul_y,
-                        lr_x,
-                        lr_y,
+                        tile_bbox[0],
+                        tile_bbox[1],
+                        tile_bbox[2],
+                        tile_bbox[3],
                         brush_size,
                         self.tile_size
                         )
@@ -108,7 +103,17 @@ class TileRenderer(object):
         return tile_ul_lr
         
     ############################################################################
-    # Get UL and LR coordinates of tile containing a given point at zoom level 
+    # Get UL and LR coordinates of tile containing a given point at zoom level
+    #
+    # Returns tiling data array:
+    # [0][0] = tile ul x
+    # [0][1] = tile ul y
+    # [1][0] = tile lr x
+    # [1][1] = tile lr y
+    # [2][0] = tiles in x
+    # [2][1] = tiles in y
+    # [3] = tile size in CRS units (meter)
+    #
     def get_tiling_data(self, bbox, zoom):
         
         # Determine containing tile for the UL and LR bounds at zoom level
@@ -140,7 +145,32 @@ class TileRenderer(object):
         print "tiles count = " + str(tiles_count)
         
         return tiling_data
+    
+    ############################################################################    
+    # Calculating the tile coordinates from the tile size
+    def calculate_tile_bbox(self, x, y, tile_size):        
+        ul_x = self.origin_x + x * tile_size
+        ul_y = self.origin_y - y * tile_size
+        lr_x = ul_x + tile_size
+        lr_y = ul_y - tile_size
+        return [ul_x, ul_y, lr_x, lr_y]
         
+    def print_tiling_data_info_x(self, x, tiling_data):
+        indent = "  "
+        out = (indent + "row " 
+            + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
+            + str(tiling_data[2][0]) + " (" + str(x) + ")")
+        print out
+        return out
+        
+    def print_tiling_data_info_y(self, x, y, tiling_data):
+        indent = "  "
+        out = indent + indent + "tile " + str(x) + "/" + str(y)
+        print out
+        return out
+    
+    ############################################################################
+    # Saving tile as SVG file
     def save_svg_tiles(self, out_file, tile_size, curs):
         dwg = svgwrite.Drawing(
             out_file + ".svg",
@@ -165,6 +195,5 @@ class TileRenderer(object):
             if count > 0:
                 selection_string += " OR "
             selection_string += tag
-            count += 1
-            
+            count += 1            
         return selection_string

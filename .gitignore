@@ -1,6 +1,8 @@
 gimp/
 processing/
 results/
-.spyderworkspace
-.spyderproject
+log/
+scripts/.settings
+.project
+.pydevproject
 *.pyc
