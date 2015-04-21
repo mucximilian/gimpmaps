@@ -35,7 +35,7 @@ ON (
 WHERE f.geometry = 2
 AND f.zoom_max <= zoom_level
 AND f.zoom_min >= zoom_level
-ORDER BY f.z_order DESC
+ORDER BY f.z_order ASC
 $$
 LANGUAGE sql STABLE;
 ALTER FUNCTION get_line_tags_and_style(

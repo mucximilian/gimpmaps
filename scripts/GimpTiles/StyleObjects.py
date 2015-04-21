@@ -42,6 +42,9 @@ class StyleObjectLine(StyleObject):
         self.opacity = opacity
         self.dynamics = dynamics
         
+    def get_z_order(self):
+        return self.z_order
+        
     ############################################################################
     # Returns line style parameters
     def get_line_style(self):

@@ -6,3 +6,4 @@ scripts/.settings
 .project
 .pydevproject
 *.pyc
+*.xcf

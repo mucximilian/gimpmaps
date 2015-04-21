@@ -126,6 +126,7 @@ class TileRendererGimp(TileRenderer):
                         
                         sql_selection = style_feature.get_selection_tags()
                         line_style = style_feature.get_line_style()
+                        z_order = style_feature.get_z_order()
                         
                         # Get svg tiles from database                    
                         curs_osm = conn_osm.cursor()
@@ -185,7 +186,12 @@ class TileRendererGimp(TileRenderer):
                             100,
                             NORMAL_MODE
                         )    
-                        pdb.gimp_image_insert_layer(image, layer, parent, 1)    				
+                        pdb.gimp_image_insert_layer(
+                                                    image,
+                                                    layer, 
+                                                    parent, 
+                                                    z_order
+                                                )    				
                         
                         # Style settings
                         pdb.gimp_context_set_brush(line_style[0])
@@ -224,6 +230,7 @@ class TileRendererGimp(TileRenderer):
                         # TO DO: emulate brush dynamics?????
                         for vector in image.vectors:
                             pdb.gimp_edit_stroke_vectors(layer, vector)
+                            pdb.gimp_image_remove_vectors(image, vector)
                         
                         curs_osm.close()
 
@@ -240,7 +247,7 @@ class TileRendererGimp(TileRenderer):
                         100,
                         NORMAL_MODE
                     )    
-                    pdb.gimp_image_insert_layer(image, background, parent, 2)    				
+                    pdb.gimp_image_insert_layer(image, background, parent, -1)    				
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
                     # Assign the Y value as the file name
@@ -256,7 +263,7 @@ class TileRendererGimp(TileRenderer):
                         out_path_png,
                         out_path_png
                     )
-                    """
+                    
                     out_path_xcf = out_path + ".xcf"   
                     pdb.gimp_xcf_save(
                         0,
@@ -265,7 +272,7 @@ class TileRendererGimp(TileRenderer):
                         out_path_xcf,
                         out_path_xcf
                     )
-                    """
+                    
                     conn_osm.close()
                      
                 # Y-direction loop END
