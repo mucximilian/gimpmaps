@@ -7,3 +7,4 @@ scripts/.settings
 .pydevproject
 *.pyc
 *.xcf
+*.png
