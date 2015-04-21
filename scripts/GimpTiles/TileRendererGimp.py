@@ -98,9 +98,10 @@ class TileRendererGimp(TileRenderer):
                 ################################################################
                 # Y-direction loop
                 for y in range(tiling_data[0][1], tiling_data[1][1] + 1):
+                    
+                    self.log_tiling_data_info_y(x, y, tiling_data)
                                     
                     tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])
-                    print(tile_bbox)
 
                     # Create GIMP image with layer group
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
@@ -110,7 +111,8 @@ class TileRendererGimp(TileRenderer):
                     
                     pdb.gimp_image_insert_layer(image, lines, None, 0) 
                                         
-                    conn_osm = psycopg2.connect('dbname=osm_muc '
+                    conn_osm = psycopg2.connect(
+                        'dbname=osm_muc '
                         'user=gis '
                         'password=gis '
                         'host=localhost '
@@ -130,7 +132,6 @@ class TileRendererGimp(TileRenderer):
                         
                         sql_selection = style_feature.get_selection_tags()
                         line_style = style_feature.get_line_style()
-                        z_order = style_feature.get_z_order()
                         
                         logging.info(line_style)
                         
