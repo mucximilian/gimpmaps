@@ -105,8 +105,10 @@ class TileRendererGimp(TileRenderer):
                     # Create GIMP image with layer group
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
                     pdb.gimp_context_set_background((255,255,255,255))                    
-                    parent = pdb.gimp_layer_group_new(image)
-                    pdb.gimp_image_insert_layer(image, parent, None, 0)          
+                    
+                    lines = pdb.gimp_layer_group_new(image)
+                    
+                    pdb.gimp_image_insert_layer(image, lines, None, 0) 
                                         
                     conn_osm = psycopg2.connect('dbname=osm_muc '
                         'user=gis '
@@ -122,11 +124,15 @@ class TileRendererGimp(TileRenderer):
                     # draw_line_features(image, conn_osm, features_line)
                     # draw_polygon_features(image, conn_osm, features_polygon)
                     
+                    layer_pos = 0
+                    
                     for style_feature in features_line:
                         
                         sql_selection = style_feature.get_selection_tags()
                         line_style = style_feature.get_line_style()
                         z_order = style_feature.get_z_order()
+                        
+                        logging.info(line_style)
                         
                         # Get svg tiles from database                    
                         curs_osm = conn_osm.cursor()
@@ -185,13 +191,13 @@ class TileRendererGimp(TileRenderer):
                             sql_selection,
                             100,
                             NORMAL_MODE
-                        )    
+                        )
                         pdb.gimp_image_insert_layer(
                                                     image,
                                                     layer, 
-                                                    parent, 
-                                                    z_order
-                                                )    				
+                                                    lines, 
+                                                    layer_pos
+                                                )   				
                         
                         # Style settings
                         pdb.gimp_context_set_brush(line_style[0])
@@ -233,6 +239,9 @@ class TileRendererGimp(TileRenderer):
                             pdb.gimp_image_remove_vectors(image, vector)
                         
                         curs_osm.close()
+                        
+                        # Incrementing current layer position
+                        layer_pos =+ layer_pos + 1
 
                     # Geometry feature loop END
                     ############################################################
@@ -247,19 +256,24 @@ class TileRendererGimp(TileRenderer):
                         100,
                         NORMAL_MODE
                     )    
-                    pdb.gimp_image_insert_layer(image, background, parent, -1)    				
+                    pdb.gimp_image_insert_layer(
+                                                image,
+                                                background,
+                                                lines, 
+                                                layer_pos
+                                                )    				
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
                     # Assign the Y value as the file name
                     out_path = out_dir_zoom_x + str(y)
                     out = "saving file: " + out_path
-                    print out                    
+                    print out                     
                     
                     # Save images as PNG and XCF
                     out_path_png = out_path + ".png"
                     pdb.file_png_save_defaults(
                         image, 
-                        parent,
+                        lines,
                         out_path_png,
                         out_path_png
                     )
@@ -268,7 +282,7 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_xcf_save(
                         0,
                         image,
-                        parent,
+                        lines,
                         out_path_xcf,
                         out_path_xcf
                     )
