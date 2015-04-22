@@ -30,11 +30,11 @@ def run():
 
 register(
 	"stroke_pgsvg_tiles", 
-	"", 
-	"", 
-	"Max Hartl", 
-	"Max Hartl", 
-	"2015",
+	"Creating map tiles from an OpenStreetMap PostGIS database", 
+	"Creating map tiles from an OpenStreetMap PostGIS database", 
+	"Maximilian Hartl", 
+	"Maximilian Hartl", 
+	"April 2015",
 	"<Toolbox>/Scripts/StrokePgsvgTiles", "",
 	[],
 	[],

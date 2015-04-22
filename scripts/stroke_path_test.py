@@ -2,10 +2,9 @@
 from gimpfu import *
 import os
 
-import psycopg2
-import ppygis
+import datetime
 import math
-import svgwrite
+
 
 origin_x = -(2 * math.pi * 6378137 / 2.0)
 origin_y = 2 * math.pi * 6378137 / 2.0
@@ -49,7 +48,7 @@ def run():
 
 	############################################################################
 	# Brush Settings
-	brush_size = 35
+	brush_size = 10
 	brush = "GIMP Brush #7"
 	# brush_dynamics = "Dynamics Off"
 	brush_dynamics = "Det1"
@@ -74,11 +73,14 @@ def run():
 		# pdb.gimp_edit_stroke_vectors(draw, vector)		
 
 	print "saving..."
-	out_dir = "/media/data/daten/studium/master/module/master_thesis/rendering/gimp/python-fu/results/"
-	out_file = "script_test_br" + str(brush_size) + ".png"
+	out_dir = os.getcwd()
+    
+	out_time = datetime.datetime.now()
+	date_str = out_time.strftime('%Y%m%d_%H%M')   
+	out_file = "/script_test_br" + date_str + ".png"
 	out_path = out_dir + out_file
 
-	print "file: " + out_file
+	print "file: " + out_path
 
 	pdb.file_png_save_defaults(
 		image, 

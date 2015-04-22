@@ -62,7 +62,7 @@ class TileRendererGimp(TileRenderer):
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
             
-        # Copying the HTML to view the tiles in the browser
+        # Copying the HTML file to view the tiles in the browser
         os.system ("cp %s %s" % (
                                    result_dir + "index.html",
                                    out_dir + "index.html")
@@ -289,6 +289,8 @@ class TileRendererGimp(TileRenderer):
                     )
                     
                     conn_osm.close()
+                    
+                    pdb.gimp_image_delete(image)
                      
                 # Y-direction loop END
                 ################################################################

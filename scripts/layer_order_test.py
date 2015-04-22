@@ -10,12 +10,14 @@ def run():
     height = 256
     image = pdb.gimp_image_new(width, height, RGB)
     pdb.gimp_context_set_background((255,255,255,255))
-    
+
+    group_top = pdb.gimp_layer_group_new(image)
     group_1 = pdb.gimp_layer_group_new(image)
     group_2 = pdb.gimp_layer_group_new(image)
     
-    pdb.gimp_image_insert_layer(image, group_1, None, 0)         
-    pdb.gimp_image_insert_layer(image, group_2, None, 1)         
+    pdb.gimp_image_insert_layer(image, group_top, None, 0)    
+    pdb.gimp_image_insert_layer(image, group_1, group_top, 0)         
+    pdb.gimp_image_insert_layer(image, group_2, group_top, 1)         
 
     # Adding layer layers
     layer_1 = pdb.gimp_layer_new(
@@ -124,7 +126,7 @@ def run():
     pdb.gimp_xcf_save(
         0,
         image,
-        image,
+        group_top,
         out_path_xcf,
         out_path_xcf
     )
