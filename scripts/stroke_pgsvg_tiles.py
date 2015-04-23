@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import datetime
+import os
 from gimpfu import *
 
 from GimpTiles.TileRendererGimp import TileRendererGimp
@@ -17,9 +17,8 @@ def run():
 
     # Defining the pixel size of the output map tiles
     tile_size = 256
-
-    out_dir = ( "/media/data/daten/studium/master/module/master_thesis/data" 
-        + "/rendering/results/")
+ 
+    out_dir = os.getcwd() + "/results/"
 
     tile_renderer = TileRendererGimp(
 		bbox, 
@@ -35,7 +34,7 @@ register(
 	"Maximilian Hartl", 
 	"Maximilian Hartl", 
 	"April 2015",
-	"<Toolbox>/Scripts/StrokePgsvgTiles", "",
+	"<Toolbox>/Scripts/StrokePgsvg''Tiles", "",
 	[],
 	[],
 	run

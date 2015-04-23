@@ -81,7 +81,10 @@ class TileRendererGimp(TileRenderer):
                 os.makedirs(out_dir_zoom)
             
             # Get OSM tags and styles for zoom level
-            features_line = self.get_feature_styles(zoom, conn_zoom, "line")
+            features_line = self.get_feature_styles(zoom, conn_zoom,
+                                                    "line")
+            features_polygon = self.get_feature_styles(zoom, conn_zoom,
+                                                       "polygon")
             
             ####################################################################            
             # X-direction loop
@@ -101,15 +104,7 @@ class TileRendererGimp(TileRenderer):
                     
                     self.log_tiling_data_info_y(x, y, tiling_data)
                                     
-                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])
-
-                    # Create GIMP image with layer group
-                    image = pdb.gimp_image_new(tile_size, tile_size, RGB)    
-                    pdb.gimp_context_set_background((255,255,255,255))                    
-                    
-                    lines = pdb.gimp_layer_group_new(image)
-                    
-                    pdb.gimp_image_insert_layer(image, lines, None, 0) 
+                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])        
                                         
                     conn_osm = psycopg2.connect(
                         'dbname=osm_muc '
@@ -120,149 +115,37 @@ class TileRendererGimp(TileRenderer):
                     )
 
                     ############################################################
-                    # Geometry feature loop START
+                    # Drawing geometry features
                     
-                    #TO DO:
-                    # draw_line_features(image, conn_osm, features_line)
-                    # draw_polygon_features(image, conn_osm, features_polygon)
+                    # Create GIMP image with layer group
+                    image = pdb.gimp_image_new(tile_size, tile_size, RGB)
+                    pdb.gimp_context_set_background((255,255,255,255))
                     
-                    layer_pos = 0
+                    group_top = pdb.gimp_layer_group_new(image)
                     
-                    for style_feature in features_line:
-                        
-                        sql_selection = style_feature.get_selection_tags()
-                        line_style = style_feature.get_line_style()
-                        
-                        logging.info(line_style)
-                        
-                        # Get svg tiles from database                    
-                        curs_osm = conn_osm.cursor()
-                        sql = """
-                            SELECT 
-                            	ROW_NUMBER() OVER (ORDER BY osm_id) AS id,
-                            	svg
-                            FROM (
-                            	SELECT
-                            		get_scaled_svg(
-                            			way,
-                            			%s,
-                            			%s,
-                            			%s,
-                            			%s,
-                            			%s
-                            		) AS svg,
-                            		*
-                            	FROM planet_osm_line  
-                            	WHERE ST_Intersects ( 
-                            		way, 
-                            		get_tile_bbox(
-                            			%s,
-                            			%s,
-                            			%s,
-                            			%s,
-                            			%s,
-                            			%s
-                            		) 
-                            	)
-                            ) t
-                            WHERE (""" + sql_selection + ")"      
-                            
-                        # Get SVG tile geometry from database
-                        curs_osm.execute(sql, (
-                            tile_bbox[0],
-                            tile_bbox[1],
-                            tile_bbox[2],
-                            tile_bbox[3],
-                            tile_size,
-                            tile_bbox[0],
-                            tile_bbox[1],
-                            tile_bbox[2],
-                            tile_bbox[3],
-                            tile_size,
-                            line_style[1]
-                            )
-                        )
-                        
-                        # Create image layer for geometry feature
-                        layer = pdb.gimp_layer_new(
-                            image,
-                            tile_size,
-                            tile_size,
-                            RGBA_IMAGE,
-                            sql_selection,
-                            100,
-                            NORMAL_MODE
-                        )
-                        pdb.gimp_image_insert_layer(
-                                                    image,
-                                                    layer, 
-                                                    lines, 
-                                                    layer_pos
-                                                )   				
-                        
-                        # Style settings
-                        pdb.gimp_context_set_brush(line_style[0])
-                        pdb.gimp_context_set_brush_size(line_style[1])
-                        pdb.gimp_context_set_dynamics(line_style[4])
-                        pdb.gimp_context_set_foreground((
-                            line_style[2][0],
-                            line_style[2][1],
-                            line_style[2][2],
-                            line_style[3]
-                        ))
-                        pdb.gimp_context_push()
+                    # Lines
+                    self.draw_features(tile_bbox, tile_size,
+                                       image, 
+                                       conn_osm, 
+                                       features_line,
+                                       group_top, 0)
                     
-                        # Create temporary SVG drawing from geometry features
-                        dwg = svgwrite.Drawing(
-                            height = tile_size,
-                            width = tile_size
-                        )
-                    
-                        # Import SVG data into SVG drawing from database
-                        for row in curs_osm.fetchall():
-                            path = dwg.path(d=row[1])
-                            path_str = path.tostring()
-                    
-                            pdb.gimp_vectors_import_from_string(
-                                image, 
-                                path_str, 
-                                -1, 1, 1,
-                            )
-                    
-                        out = "      vectors: " + str(len(image.vectors))
-                        print out
-                        logging.info(out)
-                        
-                        # Draw vectors into GIMP image layer
-                        # TO DO: emulate brush dynamics?????
-                        for vector in image.vectors:
-                            pdb.gimp_edit_stroke_vectors(layer, vector)
-                            pdb.gimp_image_remove_vectors(image, vector)
-                        
-                        curs_osm.close()
-                        
-                        # Incrementing current layer position
-                        layer_pos =+ layer_pos + 1
+                    # Polygons
+                    self.draw_features(
+                                       tile_bbox, tile_size,
+                                       image, 
+                                       conn_osm,
+                                       features_polygon,
+                                       group_top, 1)
 
-                    # Geometry feature loop END
-                    ############################################################
-                    
-                    # Adding a white background layer
+                    # Background
                     background = pdb.gimp_layer_new(                    
-                        image,
-                        tile_size,
-                        tile_size,
-                        RGBA_IMAGE,
-                        "background",
-                        100,
-                        NORMAL_MODE
+                        image, tile_size, tile_size,
+                        RGBA_IMAGE, "background", 100, NORMAL_MODE
                     )    
-                    pdb.gimp_image_insert_layer(
-                                                image,
-                                                background,
-                                                lines, 
-                                                layer_pos
-                                                )    				
+                    pdb.gimp_image_insert_layer(image, background,
+                                                group_top, 2)
+                    
                     pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
                     # Assign the Y value as the file name
@@ -274,7 +157,7 @@ class TileRendererGimp(TileRenderer):
                     out_path_png = out_path + ".png"
                     pdb.file_png_save_defaults(
                         image, 
-                        lines,
+                        group_top,
                         out_path_png,
                         out_path_png
                     )
@@ -283,7 +166,7 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_xcf_save(
                         0,
                         image,
-                        lines,
+                        group_top,
                         out_path_xcf,
                         out_path_xcf
                     )
@@ -298,8 +181,6 @@ class TileRendererGimp(TileRenderer):
             # Y-direction loop END
             ####################################################################
                 
-            
-            
         # Zoom-level loop END
         ########################################################################
         
@@ -339,8 +220,9 @@ class TileRendererGimp(TileRenderer):
         elif (feature_type == "polygon"):
             for row in curs_zoom.fetchall():
                 style_object = StyleObjects.StyleObjectPolygon(
-                    "line", row[1], row[2],
-                    row[3], row[4], row[5], row[6], row[7]
+                    "polygon", row[1], row[2],
+                    row[3], row[4], row[5], row[6], row[7],
+                    row[8], row[9]
                 )
                 features.append(style_object)
                 logging.info("selected OSM " + feature_type 
@@ -368,3 +250,131 @@ class TileRendererGimp(TileRenderer):
     def log_tiling_data_info_y(self, x, y, tiling_data):
         out = self.print_tiling_data_info_y(x, y, tiling_data)
         logging.info(out)
+        
+    def draw_features(self, tile_bbox, tile_size, image, 
+                           conn_osm, features_line, 
+                           group_top, layer_pos):
+        
+        # Create a layer group for the feature
+        feature_group = pdb.gimp_layer_group_new(image)
+        pdb.gimp_image_insert_layer(image, feature_group, group_top, layer_pos)       
+        
+        layer_pos_group = 0
+        
+        for style_feature in features_line:
+                        
+            sql_selection = style_feature.get_selection_tags()
+            line_style = style_feature.get_line_style()
+            
+            # Get svg tiles from database                    
+            curs_osm = conn_osm.cursor()
+            sql = """
+                SELECT 
+                    ROW_NUMBER() OVER (ORDER BY osm_id) AS id,
+                    svg
+                FROM (
+                    SELECT
+                        get_scaled_svg(
+                            way,
+                            %s,
+                            %s,
+                            %s,
+                            %s,
+                            %s
+                        ) AS svg,
+                        *
+                    FROM planet_osm_line  
+                    WHERE ST_Intersects ( 
+                        way, 
+                        get_tile_bbox(
+                            %s,
+                            %s,
+                            %s,
+                            %s,
+                            %s,
+                            %s
+                        ) 
+                    )
+                ) t
+                WHERE (""" + sql_selection + ")"      
+                
+            # Get SVG tile geometry from database
+            curs_osm.execute(sql, (
+                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                tile_size,
+                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                tile_size,
+                line_style[1]
+                )
+            )
+            
+            # Create image layer for geometry feature
+            layer = pdb.gimp_layer_new(
+                image, tile_size, tile_size,
+                RGBA_IMAGE,
+                sql_selection,
+                100, NORMAL_MODE
+            )
+            pdb.gimp_image_insert_layer(image, layer, 
+                                        feature_group, layer_pos_group
+                                    )                   
+            
+            # Style settings
+            pdb.gimp_context_set_brush(line_style[0])
+            pdb.gimp_context_set_brush_size(line_style[1])
+            pdb.gimp_context_set_dynamics(line_style[4])
+            pdb.gimp_context_set_foreground((
+                line_style[2][0],
+                line_style[2][1],
+                line_style[2][2],
+                line_style[3]
+            ))
+            pdb.gimp_context_push()
+        
+            # Create temporary SVG drawing from geometry features
+            dwg = svgwrite.Drawing(
+                height = tile_size,
+                width = tile_size
+            )
+        
+            # Import SVG data into SVG drawing from database
+            for row in curs_osm.fetchall():
+                path = dwg.path(d=row[1])
+                path_str = path.tostring()
+                
+                logging.info(path)
+                logging.info(path_str)
+        
+                pdb.gimp_vectors_import_from_string(
+                    image, 
+                    path_str, 
+                    -1, 1, 1,
+                )
+                
+                # TO DO:
+                # Import from modified string (hachure)
+        
+            out = "      vectors: " + str(len(image.vectors))
+            print out
+            logging.info(out)
+            
+            # Draw vectors into GIMP image layer
+            # TO DO: emulate brush dynamics?????
+            for vector in image.vectors:
+                pdb.gimp_edit_stroke_vectors(layer, vector)
+                
+                # TO DO:
+                # Polygon drawing
+                # Masking
+                
+                pdb.gimp_image_remove_vectors(image, vector)
+            
+            curs_osm.close()
+            
+            # Incrementing current layer position
+            layer_pos_group =+ layer_pos_group + 1
+
+        # Geometry feature loop END
+        ############################################################
+        pdb.gimp_image_insert_layer(image, feature_group, None, 0)
+        
