@@ -121,7 +121,11 @@ class TileRendererGimp(TileRenderer):
                     image = pdb.gimp_image_new(tile_size, tile_size, RGB)
                     pdb.gimp_context_set_background((255,255,255,255))
                     
+                    # Creating a 'top' layer group that will contain all the
+                    # layer groups added in the following steps
                     group_top = pdb.gimp_layer_group_new(image)
+                    pdb.gimp_image_insert_layer(image, group_top,
+                                                None, 2)
                     
                     # Lines
                     self.draw_features(tile_bbox, tile_size,
@@ -339,11 +343,8 @@ class TileRendererGimp(TileRenderer):
         
             # Import SVG data into SVG drawing from database
             for row in curs_osm.fetchall():
-                path = dwg.path(d=row[1])
-                path_str = path.tostring()
-                
-                logging.info(path)
-                logging.info(path_str)
+                path = dwg.path(d=row[1]) # M 226 176 l -2 -0
+                path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
         
                 pdb.gimp_vectors_import_from_string(
                     image, 
@@ -376,5 +377,4 @@ class TileRendererGimp(TileRenderer):
 
         # Geometry feature loop END
         ############################################################
-        pdb.gimp_image_insert_layer(image, feature_group, None, 0)
         

@@ -33,13 +33,13 @@ class StyleObjectLine(StyleObject):
     def __init__(
         self, 
         geom_type, tags, z_order,
-        brush, brush_size, color, opacity, dynamics):
+        brush, brush_size, color, opacity_brush, dynamics):
             
         StyleObject.__init__(self, geom_type, tags, z_order)
         self.brush = brush
         self.brush_size = brush_size
         self.color = color
-        self.opacity = opacity
+        self.opacity_brush = opacity_brush
         self.dynamics = dynamics
         
     def get_z_order(self):
@@ -52,7 +52,7 @@ class StyleObjectLine(StyleObject):
             self.brush,
             self.brush_size,
             self.color,
-            self.opacity,
+            self.opacity_brush,
             self.dynamics
         ]
         
@@ -63,7 +63,7 @@ class StyleObjectLine(StyleObject):
             self.color[0],
             self.color[1],
             self.color[2],
-            self.opacity
+            self.opacity_brush
         ]
      
     ############################################################################
@@ -79,7 +79,7 @@ class StyleObjectLine(StyleObject):
 # StyleObjectLine
 # Specification of the StyleObject class for line features
 #
-class StyleObjectPolygon(StyleObject):
+class StyleObjectPolygon(StyleObjectLine):
     def __init__(
         self, 
         geom_type, tags, z_order,
