@@ -135,7 +135,7 @@ class TileRendererGimp(TileRenderer):
                     # layer groups added in the following steps
                     group_top = pdb.gimp_layer_group_new(image)
                     pdb.gimp_image_insert_layer(image, group_top,
-                                                None, 2)
+                                                None, 0)
                     
                     # Lines
                     self.draw_features(tile_bbox,
@@ -283,6 +283,10 @@ class TileRendererGimp(TileRenderer):
         
         layer_pos_group = 0
         
+        # Resetting GIMP image context
+        pdb.gimp_context_set_defaults()
+        pdb.gimp_context_push()
+        
         for style_feature in features:
                         
             sql_selection = style_feature.get_selection_tags()
@@ -342,6 +346,7 @@ class TileRendererGimp(TileRenderer):
                                     )                   
             
             # Style settings
+            pdb.gimp_context_pop()
             pdb.gimp_context_set_brush(line_style[0])
             pdb.gimp_context_set_brush_size(line_style[1])
             pdb.gimp_context_set_dynamics(line_style[4])
@@ -375,7 +380,6 @@ class TileRendererGimp(TileRenderer):
         
             out = "      " + sql_selection + " (" + str(len(image.vectors)) + ")"
             logging.info(out)
-            logging.info(", ".join(str(x) for x in line_style))
             
             # Draw vectors into GIMP image layer
             # TO DO: emulate brush dynamics?????
