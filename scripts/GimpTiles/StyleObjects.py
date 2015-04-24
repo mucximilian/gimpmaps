@@ -8,20 +8,13 @@
 class StyleObject(object):
     def __init__(self, geom_type, tags, z_order):
         self.geom_type = geom_type
-        self.tags = tags
+        self.tags = tags # A list of tags
         self.z_order = z_order
     
     ############################################################################
     # Returns concatenated selection tags suitable for a SQL 'WHERE' condition
     def get_selection_tags(self):
-        selection_string = ""
-        count = 0
-        for tag in self.tags:
-            if count > 0:
-                selection_string += " AND "
-            selection_string += tag
-            count += 1
-            
+        selection_string = " AND ".join(self.tags)            
         return selection_string
         
 ################################################################################
@@ -68,12 +61,24 @@ class StyleObjectLine(StyleObject):
      
     ############################################################################
     # Prints information about the style object
-    def print_style(self):
-        print (
-            "geometry type: " + self.geom_type + "\n" +
-            "OSM tags: " + str(self.tags) + "\n"
-        )
+    def string_style(self):
         
+        out = (
+            "OSM feature(s): " + ", ".join(self.tags) + " (" + self.geom_type + ")\n" +
+            "z-order: " + str(self.z_order) + "\n" +
+            "Brush style: " + self.brush + "(" + str(self.brush_size) + ")\n" +
+            "Brush color: " + self.string_color() + "\n" +
+            "Brush dynamics: " + self.dynamics + "\n"
+        )
+        return out
+        
+    def string_color(self):
+        out = (
+               ",".join(str(x) for x in self.color) + "," +
+               str(self.opacity_brush)
+        )
+        return out
+    
 ################################################################################
 # 
 # StyleObjectLine
@@ -94,3 +99,10 @@ class StyleObjectPolygon(StyleObjectLine):
         self.dynamics = dynamics
         self.image = image
         self.opacity_image = opacity_image
+        
+    def string_style(self):
+        out = StyleObjectLine.string_style(self)
+        out += (
+            "Image: " + self.image + " (" + str(self.opacity_image) + ")\n"
+        )
+        return out

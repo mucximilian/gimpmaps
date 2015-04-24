@@ -26,6 +26,8 @@ def run():
 		tile_size,
 		out_dir
     )
+    
+    tile_renderer.render_tiles()
 
 register(
 	"stroke_pgsvg_tiles", 

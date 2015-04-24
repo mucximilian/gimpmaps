@@ -77,7 +77,7 @@ def run():
     
 	out_time = datetime.datetime.now()
 	date_str = out_time.strftime('%Y%m%d_%H%M')   
-	out_file = "/script_test_br" + date_str + ".png"
+	out_file = "/script_test_" + date_str + ".png"
 	out_path = out_dir + out_file
 
 	print "file: " + out_path

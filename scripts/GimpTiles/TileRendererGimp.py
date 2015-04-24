@@ -31,7 +31,14 @@ from TileRenderer import TileRenderer
 import StyleObjects
 
 class TileRendererGimp(TileRenderer):
+    
     def __init__(self, bbox, zoom_levels, tile_size, out_dir):
+        self.bbox = bbox
+        self.zoom_levels = zoom_levels
+        self.tile_size = tile_size
+        self.out_dir = out_dir
+        
+    def render_tiles(self):
         
         t_start = datetime.datetime.now()
         t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
@@ -57,26 +64,26 @@ class TileRendererGimp(TileRenderer):
         )
         
         # Create a directory containing the date and time
-        result_dir = out_dir
-        out_dir += "tiles_" + t_form + "/"
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
+        result_dir = self.out_dir
+        self.out_dir += "tiles_" + t_form + "/"
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
             
         # Copying the HTML file to view the tiles in the browser
         os.system ("cp %s %s" % (
                                    result_dir + "index.html",
-                                   out_dir + "index.html")
+                                   self.out_dir + "index.html")
                    )
         
         ########################################################################
         # Zoom level loop
-        for zoom in zoom_levels:
+        for zoom in self.zoom_levels:
             
-            tiling_data = self.get_tiling_data(bbox, zoom)
+            tiling_data = self.get_tiling_data(self.bbox, zoom)
             self.log_tiling_data_info_zoom(zoom, tiling_data) 
     
             # Checking for a zoom directory, creating it if not existing
-            out_dir_zoom = out_dir + str(zoom) + "/"
+            out_dir_zoom = self.out_dir + str(zoom) + "/"
             if not os.path.exists(out_dir_zoom):
                 os.makedirs(out_dir_zoom)
             
@@ -118,7 +125,10 @@ class TileRendererGimp(TileRenderer):
                     # Drawing geometry features
                     
                     # Create GIMP image with layer group
-                    image = pdb.gimp_image_new(tile_size, tile_size, RGB)
+                    image = pdb.gimp_image_new(
+                                               self.tile_size,
+                                               self.tile_size,
+                                               RGB)
                     pdb.gimp_context_set_background((255,255,255,255))
                     
                     # Creating a 'top' layer group that will contain all the
@@ -128,7 +138,7 @@ class TileRendererGimp(TileRenderer):
                                                 None, 2)
                     
                     # Lines
-                    self.draw_features(tile_bbox, tile_size,
+                    self.draw_features(tile_bbox,
                                        image, 
                                        conn_osm, 
                                        features_line,
@@ -136,7 +146,7 @@ class TileRendererGimp(TileRenderer):
                     
                     # Polygons
                     self.draw_features(
-                                       tile_bbox, tile_size,
+                                       tile_bbox,
                                        image, 
                                        conn_osm,
                                        features_polygon,
@@ -144,7 +154,7 @@ class TileRendererGimp(TileRenderer):
 
                     # Background
                     background = pdb.gimp_layer_new(                    
-                        image, tile_size, tile_size,
+                        image, self.tile_size, self.tile_size,
                         RGBA_IMAGE, "background", 100, NORMAL_MODE
                     )    
                     pdb.gimp_image_insert_layer(image, background,
@@ -154,8 +164,7 @@ class TileRendererGimp(TileRenderer):
                     
                     # Assign the Y value as the file name
                     out_path = out_dir_zoom_x + str(y)
-                    out = "saving file: " + out_path
-                    print out                     
+                    out = "saving file: " + out_path                  
                     
                     # Save images as PNG and XCF
                     out_path_png = out_path + ".png"
@@ -215,12 +224,19 @@ class TileRendererGimp(TileRenderer):
         if (feature_type == "line"):        
             for row in curs_zoom.fetchall():
                 style_object = StyleObjects.StyleObjectLine(
-                    "line", row[1], row[2],
-                    row[3], row[4], row[5], row[6], row[7]
+                    "line", 
+                    row[1], # tags
+                    row[2], # z order
+                    row[3], # brush
+                    row[4], # brush_size
+                    row[5], # color
+                    row[6], # opacity_brush
+                    row[7]  # dynamics
                 )
                 features.append(style_object)
-                logging.info("selected OSM " + feature_type 
-                    + " features: " + str(row[1]))
+
+                logging.info(style_object.string_style())
+                
         elif (feature_type == "polygon"):
             for row in curs_zoom.fetchall():
                 style_object = StyleObjects.StyleObjectPolygon(
@@ -255,8 +271,10 @@ class TileRendererGimp(TileRenderer):
         out = self.print_tiling_data_info_y(x, y, tiling_data)
         logging.info(out)
         
-    def draw_features(self, tile_bbox, tile_size, image, 
-                           conn_osm, features_line, 
+    ############################################################################
+    # Drawing a GIMP feature layer 
+    def draw_features(self, tile_bbox, image, 
+                           conn_osm, features, 
                            group_top, layer_pos):
         
         # Create a layer group for the feature
@@ -265,7 +283,7 @@ class TileRendererGimp(TileRenderer):
         
         layer_pos_group = 0
         
-        for style_feature in features_line:
+        for style_feature in features:
                         
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
@@ -305,16 +323,16 @@ class TileRendererGimp(TileRenderer):
             # Get SVG tile geometry from database
             curs_osm.execute(sql, (
                 tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                tile_size,
+                self.tile_size,
                 tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                tile_size,
+                self.tile_size,
                 line_style[1]
                 )
             )
             
             # Create image layer for geometry feature
             layer = pdb.gimp_layer_new(
-                image, tile_size, tile_size,
+                image, self.tile_size, self.tile_size,
                 RGBA_IMAGE,
                 sql_selection,
                 100, NORMAL_MODE
@@ -337,8 +355,8 @@ class TileRendererGimp(TileRenderer):
         
             # Create temporary SVG drawing from geometry features
             dwg = svgwrite.Drawing(
-                height = tile_size,
-                width = tile_size
+                height = self.tile_size,
+                width = self.tile_size
             )
         
             # Import SVG data into SVG drawing from database
@@ -355,9 +373,9 @@ class TileRendererGimp(TileRenderer):
                 # TO DO:
                 # Import from modified string (hachure)
         
-            out = "      vectors: " + str(len(image.vectors))
-            print out
+            out = "      " + sql_selection + " (" + str(len(image.vectors)) + ")"
             logging.info(out)
+            logging.info(", ".join(str(x) for x in line_style))
             
             # Draw vectors into GIMP image layer
             # TO DO: emulate brush dynamics?????
