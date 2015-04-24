@@ -291,6 +291,7 @@ class TileRendererGimp(TileRenderer):
                         
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
+            geom = style_feature.get_geom_type()
             
             # Get svg tiles from database                    
             curs_osm = conn_osm.cursor()
@@ -309,7 +310,7 @@ class TileRendererGimp(TileRenderer):
                             %s
                         ) AS svg,
                         *
-                    FROM planet_osm_line  
+                    FROM planet_osm_""" + geom + """ 
                     WHERE ST_Intersects ( 
                         way, 
                         get_tile_bbox(
@@ -383,14 +384,30 @@ class TileRendererGimp(TileRenderer):
             
             # Draw vectors into GIMP image layer
             # TO DO: emulate brush dynamics?????
-            for vector in image.vectors:
-                pdb.gimp_edit_stroke_vectors(layer, vector)
+            
+            if (geom == "line"):            
+                for vector in image.vectors:
+                    pdb.gimp_edit_stroke_vectors(layer, vector)                    
+                    pdb.gimp_image_remove_vectors(image, vector)
+            
+            elif (geom == "polygon"):
                 
-                # TO DO:
-                # Polygon drawing
-                # Masking
+                mask_image = "img/" + style_feature.get_image_data()[0]
+                layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
+                pdb.gimp_image_insert_layer(image, layer_mask_image, 
+                                            feature_group, 0)
                 
-                pdb.gimp_image_remove_vectors(image, vector)
+                for vector in image.vectors:
+                    pdb.gimp_edit_stroke_vectors(layer, vector)
+                    
+                    pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
+                    
+                    pdb.gimp_image_remove_vectors(image, vector)
+                    
+                mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
+                pdb.gimp_layer_add_mask(layer_mask_image, mask)
+                
+                pdb.gimp_selection_clear(image)
             
             curs_osm.close()
             

@@ -11,11 +11,13 @@ class StyleObject(object):
         self.tags = tags # A list of tags
         self.z_order = z_order
     
-    ############################################################################
     # Returns concatenated selection tags suitable for a SQL 'WHERE' condition
     def get_selection_tags(self):
         selection_string = " AND ".join(self.tags)            
         return selection_string
+    
+    def get_geom_type(self):
+        return self.geom_type
         
 ################################################################################
 # 
@@ -106,3 +108,6 @@ class StyleObjectPolygon(StyleObjectLine):
             "Image: " + self.image + " (" + str(self.opacity_image) + ")\n"
         )
         return out
+    
+    def get_image_data(self):
+        return [self.image, self.opacity_image]

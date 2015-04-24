@@ -3,7 +3,8 @@ from gimpfu import *
 import os
 import datetime
 
-path = '<path d="M 169 191 l 3 -9 3 -4 9 -10 1 -0 9 12 8 12 1 4 -2 1 -8 1 -8 -0 -16 -3 z"/>'
+path_1 = '<path d="M 20 20 l 20 20 5 20 -30 0 z"/>'
+path_2 = '<path d="M 100 100 l 30 10 1 10 -20 0 z"/>'
 
 def run():
     
@@ -16,7 +17,8 @@ def run():
     pdb.gimp_image_insert_layer(image, parent, None, 0)         
 
     # Adding a background image layer
-    layer_1 = pdb.gimp_file_load_layer(image, "scripts/img/hachure1.png")
+    out_dir = os.getcwd()
+    layer_1 = pdb.gimp_file_load_layer(image, out_dir + "/img/hachure_grey_08.png")
     pdb.gimp_image_insert_layer(image, layer_1, parent, 0)
 
     # Adding layer to stroke a vector path into
@@ -31,7 +33,10 @@ def run():
     )
     pdb.gimp_image_insert_layer(image, layer_2, parent, -1)
     pdb.gimp_vectors_import_from_string(image,
-        path,
+        path_1,
+        -1, 1, 1, )
+    pdb.gimp_vectors_import_from_string(image,
+        path_2,
         -1, 1, 1, )
     vectors = image.vectors
     print "vectors=" + str(len(vectors))
@@ -39,9 +44,10 @@ def run():
     # Stroking
     for vector in vectors:
         print "selecting vector"
-        pdb.gimp_image_select_item(image, CHANNEL_OP_REPLACE, vector)
-        mask = pdb.gimp_layer_create_mask(layer_1, 4)
-        pdb.gimp_layer_add_mask(layer_1, mask)
+        pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
+    
+    mask = pdb.gimp_layer_create_mask(layer_1, 4)
+    pdb.gimp_layer_add_mask(layer_1, mask)
 
     # Saving
     print "saving..."
