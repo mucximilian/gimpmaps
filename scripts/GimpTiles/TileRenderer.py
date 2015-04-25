@@ -146,29 +146,6 @@ class TileRenderer(object):
         
         return tiling_data
     
-    ############################################################################    
-    # Calculating the tile coordinates from the tile size
-    def calculate_tile_bbox(self, x, y, tile_size):        
-        ul_x = self.origin_x + x * tile_size
-        ul_y = self.origin_y - y * tile_size
-        lr_x = ul_x + tile_size
-        lr_y = ul_y - tile_size
-        return [ul_x, ul_y, lr_x, lr_y]
-        
-    def print_tiling_data_info_x(self, x, tiling_data):
-        indent = "  "
-        out = (indent + "row " 
-            + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
-            + str(tiling_data[2][0]) + " (" + str(x) + ")")
-        print out
-        return out
-        
-    def print_tiling_data_info_y(self, x, y, tiling_data):
-        indent = "  "
-        out = indent + indent + "tile " + str(x) + "/" + str(y)
-        print out
-        return out
-    
     ############################################################################
     # Saving tile as SVG file
     def save_svg_tiles(self, out_file, tile_size, curs):
@@ -197,3 +174,37 @@ class TileRenderer(object):
             selection_string += tag
             count += 1            
         return selection_string
+    
+    ############################################################################    
+    # Calculating the tile coordinates from the tile size
+    def calculate_tile_bbox(self, x, y, tile_size):        
+        ul_x = self.origin_x + x * tile_size
+        ul_y = self.origin_y - y * tile_size
+        lr_x = ul_x + tile_size
+        lr_y = ul_y - tile_size
+        return [ul_x, ul_y, lr_x, lr_y]
+        
+    # Printing functions
+    def print_tiling_data_info_x(self, x, tiling_data):
+        indent = "  "
+        out = (indent + "row " 
+            + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
+            + str(tiling_data[2][0]) + " (" + str(x) + ")")
+        print out
+        return out
+        
+    def print_tiling_data_info_y(self, x, y, tiling_data):
+        indent = "  "
+        out = indent + indent + "tile " + str(x) + "/" + str(y)
+        print out
+        return out
+    
+    def print_tile_bbox_info(self, tile_bbox):
+        indent = "  "
+        out = (indent + indent + "tile bbox:\n" + 
+               indent + indent + str(tile_bbox[0]) + ",\n" +
+               indent + indent + str(tile_bbox[1]) + ",\n" +
+               indent + indent + str(tile_bbox[2]) + ",\n" +
+               indent + indent + str(tile_bbox[3]))
+        print out
+        return out

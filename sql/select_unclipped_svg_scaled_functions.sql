@@ -1,16 +1,15 @@
 ﻿SELECT 
-	ROW_NUMBER() OVER (ORDER BY osm_id) AS id,
-	svg
+	row_number() over() AS id,
+	get_scaled_svg(
+		ST_Union(way),
+		1271912.15067,
+		6124746.20243,
+		1281696.09029,
+		6114962.26281,
+		256
+	) AS svg
 FROM (
-	SELECT
-		get_scaled_svg(
-			way,
-			1271912.15067,
-			6124746.20243,
-			1281696.09029,
-			6114962.26281,
-			256
-		) AS svg,
+	SELECT		
 		*
 	FROM planet_osm_line  
 	WHERE ST_Intersects ( 
@@ -26,4 +25,4 @@ FROM (
 	)
 ) t
 WHERE
-	highway = 'motorway'
+	highway = 'trunk'

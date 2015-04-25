@@ -45,6 +45,7 @@ class TileRendererGimp(TileRenderer):
         
         # logging setup
         logging.basicConfig(
+            format = '%(message)s',
             filename = os.getcwd() + "/log/gimp_rendering_" + t_form + ".log",
             filemode = 'w',
             level = logging.INFO
@@ -111,7 +112,9 @@ class TileRendererGimp(TileRenderer):
                     
                     self.log_tiling_data_info_y(x, y, tiling_data)
                                     
-                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])        
+                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])
+                    
+                    self.log_tile_bbox_info(tile_bbox)       
                                         
                     conn_osm = psycopg2.connect(
                         'dbname=osm_muc '
@@ -250,26 +253,7 @@ class TileRendererGimp(TileRenderer):
         
         curs_zoom.close()
         
-        return features
-        
-    ############################################################################
-    # Logging functions
-    def log_tiling_data_info_zoom(self, zoom, tiling_data):
-        logging.info("zoom level: " + str(zoom))
-        logging.info("tile ul: " + str(tiling_data[0]))
-        logging.info("tile lr: " + str(tiling_data[1]))
-        logging.info("tiles in x: " + str(tiling_data[2][0]))
-        logging.info("tiles in y: " + str(tiling_data[2][1]))
-        logging.info("tiles total: "
-            + str(tiling_data[2][0] + tiling_data[2][1]))
-        
-    def log_tiling_data_info_x(self, x, tiling_data):
-        out = self.print_tiling_data_info_x(x, tiling_data)
-        logging.info(out)
-        
-    def log_tiling_data_info_y(self, x, y, tiling_data):
-        out = self.print_tiling_data_info_y(x, y, tiling_data)
-        logging.info(out)
+        return features            
         
     ############################################################################
     # Drawing a GIMP feature layer 
@@ -287,28 +271,33 @@ class TileRendererGimp(TileRenderer):
         pdb.gimp_context_set_defaults()
         pdb.gimp_context_push()
         
+        # Geometry feature loop END
         for style_feature in features:
                         
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
             geom = style_feature.get_geom_type()
             
+            # Defining union operation for polygons 
+            geom_op = "way"
+            if geom == "polygon":
+                geom_op = "ST_Union(" + geom_op + ")"
+            
             # Get svg tiles from database                    
             curs_osm = conn_osm.cursor()
             sql = """
                 SELECT 
-                    ROW_NUMBER() OVER (ORDER BY osm_id) AS id,
-                    svg
+                    ROW_NUMBER() OVER () AS id,
+                    get_scaled_svg(
+                        """ + geom_op + """,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    ) AS svg
                 FROM (
                     SELECT
-                        get_scaled_svg(
-                            way,
-                            %s,
-                            %s,
-                            %s,
-                            %s,
-                            %s
-                        ) AS svg,
                         *
                     FROM planet_osm_""" + geom + """ 
                     WHERE ST_Intersects ( 
@@ -323,7 +312,7 @@ class TileRendererGimp(TileRenderer):
                         ) 
                     )
                 ) t
-                WHERE (""" + sql_selection + ")"      
+                WHERE (""" + sql_selection + ")"   
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, (
@@ -357,6 +346,10 @@ class TileRendererGimp(TileRenderer):
         
             # Import SVG data into SVG drawing from database
             for row in curs_osm.fetchall():
+                # Escape if no SVG geometry is provided
+                # TO DO: Fix in SQL query (row number even with empty result...)
+                if (row[1] == None):
+                    continue 
                 path = dwg.path(d=row[1]) # M 226 176 l -2 -0
                 path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
         
@@ -372,6 +365,7 @@ class TileRendererGimp(TileRenderer):
             out = "      " + sql_selection + " (" + str(len(image.vectors)) + ")"
             logging.info(out)
                        
+            # Drawing line features
             if (geom == "line"):
                 
                 # Creating image layer for geometry feature
@@ -390,6 +384,7 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_edit_stroke_vectors(layer, vector)                    
                     pdb.gimp_image_remove_vectors(image, vector)
             
+            # Drawing polygon features
             elif (geom == "polygon"):
                 
                 # Creating a layer group for vector and raster layers
@@ -417,13 +412,21 @@ class TileRendererGimp(TileRenderer):
                 
                 # Drawing and selecting vectors in GIMP layer
                 for vector in image.vectors:
-                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)
+                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
                     
+                # Drawing and selecting vectors in GIMP layer
+                for vector in image.vectors:
                     pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
                     
                     pdb.gimp_image_remove_vectors(image, vector)
                     
-                # Apply mask of collected vectors on background image 
+                # Grow and shrink selection to even out small selections
+                pdb.gimp_selection_shrink(image, 2)
+                pdb.gimp_selection_grow(image, 2)
+                pdb.gimp_selection_shrink(image, 2)
+                pdb.gimp_selection_grow(image, 2)
+                
+                # Apply mask of collected vectors on background image
                 mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
                 pdb.gimp_layer_add_mask(layer_mask_image, mask)
                 
@@ -435,5 +438,26 @@ class TileRendererGimp(TileRenderer):
             layer_pos_group =+ layer_pos_group + 1
 
         # Geometry feature loop END
-        ############################################################
         
+    ############################################################################
+    # Logging functions
+    def log_tiling_data_info_zoom(self, zoom, tiling_data):
+        logging.info("zoom level: " + str(zoom))
+        logging.info("tile ul: " + str(tiling_data[0]))
+        logging.info("tile lr: " + str(tiling_data[1]))
+        logging.info("tiles in x: " + str(tiling_data[2][0]))
+        logging.info("tiles in y: " + str(tiling_data[2][1]))
+        logging.info("tiles total: "
+            + str(tiling_data[2][0] + tiling_data[2][1]))
+        
+    def log_tiling_data_info_x(self, x, tiling_data):
+        out = self.print_tiling_data_info_x(x, tiling_data)
+        logging.info(out)
+        
+    def log_tiling_data_info_y(self, x, y, tiling_data):
+        out = self.print_tiling_data_info_y(x, y, tiling_data)
+        logging.info(out)
+        
+    def log_tile_bbox_info(self, tile_bbox):
+        out = self.print_tile_bbox_info(tile_bbox)
+        logging.info(out)
