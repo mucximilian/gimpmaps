@@ -245,8 +245,8 @@ class TileRendererGimp(TileRenderer):
                     row[8], row[9]
                 )
                 features.append(style_object)
-                logging.info("selected OSM " + feature_type 
-                    + " features: " + str(row[1]))
+                
+                logging.info(style_object.string_style())
         
         curs_zoom.close()
         
@@ -279,7 +279,7 @@ class TileRendererGimp(TileRenderer):
         
         # Create a layer group for the feature
         feature_group = pdb.gimp_layer_group_new(image)
-        pdb.gimp_image_insert_layer(image, feature_group, group_top, layer_pos)       
+        pdb.gimp_image_insert_layer(image, feature_group, group_top, layer_pos)
         
         layer_pos_group = 0
         
@@ -333,20 +333,10 @@ class TileRendererGimp(TileRenderer):
                 self.tile_size,
                 line_style[1]
                 )
-            )
-            
-            # Create image layer for geometry feature
-            layer = pdb.gimp_layer_new(
-                image, self.tile_size, self.tile_size,
-                RGBA_IMAGE,
-                sql_selection,
-                100, NORMAL_MODE
-            )
-            pdb.gimp_image_insert_layer(image, layer, 
-                                        feature_group, layer_pos_group
-                                    )                   
+            )               
             
             # Style settings
+            # TO DO: emulate brush dynamics?????
             pdb.gimp_context_pop()
             pdb.gimp_context_set_brush(line_style[0])
             pdb.gimp_context_set_brush_size(line_style[1])
@@ -381,29 +371,59 @@ class TileRendererGimp(TileRenderer):
         
             out = "      " + sql_selection + " (" + str(len(image.vectors)) + ")"
             logging.info(out)
-            
-            # Draw vectors into GIMP image layer
-            # TO DO: emulate brush dynamics?????
-            
-            if (geom == "line"):            
+                       
+            if (geom == "line"):
+                
+                # Creating image layer for geometry feature
+                layer = pdb.gimp_layer_new(
+                    image, self.tile_size, self.tile_size,
+                    RGBA_IMAGE,
+                    sql_selection,
+                    100, NORMAL_MODE
+                )
+                pdb.gimp_image_insert_layer(image, layer, 
+                                            feature_group, layer_pos_group
+                                        )    
+                
+                # Drawing vectors into GIMP layer
                 for vector in image.vectors:
                     pdb.gimp_edit_stroke_vectors(layer, vector)                    
                     pdb.gimp_image_remove_vectors(image, vector)
             
             elif (geom == "polygon"):
                 
+                # Creating a layer group for vector and raster layers
+                vector_raster_group = pdb.gimp_layer_group_new(image)
+                pdb.gimp_image_insert_layer(image,
+                                            vector_raster_group, feature_group,
+                                            0)
+                
+                # Creating vector layer
+                layer_vector = pdb.gimp_layer_new(
+                    image, self.tile_size, self.tile_size,
+                    RGBA_IMAGE,
+                    sql_selection,
+                    100, NORMAL_MODE
+                )
+                pdb.gimp_image_insert_layer(image, layer_vector, 
+                                            vector_raster_group, 0
+                                        )
+                
+                # Adding background image to use the mask on
                 mask_image = "img/" + style_feature.get_image_data()[0]
                 layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
                 pdb.gimp_image_insert_layer(image, layer_mask_image, 
-                                            feature_group, 0)
+                                            vector_raster_group, 1)
                 
+                # Drawing and selecting vectors in GIMP layer
                 for vector in image.vectors:
-                    pdb.gimp_edit_stroke_vectors(layer, vector)
+                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)
                     
                     pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
                     
                     pdb.gimp_image_remove_vectors(image, vector)
                     
+                # Apply mask of collected vectors on background image 
                 mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
                 pdb.gimp_layer_add_mask(layer_mask_image, mask)
                 
