@@ -3,6 +3,7 @@ import psycopg2
 import math
 import svgwrite
 import os
+import datetime
 
 from ZoomSelection import ZoomSelectionLinesType
 
@@ -17,7 +18,14 @@ class TileRenderer(object):
         self.tile_size = tile_size
         self.out_dir = out_dir
         
-    def create_tiles(self):
+    def render_tiles(self):
+        
+        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
+        
+        # Create a directory containing the date and time
+        self.out_dir += "svg_" + t_form + "/"
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
         
         for zoom in self.zoom_levels:
             
@@ -51,7 +59,7 @@ class TileRenderer(object):
                 
                 out_dir_zoom_x = out_dir_zoom + str(x) + "/"
                 if not os.path.exists(out_dir_zoom_x):
-        			os.makedirs(out_dir_zoom_x)
+                    os.makedirs(out_dir_zoom_x)
     
                 # Y-direction loop
                 for y in range(tiling_data[0][1], tiling_data[1][1] + 1):

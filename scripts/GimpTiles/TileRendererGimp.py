@@ -159,15 +159,17 @@ class TileRendererGimp(TileRenderer):
                     background = pdb.gimp_layer_new(                    
                         image, self.tile_size, self.tile_size,
                         RGBA_IMAGE, "background", 100, NORMAL_MODE
-                    )    
+                    )
+                    
+                    background = pdb.gimp_file_load_layer(image, 
+                                       "img/texture_blackboard.png")
                     pdb.gimp_image_insert_layer(image, background,
                                                 group_top, 2)
                     
-                    pdb.gimp_edit_fill(background, BACKGROUND_FILL)
+                    # pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                     
                     # Assign the Y value as the file name
-                    out_path = out_dir_zoom_x + str(y)
-                    out = "saving file: " + out_path                  
+                    out_path = out_dir_zoom_x + str(y)                
                     
                     # Save images as PNG and XCF
                     out_path_png = out_path + ".png"
@@ -277,52 +279,76 @@ class TileRendererGimp(TileRenderer):
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
             geom = style_feature.get_geom_type()
-            
-            # Defining union operation for polygons 
-            geom_op = "way"
-            if geom == "polygon":
-                geom_op = "ST_Union(" + geom_op + ")"
-            
-            # Get svg tiles from database                    
+
+            # Query svg tiles from database               
             curs_osm = conn_osm.cursor()
-            sql = """
-                SELECT 
-                    ROW_NUMBER() OVER () AS id,
-                    get_scaled_svg(
-                        """ + geom_op + """,
-                        %s,
-                        %s,
-                        %s,
-                        %s,
-                        %s
-                    ) AS svg
-                FROM (
-                    SELECT
-                        *
-                    FROM planet_osm_""" + geom + """ 
-                    WHERE ST_Intersects ( 
-                        way, 
-                        get_tile_bbox(
-                            %s,
-                            %s,
-                            %s,
-                            %s,
-                            %s,
-                            %s
-                        ) 
-                    )
-                ) t
-                WHERE (""" + sql_selection + ")"   
+            
+            if (geom == "line"):
                 
-            # Get SVG tile geometry from database
-            curs_osm.execute(sql, (
-                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                self.tile_size,
-                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                self.tile_size,
-                line_style[1]
-                )
-            )               
+                sql = """
+                    SELECT 
+                        ROW_NUMBER() OVER () AS id,
+                        get_scaled_svg(
+                            way, %s, %s, %s, %s, %s
+                        ) AS svg
+                    FROM (
+                        SELECT
+                            *
+                        FROM planet_osm_line 
+                        WHERE ST_Intersects ( 
+                            way, 
+                            get_tile_bbox(
+                                %s, %s, %s, %s, %s, %s
+                            ) 
+                        )
+                    ) t
+                    WHERE (""" + sql_selection + ")"   
+                    
+                # Get SVG tile geometry from database
+                curs_osm.execute(sql, (
+                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    self.tile_size,
+                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    self.tile_size,
+                    line_style[1]
+                    )
+                )               
+            elif (geom == "polygon"):   
+                
+                # TO DO:
+                # tile_size/brush_size instead of 100
+                sql = """
+                    SELECT 
+                        ROW_NUMBER() OVER () AS id,
+                        get_scaled_svg_polygon(
+                            ST_Union(way),
+                            %s, %s, %s, %s, %s
+                        ) AS svg
+                    FROM (
+                        SELECT
+                            *
+                        FROM planet_osm_polygon 
+                        WHERE ST_Intersects ( 
+                            way, 
+                            get_tile_bbox(
+                                %s, %s, %s, %s, %s, %s
+                            ) 
+                        )
+                        AND ST_Area(way) > ((((%s - %s)/(%s / %s))*2)^2)
+                    ) t
+                    WHERE (""" + sql_selection + ")"   
+                    
+                # Get SVG tile geometry from database
+                curs_osm.execute(sql, (
+                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    self.tile_size,
+                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    self.tile_size,
+                    line_style[1],
+                    tile_bbox[2], tile_bbox[0],
+                    self.tile_size, line_style[1]
+                    )
+                )               
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -333,9 +359,9 @@ class TileRendererGimp(TileRenderer):
             pdb.gimp_context_set_foreground((
                 line_style[2][0],
                 line_style[2][1],
-                line_style[2][2],
-                line_style[3]
+                line_style[2][2]                
             ))
+            pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
             pdb.gimp_context_push()
         
             # Create temporary SVG drawing from geometry features
@@ -347,8 +373,8 @@ class TileRendererGimp(TileRenderer):
             # Import SVG data into SVG drawing from database
             for row in curs_osm.fetchall():
                 # Escape if no SVG geometry is provided
-                # TO DO: Fix in SQL query (row number even with empty result...)
-                if (row[1] == None):
+                # TO DO: Fix in SQL query: no row number even with empty result
+                if (row[1] == None or row[1] ==''):
                     continue 
                 path = dwg.path(d=row[1]) # M 226 176 l -2 -0
                 path_str = path.tostring() # <path d="M 226 176 l -2 -0" />

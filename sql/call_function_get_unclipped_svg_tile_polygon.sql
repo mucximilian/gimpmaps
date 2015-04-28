@@ -1,7 +1,7 @@
 ﻿SELECT 
 	ROW_NUMBER() OVER () AS id,
-	get_scaled_svg(
-		way,
+	get_scaled_svg_polygon(
+		ST_Union(way),
 		1271912.15067,
 		6134530.14206,
 		1281696.09029,
@@ -23,7 +23,7 @@ FROM (
 			12
 		) 
 	)
-	AND ST_Area(way) > ((((1281696.09029-1271912.15067)/(256/2))*2)^2)
+	AND ST_Area(way) > (((1281696.09029-1271912.15067)/((256/2))*3)^2)
 ) t
 WHERE
 	landuse='forest' OR leisure='park'

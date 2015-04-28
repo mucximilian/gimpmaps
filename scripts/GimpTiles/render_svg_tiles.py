@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+import os
 from TileRenderer import TileRenderer
 
 zoom_min = 12
@@ -17,9 +17,7 @@ bbox = [bbox_ul, bbox_lr]
 brush_size = 12
 tile_size = 256
 
-out_dir = ( "/media/data/daten/studium/master/module/master_thesis/data" 
-    + "/rendering/results/svg_" 
-    + datetime.datetime.now().strftime('%Y%m%d_%H%M') + "/")
+out_dir = os.getcwd() + "/results/"
 
 tile_renderer = TileRenderer(
     bbox, 
@@ -27,4 +25,4 @@ tile_renderer = TileRenderer(
     tile_size,
     out_dir
 )
-tile_renderer.create_tiles()
+tile_renderer.render_tiles()

@@ -6,7 +6,7 @@ from GimpTiles.TileRendererGimp import TileRendererGimp
 
 def run():
     zoom_min = 12
-    zoom_max = 13
+    zoom_max = 14
 
     zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
 
