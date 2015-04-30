@@ -44,4 +44,4 @@ LEFT JOIN
 ON (
 	f.style = i.style
 )
-ORDER BY f.geometry, f.z_order DESC
+ORDER BY f.geometry, f.z_order ASC

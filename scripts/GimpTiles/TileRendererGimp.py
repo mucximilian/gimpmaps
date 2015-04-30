@@ -97,12 +97,12 @@ class TileRendererGimp(TileRenderer):
         
         layer_pos_group = 0
         
+        # Resetting GIMP image context
+        pdb.gimp_context_set_defaults()
+        pdb.gimp_context_push()
+        
         # Geometry feature loop END
         for style_feature in features:
-            
-            # Resetting GIMP image context
-            pdb.gimp_context_set_defaults()
-            pdb.gimp_context_push()
                         
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
@@ -209,7 +209,7 @@ class TileRendererGimp(TileRenderer):
                 # TO DO:
                 # Import from modified string (hachure)
         
-            out = "      " + sql_selection + " (" + str(len(image.vectors)) + ")"
+            out = ("      " + sql_selection + " (" + str(len(image.vectors)) + ")")
             logging.info(out)
                        
             # Drawing line features
@@ -315,4 +315,5 @@ class TileRendererGimp(TileRenderer):
         )
         
         conn_osm.close()        
-        pdb.gimp_image_delete(image)        
+        pdb.gimp_image_delete(image)
+        pdb.gimp_context_pop()   

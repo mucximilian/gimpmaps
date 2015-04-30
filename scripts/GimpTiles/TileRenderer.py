@@ -20,6 +20,10 @@ class TileRenderer(object):
         self.out_dir = out_dir
         
     def render_tiles(self):
+        """
+        Basic tile rendering function. Loops over the specified bounding box in
+        different zoom levels.
+        """
         
         t_start = datetime.datetime.now()
         t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')

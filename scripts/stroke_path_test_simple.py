@@ -3,7 +3,7 @@ from gimpfu import *
 import os
 
 def run():
-	brush_size = 6
+	brush_size = 20
 	brush = "GIMP Brush #7"
 	# brush = "GIMP Brush #7"
 	# brush_dynamics = "Dynamics Off"
