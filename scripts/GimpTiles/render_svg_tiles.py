@@ -17,7 +17,8 @@ bbox = [bbox_ul, bbox_lr]
 brush_size = 12
 tile_size = 256
 
-out_dir = os.getcwd() + "/results/"
+# out_dir = os.getcwd() + "/results/"
+out_dir = "../../results/"
 
 tile_renderer = TileRenderer(
     bbox, 

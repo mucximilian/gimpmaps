@@ -4,8 +4,9 @@ import math
 import svgwrite
 import os
 import datetime
+import logging
 
-from ZoomSelection import ZoomSelectionLinesType
+import StyleObjects
 
 class TileRenderer(object):
     
@@ -20,82 +21,67 @@ class TileRenderer(object):
         
     def render_tiles(self):
         
+        t_start = datetime.datetime.now()
         t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
-        # Create a directory containing the date and time
-        self.out_dir += "svg_" + t_form + "/"
-        if not os.path.exists(self.out_dir):
-            os.makedirs(self.out_dir)
+        self.setup(t_start, t_form)       
         
+        ########################################################################
+        # Zoom level loop
         for zoom in self.zoom_levels:
             
-            tiling_data = self.get_tiling_data(self.bbox, zoom)            
-            print tiling_data
-            
-            brush_size = 12
+            tiling_data = self.get_tiling_data(self.bbox, zoom)
+            self.log_tiling_data_info_zoom(zoom, tiling_data) 
     
+            # Checking for a zoom directory, creating it if not existing
             out_dir_zoom = self.out_dir + str(zoom) + "/"
             if not os.path.exists(out_dir_zoom):
                 os.makedirs(out_dir_zoom)
             
-            indent = "  "
+            # Get OSM tags and styles for zoom level
+            features = self.get_feature_styles(zoom)
             
-            # Define geometry selection query based on zoom level
-            zoom_selection_lines = ZoomSelectionLinesType()        
-            sql_selection = zoom_selection_lines.roads[zoom]
-                        
+            ####################################################################            
             # X-direction loop
             for x in range(tiling_data[0][0], tiling_data[1][0] + 1):
                 
-                print (indent + "row " + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" +
-                    str(tiling_data[2][0]) + " (" + str(x) + ")")
-                    
-                conn = psycopg2.connect('dbname=osm_muc '
-                	'user=gis '
-                	'password=gis '
-                	'host=localhost '
-                	'port=5432')    
-                curs = conn.cursor()
+                self.log_tiling_data_info_x(x, tiling_data)                
                 
+                # Checking for a X directory in zoom directory, 
+                # creating it if not existing
                 out_dir_zoom_x = out_dir_zoom + str(x) + "/"
                 if not os.path.exists(out_dir_zoom_x):
                     os.makedirs(out_dir_zoom_x)
     
+                ################################################################
                 # Y-direction loop
                 for y in range(tiling_data[0][1], tiling_data[1][1] + 1):
                                     
-                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])    
-                                    
-                    print indent + indent + "tile " + str(x) + "/" + str(y)
+                    tile_bbox = self.calculate_tile_bbox(x, y, tiling_data[3])
                     
-                    sql = """
-                        SELECT 
-                            ROW_NUMBER() OVER (ORDER BY id) AS id,
-                            line_type,
-                            svg
-                        FROM get_unclipped_svg_tile_collect(%s,%s,%s,%s,%s,%s)
-                        WHERE (""" + sql_selection + ")"        
-
-                    curs.execute(sql, (
-                        tile_bbox[0],
-                        tile_bbox[1],
-                        tile_bbox[2],
-                        tile_bbox[3],
-                        brush_size,
-                        self.tile_size
-                        )
-                    )
-    
-                    # Assign the Y value as the file name
+                    self.log_tiling_data_info_y(x, y, tiling_data)                    
+                    self.log_tile_bbox_info(tile_bbox)       
+                                    
+                    # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
-                    self.save_svg_tiles(out_path, self.tile_size, curs)
-                        
-                curs.close()
-                conn.close()
+                    
+                    self.draw_features(features, tile_bbox, out_path)
+                    
+                # Y-direction loop END
+                ################################################################
+            
+            # Y-direction loop END
+            ####################################################################
+                
+        # Zoom-level loop END
+        ########################################################################                  
+        
+        self.finish(t_start, t_form)
     
-    ############################################################################
-    # Get UL and LR coordinates of tile containing a given point at zoom level 
     def get_tile_of_point(self, point_ul, zoom):
+        """
+        Get UL and LR coordinates of tile containing a given point at zoom level 
+        """
         
         # Calculate tile size for zoom level
         tiles_xy = int(math.pow(2, zoom))
@@ -110,19 +96,19 @@ class TileRenderer(object):
         
         return tile_ul_lr
         
-    ############################################################################
-    # Get UL and LR coordinates of tile containing a given point at zoom level
-    #
-    # Returns tiling data array:
-    # [0][0] = tile ul x
-    # [0][1] = tile ul y
-    # [1][0] = tile lr x
-    # [1][1] = tile lr y
-    # [2][0] = tiles in x
-    # [2][1] = tiles in y
-    # [3] = tile size in CRS units (meter)
-    #
     def get_tiling_data(self, bbox, zoom):
+        """
+        Get UL and LR coordinates of tile containing a given point at zoom level
+        
+        Returns tiling data array:
+        [0][0] = tile ul x
+        [0][1] = tile ul y
+        [1][0] = tile lr x
+        [1][1] = tile lr y
+        [2][0] = tiles in x
+        [2][1] = tiles in y
+        [3] = tile size in CRS units (meter)
+        """
         
         # Determine containing tile for the UL and LR bounds at zoom level
         tile_ul = self.get_tile_of_point(bbox[0], zoom)
@@ -153,45 +139,97 @@ class TileRenderer(object):
         print "tiles count = " + str(tiles_count)
         
         return tiling_data
-    
-    ############################################################################
-    # Saving tile as SVG file
-    def save_svg_tiles(self, out_file, tile_size, curs):
-        dwg = svgwrite.Drawing(
-            out_file + ".svg",
-            height = tile_size,
-            width = tile_size)
-    
-        i = 1
-        for row in curs.fetchall():
-            dwg.add(dwg.path(d=row[2]))
-            #print path.tostring()
-            i += 1
-            
-        dwg.save()
-        print "        vectors = " + str(i)
         
-    ############################################################################
-    # Returns selection tags as a string suitable for a SQL 'WHERE' condition
-    def get_selection_tags(self, tags):
-        selection_string = ""
-        count = 0
-        for tag in tags:
-            if count > 0:
-                selection_string += " OR "
-            selection_string += tag
-            count += 1            
-        return selection_string
+    def get_feature_styles(self, zoom_level):
+        """
+        Get style and tag info of all feature of a type for a zoom level
+        """
+        
+        # Defining database connection for different zoom level styles
+        conn_zoom = psycopg2.connect(
+            'dbname=gimp_osm_styles '
+            'user=gis '
+            'password=gis '
+            'host=localhost '
+            'port=5432'
+        )
+        
+        curs_zoom = conn_zoom.cursor()
+        
+        sql = "SELECT * FROM get_tags_and_style(%s)"                            
+        curs_zoom.execute(sql, (zoom_level,))
+        
+        # Store feature data in an array
+        features = []               
+        for row in curs_zoom.fetchall():
+            
+            if (row[1] == 2):
+                style_object = StyleObjects.StyleObjectLine(
+                    row[1], # geometry type
+                    row[2], # tags
+                    row[3], # z order
+                    row[4], # brush
+                    row[5], # brush_size
+                    row[6], # color
+                    row[7], # opacity_brush
+                    row[8]  # dynamics
+                )
+                features.append(style_object)
+
+                logging.info(style_object.string_style())
+                
+            elif (row[1] == 3):
+                
+                print row
+                
+                style_object = StyleObjects.StyleObjectPolygon(
+                    row[1], # geometry type
+                    row[2], # tags
+                    row[3], # z order
+                    row[4], # brush
+                    row[5], # brush_size
+                    row[6], # color
+                    row[7], # opacity_brush
+                    row[8], # dynamics
+                    row[9], # image
+                    row[10] # image opacity
+                )
+                features.append(style_object)
+                
+                logging.info(style_object.string_style())
+            
+        curs_zoom.close()
+        
+        return features         
     
-    ############################################################################    
-    # Calculating the tile coordinates from the tile size
-    def calculate_tile_bbox(self, x, y, tile_size):        
+    def calculate_tile_bbox(self, x, y, tile_size):    
+        """
+        Calculating the tile coordinates from the tile size    
+        """
+        
         ul_x = self.origin_x + x * tile_size
         ul_y = self.origin_y - y * tile_size
         lr_x = ul_x + tile_size
         lr_y = ul_y - tile_size
         return [ul_x, ul_y, lr_x, lr_y]
+    
+    def setup(self, t_start, t_form):
         
+        log_file = "../../log/svg_rendering_"     
+        self.start_logging(t_start, t_form, log_file)
+        
+        # Create a directory containing the date and time
+        self.out_dir += "svg_" + t_form + "/"
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
+    
+    def finish(self, t_start, t_form):
+        
+        self.finish_logging(t_start, t_form)
+        
+        print "Finished processing"
+                   
+    ############################################################################
     # Printing functions
     def print_tiling_data_info_x(self, x, tiling_data):
         indent = "  "
@@ -216,3 +254,149 @@ class TileRenderer(object):
                indent + indent + str(tile_bbox[3]))
         print out
         return out
+    
+    ############################################################################
+    # Logging functions
+    def start_logging(self, t_start, t_form, log_file):
+        
+        log_line = "###########################################################"
+        
+        # logging setup
+        logging.basicConfig(
+            format = '%(message)s',
+            # filename = os.getcwd() + "/log/gimp_rendering_" + t_form + ".log",
+            filename = log_file + t_form + ".log",
+            filemode = 'w',
+            level = logging.INFO
+        )            
+        logging.info(log_line)
+        logging.info("Start of Gimp Tile processing at " + str(t_start))
+        logging.info(log_line)
+        
+        return t_start
+    
+    def finish_logging(self, t_start, t_form):
+        
+        log_line = "###########################################################"
+        
+        t_end = datetime.datetime.now()
+        delta_t = t_end - t_start
+        
+        logging.info(log_line)
+        logging.info("End of Gimp Tile processing at " + str(t_end))
+        logging.info("processing duration: " + 
+            str(delta_t.total_seconds()) +
+            " seconds"
+        )
+        logging.info(log_line)
+        
+    
+    def log_tiling_data_info_zoom(self, zoom, tiling_data):
+        logging.info("zoom level: " + str(zoom))
+        logging.info("tile ul: " + str(tiling_data[0]))
+        logging.info("tile lr: " + str(tiling_data[1]))
+        logging.info("tiles in x: " + str(tiling_data[2][0]))
+        logging.info("tiles in y: " + str(tiling_data[2][1]))
+        logging.info("tiles total: "
+            + str(tiling_data[2][0] + tiling_data[2][1]))
+        
+    def log_tiling_data_info_x(self, x, tiling_data):
+        out = self.print_tiling_data_info_x(x, tiling_data)
+        logging.info(out)
+        
+    def log_tiling_data_info_y(self, x, y, tiling_data):
+        out = self.print_tiling_data_info_y(x, y, tiling_data)
+        logging.info(out)
+        
+    def log_tile_bbox_info(self, tile_bbox):
+        out = self.print_tile_bbox_info(tile_bbox)
+        logging.info(out)
+        
+    def draw_features(self, features, tile_bbox, out_path):
+        """
+        Drawing function for SVG image files   
+        """
+        
+        conn_osm = psycopg2.connect(
+            'dbname=osm_muc '
+            'user=gis '
+            'password=gis '
+            'host=localhost '
+            'port=5432'
+        )        
+        
+        # Create SVG file name with extension
+        dwg = svgwrite.Drawing(
+            out_path + ".svg",
+            height = self.tile_size,
+            width = self.tile_size)
+        print "creating SVG: " + out_path + ".svg"
+        
+        for style_feature in features:
+                        
+            sql_selection = style_feature.get_selection_tags()
+            line_style = style_feature.get_line_style()
+            
+            curs_osm = conn_osm.cursor()
+            
+            if (style_feature.geom_type == 2):        
+                sql = """
+                SELECT 
+                    ROW_NUMBER() OVER () AS id,
+                    get_scaled_svg_line(
+                        way, %s, %s, %s, %s, %s
+                    ) AS svg
+                FROM (
+                    SELECT
+                        *
+                    FROM planet_osm_line 
+                    WHERE ST_Intersects ( 
+                        way, 
+                        get_tile_bbox(
+                            %s, %s, %s, %s, %s, %s
+                        ) 
+                    )
+                ) t
+                WHERE (""" + sql_selection + ")"
+            elif (style_feature.geom_type == 3):
+                sql = """
+                SELECT 
+                    ROW_NUMBER() OVER () AS id,
+                    get_scaled_svg_polygon(
+                        ST_Union(way), %s, %s, %s, %s, %s
+                    ) AS svg
+                FROM (
+                    SELECT
+                        *
+                    FROM planet_osm_polygon
+                    WHERE ST_Intersects ( 
+                        way, 
+                        get_tile_bbox(
+                            %s, %s, %s, %s, %s, %s
+                        ) 
+                    )
+                ) t
+                WHERE (""" + sql_selection + ")"            
+        
+            curs_osm.execute(sql, (
+                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                self.tile_size,
+                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                self.tile_size,
+                line_style[1]
+                )
+            )     
+    
+            # Drawing vectors and displaying count
+            i = 1
+            for row in curs_osm.fetchall():
+                
+                if (row[1] == None or row[1] ==''): continue                
+                dwg.add(dwg.path(d=row[1]))
+                i += 1
+                
+            out = "      " + sql_selection + " (" + str(i) + ")"
+            logging.info(out)
+            print(out)
+            
+        dwg.save()

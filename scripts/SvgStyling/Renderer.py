@@ -9,9 +9,11 @@ class Renderer(object):
     classdocs
     '''
 
-
-    def __init__(self, svg):
+    def __init__(self, path_d):
         '''
         Constructor
         '''
-        self.svg = svg
+        self.path_d = path_d
+        
+    def hachurizePolygon(self):
+        return
