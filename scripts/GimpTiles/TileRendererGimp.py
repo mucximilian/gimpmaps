@@ -268,10 +268,10 @@ class TileRendererGimp(TileRenderer):
                     pdb.gimp_image_remove_vectors(image, vector)
                     
                 # Grow and shrink selection to even out small selections
-                pdb.gimp_selection_shrink(image, 2)
-                pdb.gimp_selection_grow(image, 2)
-                pdb.gimp_selection_shrink(image, 2)
-                pdb.gimp_selection_grow(image, 2)
+#                 pdb.gimp_selection_shrink(image, 2)
+#                 pdb.gimp_selection_grow(image, 2)
+#                 pdb.gimp_selection_grow(image, 2)
+#                 pdb.gimp_selection_shrink(image, 2)
                 
                 # Apply mask of collected vectors on background image
                 mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)

@@ -3,17 +3,32 @@ Created on Apr 28, 2015
 
 @author: mucx
 '''
+import shapely
 
 class Renderer(object):
     '''
     classdocs
     '''
 
-    def __init__(self, path_d):
+    def __init__(self):
         '''
         Constructor
         '''
-        self.path_d = path_d
         
-    def hachurizePolygon(self):
-        return
+    def createPolygonHachure(self, path):
+        
+        polygon = self.createMultiPolygonFromSvgPath(path)
+        
+        hachure = self.createHachure(polygon)
+        
+        return hachure
+    
+    def createMultiPolygonFromSvgPath(self, path):
+        polygon = None
+        
+        return polygon
+    
+    def createHachure(self, polygon):
+        hachure = None
+        
+        return hachure

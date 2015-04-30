@@ -4,7 +4,6 @@ Created on Apr 28, 2015
 @author: mucx
 '''
 import Renderer
-import shapely
 import svgwrite
 
 path_d = ("M 100 50 L 100 200 250 200 250 50 Z " +
@@ -14,6 +13,6 @@ print(path_d)
 
 my_path = svgwrite.path.Path(path_d)
 
-svg_renderer = Renderer.Renderer(my_path)
+svg_renderer = Renderer.Renderer()
 
-# svg_hachure = svg_renderer.hachurizePolygon()
+svg_hachure = svg_renderer.createPolygonHachure(my_path)
