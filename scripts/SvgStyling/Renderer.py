@@ -16,6 +16,9 @@ class Renderer(object):
         '''
         
     def createPolygonHachure(self, path):
+        """
+        Creating a SVG hachure for a polygon
+        """
         
         # Creating a (MUlti-)Polygon consisting of an array of points
         polygon = self.createMultiPolygonFromSvgPath(path)
@@ -27,6 +30,9 @@ class Renderer(object):
         return hachure
     
     def createMultiPolygonFromSvgPath(self, path):
+        """
+        Returning a multipolygon array from a SVG path input
+        """
         
         multipolygon = []
         
@@ -59,13 +65,19 @@ class Renderer(object):
         return multipolygon
     
     def createHachureLines(self, polygon):
+        """
+        Returning hachure as an array of lines 
+        """
+        
         hachure_lines = None
         
-        # Returning hachure as an array of lines 
         return hachure_lines
     
     def createHachureSvg(self, hachure_lines):
+        """
+        Returning a hachure as a SVG multiline
+        """
+        
         hachure = None
         
-        # Return a hachure as a SVG multiline
         return hachure
