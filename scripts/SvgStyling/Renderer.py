@@ -3,7 +3,9 @@ Created on Apr 28, 2015
 
 @author: mucx
 '''
-import shapely
+
+from shapely.geometry import Polygon
+from shapely.geometry.polygon import LinearRing
 
 class Renderer(object):
     '''
@@ -20,7 +22,7 @@ class Renderer(object):
         Creating a SVG hachure for a polygon
         """
         
-        # Creating a (MUlti-)Polygon consisting of an array of points
+        # Creating a (Multi-)Polygon consisting of an array of points
         polygon = self.createMultiPolygonFromSvgPath(path)
         
         hachure_lines = self.createHachureLines(polygon)
@@ -45,7 +47,7 @@ class Renderer(object):
         
         for polygon_str in multipolygon_str:
             
-            polygon = []
+            polygon_points = []
             
             polygon_str = polygon_str.strip() # Trim whitespaces
             
@@ -56,13 +58,23 @@ class Renderer(object):
             
             # Appending point pairs (coordinates) to an array (polygon)
             for i in range(0, len(points_str), 2):
-                polygon.append([points_str[i], points_str[i+1]])
+                polygon_points.append(
+                    [float(points_str[i]), float(points_str[i+1])]
+                )
                 
+            # Adding first point again
+            polygon_points.append([float(points_str[0]), float(points_str[1])])
+            
             # Appending the created polygon to an array (multipolygon)
-            multipolygon.append(polygon)
+            multipolygon.append(polygon_points)
+            
+        # Extracting the first polygon as outline from the multipolygon array
+        exterior = multipolygon.pop(0)
         
-        print multipolygon
-        return multipolygon
+        # Creating shapely polygon from outline and remaining polygons
+        polygon = Polygon(exterior, multipolygon)
+
+        return polygon
     
     def createHachureLines(self, polygon):
         """
