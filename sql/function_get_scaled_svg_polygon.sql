@@ -36,13 +36,17 @@ BEGIN
 							ST_Buffer(
 								ST_Buffer(
 									geom,
-									-(tile_pixel_m_x*2)
+									-(tile_pixel_m_x*2),
+									'join=mitre miter_limit=1'
 								),
-								(tile_pixel_m_x*2)
+								(tile_pixel_m_x*2),
+								'join=mitre miter_limit=1'
 							),
-							(tile_pixel_m_x*2)
+							(tile_pixel_m_x*2),
+							'join=mitre miter_limit=1'
 						),
-						-(tile_pixel_m_x*2)
+						-(tile_pixel_m_x*2),
+						'join=mitre miter_limit=1'
 					),
 					tile_pixel_m_x
 				),

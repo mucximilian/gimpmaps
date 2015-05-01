@@ -333,7 +333,8 @@ class TileRenderer(object):
         dwg = svgwrite.Drawing(
             out_path + ".svg",
             height = self.tile_size,
-            width = self.tile_size)
+            width = self.tile_size
+        )
         print "creating SVG: " + out_path + ".svg"
         
         for style_feature in features:

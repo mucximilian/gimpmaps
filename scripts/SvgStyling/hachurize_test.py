@@ -15,4 +15,4 @@ my_path = svgwrite.path.Path(path_d)
 
 svg_renderer = Renderer.Renderer()
 
-svg_hachure = svg_renderer.createPolygonHachure(my_path)
+svg_hachure = svg_renderer.createMultiPolygonFromSvgPath(my_path)
