@@ -30,14 +30,17 @@ from TileRenderer import TileRenderer
 class TileRendererGimp(TileRenderer):
     """
     This subclass of TileRenderer implements different 'setup' and
-    'draw_features' methods for the creation of GIMP tiles (PNG and XCF files)
+    'draw_features' methods for the creation of GIMP tiles as PNG and if defined
+    in the 'create_xcf' variable also as XCF files. 
+    can be defined )
     """
     
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir):
+    def __init__(self, bbox, zoom_levels, tile_size, out_dir, create_xcf):
         self.bbox = bbox
         self.zoom_levels = zoom_levels
         self.tile_size = tile_size
         self.out_dir = out_dir
+        self.create_xcf = create_xcf
         
     def setup(self, t_start, t_form):
         """
@@ -305,14 +308,16 @@ class TileRendererGimp(TileRenderer):
             out_path_png
         )
         
-        out_path_xcf = out_path + ".xcf"   
-        pdb.gimp_xcf_save(
-            0,
-            image,
-            group_top,
-            out_path_xcf,
-            out_path_xcf
-        )
+        if (self.create_xcf):
+        
+            out_path_xcf = out_path + ".xcf"   
+            pdb.gimp_xcf_save(
+                0,
+                image,
+                group_top,
+                out_path_xcf,
+                out_path_xcf
+            )
         
         conn_osm.close()        
         pdb.gimp_image_delete(image)

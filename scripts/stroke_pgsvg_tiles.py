@@ -23,12 +23,14 @@ def run():
     tile_size = 256
  
     out_dir = os.getcwd() + "/results/"
+    create_xcf = False
 
     tile_renderer = TileRendererGimp(
 		bbox, 
 		zoom_levels,
 		tile_size,
-		out_dir
+		out_dir,
+        create_xcf
     )
     
     tile_renderer.render_tiles()
