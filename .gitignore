@@ -2,6 +2,7 @@ gimp/
 processing/
 results/
 log/
+img/
 scripts/.settings
 .project
 .pydevproject

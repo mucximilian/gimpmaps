@@ -4,6 +4,7 @@ Created on Apr 28, 2015
 @author: mucx
 '''
 
+from shapely.geometry import LineString
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import LinearRing
 
@@ -80,6 +81,22 @@ class Renderer(object):
         """
         Returning hachure as an array of lines 
         """
+        
+        bbox = polygon.bounds
+        
+        line = [(50, 0), (300, 250)]
+        shapely_line = LineString(line)
+        
+        # lines = calculateHachureLines(bbox, spacing, angle)
+        
+        intersection = list(polygon.intersection(shapely_line))
+        print intersection
+        
+        print intersection[0]
+        print intersection[1]
+
+        #prep_poly = prep(polygon)
+        #hits = filter(prepared_polygon.intersects, points)
         
         hachure_lines = None
         

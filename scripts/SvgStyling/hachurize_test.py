@@ -18,4 +18,5 @@ svg_renderer = Renderer.Renderer()
 polygon = svg_renderer.createMultiPolygonFromSvgPath(my_path)
 
 print polygon
-print polygon.bounds
+
+svg_renderer.createHachureLines(polygon)
