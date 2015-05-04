@@ -1,11 +1,11 @@
-﻿/*DROP FUNCTION get_scaled_svg_polygon(
+﻿DROP FUNCTION get_scaled_svg_polygon(
 	geom geometry,
 	ul_x numeric,
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
 	tile_size_px integer
-);*/
+);
 
 CREATE OR REPLACE FUNCTION get_scaled_svg_polygon(
 	geom geometry,
@@ -13,7 +13,8 @@ CREATE OR REPLACE FUNCTION get_scaled_svg_polygon(
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size_px integer
+	tile_size_px integer,
+	brush_size integer
 )
 RETURNS text
 AS
@@ -45,7 +46,7 @@ BEGIN
 							(tile_pixel_m_x*2),
 							'join=mitre miter_limit=1'
 						),
-						-(tile_pixel_m_x*2),
+						-((tile_pixel_m_x*2)+brush_size/2),
 						'join=mitre miter_limit=1'
 					),
 					tile_pixel_m_x
@@ -69,6 +70,7 @@ ALTER FUNCTION get_scaled_svg_polygon(
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size_px integer
+	tile_size_px integer,
+	brush_size integer
 	)
 OWNER TO gis;

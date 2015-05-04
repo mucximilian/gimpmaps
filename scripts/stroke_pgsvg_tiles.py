@@ -6,16 +6,16 @@ from GimpTiles.TileRendererGimp import TileRendererGimp
 
 def run():
     zoom_min = 12
-    zoom_max = 13
+    zoom_max = 14
 
     zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
 
     # Defining bounds of selection to render
-    bbox_ul = [1275000, 6131500]
-    bbox_lr = [1289700, 6118200]
+#     bbox_ul = [1275000, 6131500]
+#     bbox_lr = [1289700, 6118200]
     
-#     bbox_ul = [1250000, 6160000]
-#     bbox_lr = [1310000, 6080000]
+    bbox_ul = [1250000, 6160000]
+    bbox_lr = [1310000, 6080000]
     
     bbox = [bbox_ul, bbox_lr]
 

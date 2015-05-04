@@ -152,7 +152,7 @@ class TileRendererGimp(TileRenderer):
                         ROW_NUMBER() OVER () AS id,
                         get_scaled_svg_polygon(
                             ST_Union(way),
-                            %s, %s, %s, %s, %s
+                            %s, %s, %s, %s, %s, %s
                         ) AS svg
                     FROM (
                         SELECT
@@ -171,7 +171,7 @@ class TileRendererGimp(TileRenderer):
                 # Get SVG tile geometry from database
                 curs_osm.execute(sql, (
                     tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                    self.tile_size,
+                    self.tile_size, line_style[1],
                     tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
                     self.tile_size,
                     line_style[1],
