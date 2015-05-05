@@ -5,7 +5,7 @@ import datetime
 
 def run():
 	brush_size = 6
-	brush = "GIMP Brush #7"
+	brush = "Chalk 03"
 	# brush = "GIMP Brush #7"
 	# brush_dynamics = "Dynamics Off"
 	brush_dynamics = "Det3"
@@ -21,8 +21,22 @@ def run():
 	parent = pdb.gimp_layer_group_new(image)
 	pdb.gimp_image_insert_layer(image, parent, None, 0)
 	
-	text_layer = pdb.gimp_text_layer_new(image, "Text", "Arial", 60, UNIT_PIXEL)
-	pdb.gimp_image_insert_layer(image, text_layer, parent, 0)
+	
+	# layer_text = pdb.gimp_text_layer_new(image, "Text", "Arial", 20, UNIT_PIXEL)
+	
+	
+	layer_text = pdb.gimp_text_fontname(image,
+						None,
+						50,
+						50,
+						"Bla",
+						0,
+						True,
+						100,
+						UNIT_PIXEL,
+						"Arial"
+						)
+	#pdb.gimp_image_insert_layer(image, layer_text, parent, 0)
 	
 	layer = pdb.gimp_layer_new(image, width, height, RGBA_IMAGE,
 		"layer", 100, NORMAL_MODE)
@@ -30,10 +44,21 @@ def run():
 	
 	pdb.gimp_edit_fill(layer, BACKGROUND_FILL)
 	
-	vectors = pdb.gimp_vectors_new_from_text_layer(image, text_layer)	
-	print vectors
+	vectors = pdb.gimp_vectors_new_from_text_layer(image, layer_text)	
 	pdb.gimp_image_insert_vectors(image, vectors, None, 0)
 	
+	pdb.gimp_context_set_brush((brush))
+	pdb.gimp_context_set_opacity((50))
+	pdb.gimp_context_set_dynamics(brush_dynamics)
+	pdb.gimp_context_set_brush_size(brush_size)
+	pdb.gimp_context_set_foreground((128,0,128,50))
+	pdb.gimp_context_set_background((255,255,255,100))
+
+	pdb.gimp_context_push()
+
+	# TO DO: emulate brush dynamics?????
+	for vector in image.vectors:
+		pdb.gimp_edit_stroke_vectors(layer, vector)
 
 	out_dir = os.getcwd()
 	out_time = datetime.datetime.now()
