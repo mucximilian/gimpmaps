@@ -1,7 +1,7 @@
 ﻿SELECT 
 	ROW_NUMBER() OVER () AS id,
-	get_scaled_svg(
-		way,
+	get_scaled_svg_polygon(
+		ST_Union(way),
 		1271912.15067,
 		6134530.14206,
 		1281696.09029,

@@ -26,6 +26,7 @@ import logging
 
 from gimpfu import *
 from TileRenderer import TileRenderer
+from SvgStyling import Renderer
 
 class TileRendererGimp(TileRenderer):
     """
@@ -104,6 +105,8 @@ class TileRendererGimp(TileRenderer):
         pdb.gimp_context_set_defaults()
         pdb.gimp_context_push()
         
+        mask = False
+        
         # Geometry feature loop END
         for style_feature in features:
                         
@@ -147,11 +150,16 @@ class TileRendererGimp(TileRenderer):
                 
                 # TO DO:
                 # tile_size/brush_size instead of 100
+                
+                way_select = "way"
+                if (mask):
+                    way_select = "ST_Union(way)"
+                
                 sql = """
                     SELECT 
                         ROW_NUMBER() OVER () AS id,
                         get_scaled_svg_polygon(
-                            ST_Union(way),
+                            """ + way_select + """,
                             %s, %s, %s, %s, %s, %s
                         ) AS svg
                     FROM (
@@ -203,11 +211,29 @@ class TileRendererGimp(TileRenderer):
                 path = svgwrite.path.Path(row[1]) # M 226 176 l -2 -0
                 path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
         
-                pdb.gimp_vectors_import_from_string(
-                    image, 
-                    path_str, 
-                    -1, 1, 1,
-                )
+                if (not mask and style_feature.geom_type == 3):
+                    
+                    svg_renderer = Renderer.Renderer()
+
+                    hachure = svg_renderer.createPolygonHachure(path)
+                    
+                    hachure = svgwrite.path.Path(hachure)
+                    
+                    if (hachure.tostring() == None or hachure.tostring() ==''):
+                        continue
+                    
+                    pdb.gimp_vectors_import_from_string(
+                        image, 
+                        hachure.tostring(), 
+                        -1, 1, 1,
+                    )
+                    
+                else:
+                    pdb.gimp_vectors_import_from_string(
+                        image, 
+                        path_str, 
+                        -1, 1, 1,
+                    )
                 
                 # TO DO:
                 # Import from modified string (hachure)
@@ -237,50 +263,71 @@ class TileRendererGimp(TileRenderer):
             # Drawing polygon features
             elif (style_feature.geom_type == 3):
                 
-                # Creating a layer group for vector and raster layers
-                vector_raster_group = pdb.gimp_layer_group_new(image)
-                pdb.gimp_image_insert_layer(image,
-                                            vector_raster_group, group_polygon,
-                                            0)
+                if (mask):
                 
-                # Creating vector layer
-                layer_vector = pdb.gimp_layer_new(
-                    image, self.tile_size, self.tile_size,
-                    RGBA_IMAGE,
-                    sql_selection,
-                    100, NORMAL_MODE
-                )
-                pdb.gimp_image_insert_layer(image, layer_vector, 
-                                            vector_raster_group, 0
-                                        )
-                
-                # Adding background image to use the mask on
-                mask_image = "img/" + style_feature.get_image_data()[0]
-                layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
-                pdb.gimp_image_insert_layer(image, layer_mask_image, 
-                                            vector_raster_group, 1)
-                
-                # Drawing and selecting vectors in GIMP layer
-                for vector in image.vectors:
-                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
+                    # Creating a layer group for vector and raster layers
+                    vector_raster_group = pdb.gimp_layer_group_new(image)
+                    pdb.gimp_image_insert_layer(image,
+                                                vector_raster_group, group_polygon,
+                                                0)
                     
-                # Drawing and selecting vectors in GIMP layer
-                for vector in image.vectors:
-                    pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
+                    # Creating vector layer
+                    layer_vector = pdb.gimp_layer_new(
+                        image, self.tile_size, self.tile_size,
+                        RGBA_IMAGE,
+                        sql_selection,
+                        100, NORMAL_MODE
+                    )
+                    pdb.gimp_image_insert_layer(image, layer_vector, 
+                                                vector_raster_group, 0
+                                            )
                     
-                    pdb.gimp_image_remove_vectors(image, vector)
+                    # Adding background image to use the mask on
+                    mask_image = "img/" + style_feature.get_image_data()[0]
+                    layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
+                    pdb.gimp_image_insert_layer(image, layer_mask_image, 
+                                                vector_raster_group, 1)
                     
-                # Grow and shrink selection to even out small selections
-#                 pdb.gimp_selection_shrink(image, 2)
-#                 pdb.gimp_selection_grow(image, 2)
-#                 pdb.gimp_selection_grow(image, 2)
-#                 pdb.gimp_selection_shrink(image, 2)
-                
-                # Apply mask of collected vectors on background image
-                mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
-                pdb.gimp_layer_add_mask(layer_mask_image, mask)
-                
-                pdb.gimp_selection_clear(image)
+                    # Drawing and selecting vectors in GIMP layer
+                    for vector in image.vectors:
+                        pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
+                        
+                    # Drawing and selecting vectors in GIMP layer
+                    for vector in image.vectors:
+                        pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
+                        
+                        pdb.gimp_image_remove_vectors(image, vector)
+                        
+                    # Grow and shrink selection to even out small selections
+    #                 pdb.gimp_selection_shrink(image, 2)
+    #                 pdb.gimp_selection_grow(image, 2)
+    #                 pdb.gimp_selection_grow(image, 2)
+    #                 pdb.gimp_selection_shrink(image, 2)
+                    
+                    # Apply mask of collected vectors on background image
+                    mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
+                    pdb.gimp_layer_add_mask(layer_mask_image, mask)
+                    
+                    pdb.gimp_selection_clear(image)
+                    
+                else :
+                    
+                    # Creating image layer for geometry feature
+                    layer = pdb.gimp_layer_new(
+                        image, self.tile_size, self.tile_size,
+                        RGBA_IMAGE,
+                        sql_selection,
+                        100, NORMAL_MODE
+                    )
+                    pdb.gimp_image_insert_layer(image, layer, 
+                                                group_line, layer_pos_group
+                                            )    
+                    
+                    # Drawing vectors into GIMP layer
+                    for vector in image.vectors:
+                        pdb.gimp_edit_stroke_vectors(layer, vector)                    
+                        pdb.gimp_image_remove_vectors(image, vector)              
+                    
                 
             curs_osm.close()
             

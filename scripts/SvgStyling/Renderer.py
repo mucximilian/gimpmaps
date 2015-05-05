@@ -7,6 +7,7 @@ Created on Apr 28, 2015
 from shapely.geometry import LineString
 from shapely.geometry import MultiLineString
 from shapely.geometry import Polygon
+from shapely.geometry import Point
 from shapely.geometry.polygon import LinearRing
 
 import math
@@ -31,9 +32,7 @@ class Renderer(object):
         
         hachure_lines = self.createHachureLines(polygon)
         
-        hachure = self.createHachureSvg(hachure_lines)
-        
-        return hachure
+        return hachure_lines
     
     def createMultiPolygonFromSvgPath(self, path):
         """
@@ -51,7 +50,7 @@ class Renderer(object):
         
         for polygon_str in multipolygon_str:
             
-            polygon_points = []
+            polygon_points = []           
             
             polygon_str = polygon_str.strip() # Trim whitespaces
             
@@ -86,34 +85,39 @@ class Renderer(object):
         """
         
         bbox = polygon.bounds
-        
-        print(bbox)
                
         # Creating the bounding box hachure lines
-        lines = self.calculateHachureLines(bbox, 20, 30)
+        lines = self.calculateHachureLines(bbox, 8, 30)
         
-        self.createSvgMultiline(lines)
+        self.createSvgMultiline(lines) # Just for printing of bbox hachures
+        
+        print "line count = " + str(len(lines))
+        print polygon
         
         # Calculating the intersection of hachure lines and polygon
         intersection = list(polygon.intersection(lines))
         
-        print len(intersection)
+        print "intersection count = " + str(len(intersection))
+        
+        for item in intersection:
+            if (type(item) == Point):
+                intersection.remove(item)
 
         # Filter and randomize hachure lines
         # TO DO: function
         # hachure_lines = randomizeLines(intersection)
-        hachure_lines = None
+        #hachure_lines = None
         
-        multiline = MultiLineString(hachure_lines)
-        print multiline
+        #multiline = MultiLineString(hachure_lines)
+        #print multiline
         
         multiline_svg = self.createSvgMultiline(intersection)
-        
+                
         return multiline_svg
     
     def createSvgMultiline(self, multiline):
         """
-        Returning a multilinestring as a SVG multiline  
+        Returning a multilinestring as a SVG multiline  textstring "M ... L ..."
         """
         
         multiline_svg = ""
@@ -134,12 +138,11 @@ class Renderer(object):
                 
                 i += 1     
         
-        print multiline_svg
         return multiline_svg
     
     def calculateHachureLines(self, bbox, spacing, angle):
         
-        if (angle > 180 or angle == 90):
+        if (angle > 180 or angle == 90 or angle == 0):
             print "Angle '" + str(angle) + "' is too large or 90 degrees"                
             return
         
@@ -158,26 +161,17 @@ class Renderer(object):
             
         spacing_start = spacing_rel/2;
         
-        # Calculating the integer count of spacings in x-length
-        spacing_count_int = int(x_length//spacing)
-        
-        print "spacing start = " + str(spacing_start)
-        print "spacing count = " + str(spacing_count_int)
-        print "spacing = " + str(spacing)
-        
         bbox_anglespacing = self.calculateAngleSpacingBounds(
             bbox,
             spacing_start,
             spacing,
             angle
         )
-        
-        print bbox_anglespacing
                 
         # Create lines with respect to the x-shift calculated before
         lines = []
         
-        position_x = bbox_anglespacing[0]
+        position_x = spacing_start
         while (position_x <= bbox_anglespacing[2]):
             point_1 = (position_x, bbox_anglespacing[1])
             point_2 = self.calculateLinePointX(
@@ -206,15 +200,18 @@ class Renderer(object):
         Calculating the point coordinates on a linear line with known Y
         """
         
-        x = (1/math.tan(math.radians(angle)))*(point[0] * math.tan(math.radians(angle))- point[1] + y)
+        x = (1/math.tan(math.radians(angle)))*(point[0] 
+                * math.tan(math.radians(angle))- point[1] + y)
         return (x, y)
         
     def calculateAngleSpacingBounds(self, bbox, start, spacing, angle):
+        """
+        Calculating a new bounding box for the hachure lines based on the angle
+        """
                 
-        # Calculating the x length of a hachure line      
+        # Calculating the x dimension of a hachure line      
         hachure_x = abs((bbox[3] - bbox[1]) * math.tan(math.radians(90-angle)))
 
-        print hachure_x
         # Calculating the oversize that needs to be added to the bounds to fit
         # to all hachure lines  
         oversize = self.exapandSpacingSteps(
@@ -223,13 +220,19 @@ class Renderer(object):
             hachure_x,
             0
         )
-        print oversize
+
+        # Add oversize in minus or plus direction, depending on angle direction
         if (angle < 90):    
             return (bbox[0] - oversize, bbox[1], bbox[2], bbox[3])
         else:
             return (bbox[0], bbox[1], bbox[2] + oversize, bbox[3])
     
     def exapandSpacingSteps(self, spacing, start, hachure_x, oversize):
+        """
+        Recursive function to sequentially calculate the amount that the initial
+        bounding box has to be expanded
+        """
+        
         diff = oversize - start
         if (diff < hachure_x):
             oversize += spacing
