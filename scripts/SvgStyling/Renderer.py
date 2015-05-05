@@ -94,14 +94,24 @@ class Renderer(object):
         print "line count = " + str(len(lines))
         print polygon
         
-        # Calculating the intersection of hachure lines and polygon
-        intersection = list(polygon.intersection(lines))
         
-        print "intersection count = " + str(len(intersection))
+        intersections = []
         
-        for item in intersection:
+        for line in lines:
+
+            # Calculating the intersection of hachure lines and polygon
+            intersection = polygon.intersection(line)
+            if (type(intersection)) == LineString: 
+                intersections.append(polygon.intersection(line))
+            
+        print intersections
+        
+        print "intersection count = " + str(len(intersections))
+        
+        # TO DO check if can be deleted as type is checked earlier now
+        for item in intersections:
             if (type(item) == Point):
-                intersection.remove(item)
+                intersections.remove(item)
 
         # Filter and randomize hachure lines
         # TO DO: function
@@ -111,7 +121,7 @@ class Renderer(object):
         #multiline = MultiLineString(hachure_lines)
         #print multiline
         
-        multiline_svg = self.createSvgMultiline(intersection)
+        multiline_svg = self.createSvgMultiline(intersections)
                 
         return multiline_svg
     
@@ -138,6 +148,7 @@ class Renderer(object):
                 
                 i += 1     
         
+        print multiline_svg
         return multiline_svg
     
     def calculateHachureLines(self, bbox, spacing, angle):
@@ -167,11 +178,17 @@ class Renderer(object):
             spacing,
             angle
         )
+        
+        print bbox
+        print bbox_anglespacing
                 
         # Create lines with respect to the x-shift calculated before
         lines = []
         
-        position_x = spacing_start
+        print bbox_anglespacing[2]
+        print spacing_start
+        
+        position_x = bbox_anglespacing[0] + spacing_start
         while (position_x <= bbox_anglespacing[2]):
             point_1 = (position_x, bbox_anglespacing[1])
             point_2 = self.calculateLinePointX(
@@ -183,6 +200,8 @@ class Renderer(object):
             line = LineString([point_1, point_2])
             lines.append(line)
             position_x += spacing
+            
+            print line
             
         multiline = MultiLineString(lines)
         return multiline

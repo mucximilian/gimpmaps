@@ -210,6 +210,8 @@ class TileRendererGimp(TileRenderer):
                     continue                
                 path = svgwrite.path.Path(row[1]) # M 226 176 l -2 -0
                 path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
+                
+                print "path string = " + path_str
         
                 if (not mask and style_feature.geom_type == 3):
                     
