@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-import StyleObjects 
+from tiles import styles
 
 zoom = 14
 
@@ -30,7 +30,7 @@ for row in cur.fetchall():
         row[7]
     ]
     
-    style_object = StyleObjects.StyleObjectLine(
+    style_object = styles.StyleObjectLine(
         "line", row[1], row[2],
         row[3], row[4], row[5], row[6], row[7]
     )

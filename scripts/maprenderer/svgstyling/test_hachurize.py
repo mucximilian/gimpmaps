@@ -3,7 +3,7 @@ Created on Apr 28, 2015
 
 @author: mucx
 '''
-import Renderer
+from maprenderer.svgstyling import hachurizator
 import svgwrite
 
 #path = ('<path d="M 100 50 L 100 200 250 200 250 50 Z M 150 100 L 200 100 200 150 150 150 Z"/>)')
@@ -23,13 +23,13 @@ path_d = """M -289 351 L -283 329 -279 325 -280 316 -277 303 -269 304 -267 302 -
 
 path_d = "M 266 45 L 270 39 273 40 269 47 Z"
 
+path_d = "M 4 20 L 7 17 8 18 12 15 14 17 13 19 10 25 7 23 Z"
+
 print (path_d)
 path = svgwrite.path.Path(path_d)
 print path.tostring()
 
-svg_renderer = Renderer.Renderer()
-hachure = svg_renderer.createPolygonHachure(path)
+svg_renderer = hachurizator.Hachurizator()
+hachure = svg_renderer.get_svg_hachure(path)
 
-print "hachure = '" + hachure + "'"
-hachure = svgwrite.path.Path(hachure)
 print hachure.tostring()

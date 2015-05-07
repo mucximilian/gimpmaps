@@ -25,12 +25,13 @@ import os
 import logging
 
 from gimpfu import *
-from TileRenderer import TileRenderer
-from SvgStyling import Renderer
 
-class TileRendererGimp(TileRenderer):
+from maprenderer.tiles import tilerenderer
+from maprenderer.svgstyling import hachurizator
+
+class TileRendererGimp(tilerenderer):
     """
-    This subclass of TileRenderer implements different 'setup' and
+    This subclass of tilerenderer implements different 'setup' and
     'draw_features' methods for the creation of GIMP tiles as PNG and if defined
     in the 'create_xcf' variable also as XCF files. 
     can be defined )
@@ -211,13 +212,13 @@ class TileRendererGimp(TileRenderer):
                 path = svgwrite.path.Path(row[1]) # M 226 176 l -2 -0
                 path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
                 
-                print "path string = " + path_str
+                # print "path string = " + path_str
         
                 if (not mask and style_feature.geom_type == 3):
                     
-                    svg_renderer = Renderer.Renderer()
+                    svg_renderer = hachurizator.hachurizator()
 
-                    hachure = svg_renderer.createPolygonHachure(path)
+                    hachure = svg_renderer.get_svg_hachure(path)
                     
                     hachure = svgwrite.path.Path(hachure)
                     

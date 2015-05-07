@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from TileRenderer import TileRenderer
+from tiles import tilerenderer
 
 zoom_min = 12
 zoom_max = 13
@@ -20,7 +20,7 @@ tile_size = 256
 # out_dir = os.getcwd() + "/results/"
 out_dir = "../../results/"
 
-tile_renderer = TileRenderer(
+tile_renderer = tilerenderer(
     bbox, 
     zoom_levels,
     tile_size,

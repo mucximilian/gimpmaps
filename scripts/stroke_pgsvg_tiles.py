@@ -2,7 +2,7 @@
 import os
 from gimpfu import *
 
-from GimpTiles.TileRendererGimp import TileRendererGimp
+from tiles import tilerenderergimp
 
 def run():
     zoom_min = 12
@@ -23,9 +23,9 @@ def run():
     tile_size = 256
  
     out_dir = os.getcwd() + "/results/"
-    create_xcf = False
+    create_xcf = True
 
-    tile_renderer = TileRendererGimp(
+    tile_renderer = tilerenderergimp(
 		bbox, 
 		zoom_levels,
 		tile_size,

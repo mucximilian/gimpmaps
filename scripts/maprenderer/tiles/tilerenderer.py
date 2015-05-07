@@ -6,7 +6,7 @@ import os
 import datetime
 import logging
 
-import StyleObjects
+from maprenderer.tiles import styles
 
 class TileRenderer(object):
     
@@ -168,7 +168,7 @@ class TileRenderer(object):
         for row in curs_zoom.fetchall():
             
             if (row[1] == 2):
-                style_object = StyleObjects.StyleObjectLine(
+                style_object = styles.StyleObjectLine(
                     row[1], # geometry type
                     row[2], # tags
                     row[3], # z order
@@ -186,7 +186,7 @@ class TileRenderer(object):
                 
                 print row
                 
-                style_object = StyleObjects.StyleObjectPolygon(
+                style_object = styles.StyleObjectPolygon(
                     row[1], # geometry type
                     row[2], # tags
                     row[3], # z order
