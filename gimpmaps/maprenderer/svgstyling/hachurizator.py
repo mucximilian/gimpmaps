@@ -91,7 +91,7 @@ class Hachurizator(object):
         """
                
         # Creating the bounding box hachure lines
-        lines = self.calculate_bbox_hachure(polygon.bounds, 8, 30)     
+        lines = self.calculate_bbox_hachure(polygon.bounds, 8, 10)     
         
         intersections = []
         
@@ -113,13 +113,13 @@ class Hachurizator(object):
         #multiline = MultiLineString(hachure_lines)
         #print multiline
         
-        multiline_svg = self.createSvgMultiline(intersections)
+        multiline_svg = self.create_svg_multilinepath(intersections)
                 
         return multiline_svg
     
-    def createSvgMultiline(self, multiline):
+    def create_svg_multilinepath(self, multiline):
         """
-        Returning a multilinestring as a SVG multiline textstring "M ... L ..."
+        Returning a Shapely multilinestring as a SVG multiline path string
         """
         
         multiline_svg = ""
@@ -154,30 +154,16 @@ class Hachurizator(object):
             return
         
         angle = 180 - angle # Necessary as SVG coordinates are flipped
-        
-        # Calculating the x-shift of the hachure start point as half of the 
-        # spacing or half of the remainder of the division x-length/spacing
-        x_length = bbox[2]-bbox[0]
-        
-        spacing_mod = x_length%spacing
-        
-        if (spacing_mod == 0):
-            spacing_rel = spacing
-        else:
-            spacing_rel = spacing_mod
-            
-        spacing_start = spacing_rel/2;
-        
+               
         bbox_anglespacing = self.calculate_hachure_bounds(
             bbox,
-            spacing_start,
             spacing,
             angle
         )
                 
         # Creating lines with respect to the x-shift calculated before
         lines = []        
-        position_x = bbox_anglespacing[0] + spacing_start
+        position_x = bbox_anglespacing[0] + (spacing/2) # 
         while (position_x <= bbox_anglespacing[2]):
             point_1 = (position_x, bbox_anglespacing[1])
             point_2 = self.calculate_line_point_x(
@@ -190,6 +176,9 @@ class Hachurizator(object):
             position_x += spacing
             
         multiline = MultiLineString(lines)
+        
+        print self.create_svg_multilinepath(multiline)
+        
         return multiline
     
     def calculate_line_point_y(self, point, x, angle):
@@ -211,7 +200,7 @@ class Hachurizator(object):
                 * math.tan(math.radians(angle))- point[1] + y)
         return (x, y)
         
-    def calculate_hachure_bounds(self, bbox, start, spacing, angle):
+    def calculate_hachure_bounds(self, bbox, spacing, angle):
         """
         Calculating a new bounding box for the hachure lines based on the angle
         """
@@ -222,43 +211,24 @@ class Hachurizator(object):
 
         # Calculating the oversize that needs to be added to the bounds to fit
         # to all hachure lines  
-        oversize = self.expand_bounds_by_spacing(
-            spacing,
-            start,
-            hachure_x,
-            0
-        )
+        oversize = math.floor(hachure_x / spacing) * spacing
+        
+        # Add oversize in minus or plus direction, depending on angle direction
+        bbox_anglespacing = None
+        if (angle < 90):    
+            bbox_anglespacing = (bbox[0] - oversize, bbox[1], bbox[2], bbox[3])
+        else:
+            bbox_anglespacing = (bbox[0], bbox[1], bbox[2] + oversize, bbox[3])
         
         print "-------------"
         print bbox
         print spacing
         print hachure_x
         print oversize
+        print bbox_anglespacing
         print "-------------"
-
-        # Add oversize in minus or plus direction, depending on angle direction
-        if (angle < 90):    
-            return (bbox[0] - oversize, bbox[1], bbox[2], bbox[3])
-        else:
-            return (bbox[0], bbox[1], bbox[2] + oversize, bbox[3])
-    
-    def expand_bounds_by_spacing(self, spacing, start, hachure_x, oversize):
-        """
-        Recursive function to sequentially expand the hachure lines bounding box
-        """
         
-        diff = oversize - start
-        if (diff < hachure_x):
-            oversize += spacing
-            # Recursive call
-            return self.expand_bounds_by_spacing(
-                spacing, 
-                start,
-                hachure_x,
-                oversize
-            )
-        else:
-            return abs(oversize - start)
+        return bbox_anglespacing
         
     def calculateIntersection(self, line, polygon, intersections):
         intersection = polygon.intersection(line)

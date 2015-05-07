@@ -25,6 +25,8 @@ path_d = "M 266 45 L 270 39 273 40 269 47 Z"
 
 path_d = "M 4 20 L 7 17 8 18 12 15 14 17 13 19 10 25 7 23 Z"
 
+path_d = "M 4 20 L 4 4 20 4 20 20 Z"
+
 print (path_d)
 path = svgwrite.path.Path(path_d)
 print path.tostring()
