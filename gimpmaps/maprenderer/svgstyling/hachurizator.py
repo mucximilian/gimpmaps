@@ -5,7 +5,7 @@ Created on Apr 28, 2015
 '''
 
 from shapely.geometry import LineString
-from shapely.geometry import MultiLineString
+from shapely.geometry import MultiPolygon
 from shapely.geometry import Polygon
 from shapely.geometry import Point
 from shapely.geometry.polygon import LinearRing
@@ -33,6 +33,7 @@ class Hachurizator(object):
         
         # Creating a (Multi-)Polygon consisting of an array of points        
         polygon = self.multipolygon_from_svgpath(path)
+        print polygon
         
         hachure_lines = self.create_hachure_lines(polygon)
         
@@ -51,10 +52,14 @@ class Hachurizator(object):
         path_str = path.commands[0]
         
         # Split path into single polygons
-        multipolygon_str = path_str.split("Z");        
-        multipolygon_str.pop() # Remove last item from list which is empty
+        path_str_polygons = path_str.split("Z");
         
-        for polygon_str in multipolygon_str:
+        # Removing last item from list which is empty due to split
+        path_str_polygons.pop()
+        
+        exterior = path_str_polygons.pop(0)
+        
+        for polygon_str in path_str_polygons:
             
             polygon_points = []           
             
@@ -75,13 +80,23 @@ class Hachurizator(object):
             polygon_points.append([float(points_str[0]), float(points_str[1])])
             
             # Appending the created polygon to an array (multipolygon)
-            multipolygon.append(polygon_points)
+            # multipolygon.append(polygon_points)
+            polygon = Polygon(polygon_points)
+            
+            # TO DO:
+            # check if polygon is withon exterior
+            # TRUE add as hole to polygon
+            # FALSE add as polygon to multipolygon
+            
+            multipolygon.append(polygon)
             
         # Extracting the first polygon as outline from the multipolygon array
-        exterior = multipolygon.pop(0)
+        #exterior = multipolygon.pop(0)
         
         # Creating Shapely polygon from outline and remaining polygons
-        polygon = Polygon(exterior, multipolygon)
+        #polygon = Polygon(exterior, multipolygon)
+        
+        polygon = MultiPolygon(multipolygon)
 
         return polygon
     
@@ -177,7 +192,7 @@ class Hachurizator(object):
             
         multiline = MultiLineString(lines)
         
-        print self.create_svg_multilinepath(multiline)
+        # print self.create_svg_multilinepath(multiline)
         
         return multiline
     
@@ -220,42 +235,27 @@ class Hachurizator(object):
         else:
             bbox_anglespacing = (bbox[0], bbox[1], bbox[2] + oversize, bbox[3])
         
-        print "-------------"
-        print bbox
-        print spacing
-        print hachure_x
-        print oversize
-        print bbox_anglespacing
-        print "-------------"
+#         print "-------------"
+#         print bbox
+#         print spacing
+#         print hachure_x
+#         print oversize
+#         print bbox_anglespacing
+#         print "-------------"
         
         return bbox_anglespacing
         
     def calculateIntersection(self, line, polygon, intersections):
+        """
+        Returning the intersecting lines of a polygon an the hachure lines
+        """
+        
         intersection = polygon.intersection(line)
         
         if (type(intersection) == LineString):
-            print "linestring"
             intersections.append(intersection)
+        
+        # Recursive function call to split up multilinestrings 
         elif(type(intersection) == MultiLineString):
-            print "multilinestring"
             for linestring in intersection:
                 self.calculateIntersection(linestring, polygon, intersections)
-        
-        
-        
-        
-    """
-        intersection = polygon.intersection(line)
-            #print (type(intersection))
-            if (type(intersection) == LineString):
-                print "linestring"
-                intersection_result = polygon.intersection(line)
-                print(type(intersection_result))
-                intersections.append(intersection_result)
-            elif (type(intersection) == MultiLineString):
-                for linestring in intersection:
-                    print "multilinestring"
-                    intersection_result = polygon.intersection(linestring)
-                    print(type(intersection_result))
-                    intersections.append(intersection_result)
-        """

@@ -1,46 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-********************************************************************************
-TileRendererGimp
-                              -------------------
-        begin                : 2015-03-28
-        copyright            : (C) 2015 by Maximilian Hartl
-        email                : mucximilian@gmail.com
-        
-    
-********************************************************************************
+'''
+Created on May 7, 2015
 
-********************************************************************************
-*                                                                              *
-*   This program is free software; you can redistribute it and/or modify       *
-*   it under the terms of the GNU General Public License as published by       *
-*   the Free Software Foundation; either version 2 of the License, or          *
-*   (at your option) any later version.                                        *
-*                                                                              *
-********************************************************************************
-"""
-import psycopg2
-import svgwrite
+@author: mucx
+'''
 import os
-import logging
 
-from gimpfu import *
+class GimpRenderer(object):
+    '''
+    This is a renderer to create a GIMP image from map data in a provided 
+    bounding box with a specified styling
+    '''
 
-from maprenderer.tiles import tilerenderer
-from maprenderer.svgstyling import hachurizator
 
-class TileRendererGimp(tilerenderer.TileRenderer):
-    """
-    This subclass of tilerenderer implements different 'setup' and
-    'draw_features' methods for the creation of GIMP tiles as PNG and if defined
-    in the 'create_xcf' variable also as XCF files. 
-    can be defined )
-    """
-    
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir, create_xcf):
+    def __init__(self, bbox, map_size, out_dir, create_xcf):
+        '''
+        Constructor
+        '''
+        
         self.bbox = bbox
-        self.zoom_levels = zoom_levels
-        self.tile_size = tile_size
+        self.map_size = map_size
         self.out_dir = out_dir
         self.create_xcf = create_xcf
         
@@ -210,24 +188,26 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             for row in curs_osm.fetchall():
                 # Escape if no SVG geometry is provided
                 # TO DO: Fix in SQL query: no row number even with empty result
-                
-                svg_commands = row[1] # M 226 176 l -2 -0
-                
-                print "########################################################"
-                print svg_commands
-                
-                if (svg_commands == None or svg_commands ==''):
+                if (row[1] == None or row[1] ==''):
                     continue                
-                svg_path = svgwrite.path.Path(svg_commands) #
-                svg_path_str = svg_path.tostring() # <path d="M 226 176 l -2 -0" />
+                path = svgwrite.path.Path(row[1]) # M 226 176 l -2 -0
+                path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
                 
-                # print "path string = " + svg_path_str
+                # print "path string = " + path_str
         
                 if (not mask and style_feature.geom_type == 3):
                     
                     svg_renderer = hachurizator.Hachurizator()
+                    
+                    print path
 
-                    hachure = svg_renderer.get_svg_hachure(svg_path)                    
+                    hachure = svg_renderer.get_svg_hachure(path)
+                    
+                    print 1
+                    
+                    hachure = svgwrite.path.Path(hachure)
+                    
+                    print 2 
                     
                     if (hachure.tostring() == None or hachure.tostring() ==''):
                         continue
@@ -241,7 +221,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                 else:
                     pdb.gimp_vectors_import_from_string(
                         image, 
-                        svg_path_str, 
+                        path_str, 
                         -1, 1, 1,
                     )
                 
