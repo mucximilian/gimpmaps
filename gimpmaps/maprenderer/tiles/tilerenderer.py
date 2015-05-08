@@ -6,7 +6,7 @@ import os
 import datetime
 import logging
 
-from maprenderer.tiles import styles
+from maprenderer import styles
 
 class TileRenderer(object):
     
@@ -219,7 +219,7 @@ class TileRenderer(object):
     
     def setup(self, t_start, t_form):
         
-        log_file = "../../log/svg_rendering_"     
+        log_file = "../../../log/svg_rendering_"     
         self.start_logging(t_start, t_form, log_file)
         
         # Create a directory containing the date and time

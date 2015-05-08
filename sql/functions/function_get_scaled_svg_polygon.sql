@@ -4,7 +4,8 @@
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size_px integer
+	tile_size_px integer,
+	brush_size integer
 );
 
 CREATE OR REPLACE FUNCTION get_scaled_svg_polygon(
@@ -33,20 +34,11 @@ BEGIN
 			ST_Translate(
 				ST_SimplifyPreserveTopology(
 					ST_Buffer(
-						ST_Buffer(
-							ST_Buffer(
-								ST_Buffer(
-									geom,
-									-(tile_pixel_m_x*2),
-									'join=mitre miter_limit=1'
-								),
-								(tile_pixel_m_x*2),
-								'join=mitre miter_limit=1'
-							),
-							(tile_pixel_m_x*2),
-							'join=mitre miter_limit=1'
+						get_generalized_polygon(
+							geom,
+							tile_pixel_m_x
 						),
-						-((tile_pixel_m_x*2)+brush_size/2),
+						-(brush_size/2),
 						'join=mitre miter_limit=1'
 					),
 					tile_pixel_m_x

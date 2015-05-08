@@ -29,7 +29,7 @@ from gimpfu import *
 from maprenderer.tiles import tilerenderer
 from maprenderer.svgstyling import hachurizator
 
-class TileRendererGimp(tilerenderer):
+class TileRendererGimp(tilerenderer.TileRenderer):
     """
     This subclass of tilerenderer implements different 'setup' and
     'draw_features' methods for the creation of GIMP tiles as PNG and if defined
@@ -216,7 +216,7 @@ class TileRendererGimp(tilerenderer):
         
                 if (not mask and style_feature.geom_type == 3):
                     
-                    svg_renderer = hachurizator.hachurizator()
+                    svg_renderer = hachurizator.Hachurizator()
 
                     hachure = svg_renderer.get_svg_hachure(path)
                     
@@ -337,12 +337,7 @@ class TileRendererGimp(tilerenderer):
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
                 
-        # Background
-        background = pdb.gimp_layer_new(                    
-            image, self.tile_size, self.tile_size,
-            RGBA_IMAGE, "background", 100, NORMAL_MODE
-        )
-        
+        # Background image       
         background = pdb.gimp_file_load_layer(image, 
                            "img/texture_blackboard.png")
         pdb.gimp_image_insert_layer(image, background,

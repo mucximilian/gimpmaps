@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
-from tiles import tilerenderer
+
+from maprenderer.tiles import tilerenderer
 
 zoom_min = 12
 zoom_max = 13
@@ -18,9 +18,9 @@ brush_size = 12
 tile_size = 256
 
 # out_dir = os.getcwd() + "/results/"
-out_dir = "../../results/"
+out_dir = "../../../results/"
 
-tile_renderer = tilerenderer(
+tile_renderer = tilerenderer.TileRenderer(
     bbox, 
     zoom_levels,
     tile_size,

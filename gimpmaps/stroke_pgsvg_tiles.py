@@ -2,7 +2,12 @@
 import os
 from gimpfu import *
 
-from tiles import tilerenderergimp
+from maprenderer.tiles import tilerenderergimp
+
+"""
+Run this file from the bash script provided in the directory above.
+"""
+
 
 def run():
     zoom_min = 12
@@ -25,7 +30,7 @@ def run():
     out_dir = os.getcwd() + "/results/"
     create_xcf = True
 
-    tile_renderer = tilerenderergimp(
+    tile_renderer = tilerenderergimp.TileRendererGimp(
 		bbox, 
 		zoom_levels,
 		tile_size,

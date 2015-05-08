@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-from tiles import styles
+from maprenderer import styles
 
 zoom = 14
 
