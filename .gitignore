@@ -3,6 +3,7 @@ processing/
 results/
 log/
 img/
+sql/old/
 scripts/.settings
 .project
 .pydevproject
