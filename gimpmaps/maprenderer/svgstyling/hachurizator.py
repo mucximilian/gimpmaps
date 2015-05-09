@@ -13,6 +13,7 @@ from shapely.geometry.polygon import LinearRing
 import math
 import svgwrite
 from shapely.geometry.multilinestring import MultiLineString
+from _dbus_bindings import String
 
 class Hachurizator(object):
     '''
@@ -33,7 +34,6 @@ class Hachurizator(object):
         
         # Creating a (Multi-)Polygon consisting of an array of points        
         polygon = self.multipolygon_from_svgpath(path)
-        print polygon
         
         hachure_lines = self.create_hachure_lines(polygon)
         
@@ -46,7 +46,7 @@ class Hachurizator(object):
         Returning a Shapely multipolygon array from a SVG path input
         """
         
-        multipolygon = []
+        multipolygon_list = []
         
         # Getting the "d" string of the SVG path
         path_str = path.commands[0]
@@ -55,40 +55,31 @@ class Hachurizator(object):
         path_str_polygons = path_str.split("Z");
         
         # Removing last item from list which is empty due to split
-        path_str_polygons.pop()
+        path_str_polygons.pop()    
         
-        exterior = path_str_polygons.pop(0)
-        
+        # Getting first SVG polygon string as exterior (outline)
+        exterior = self.create_coordlist_from_string(path_str_polygons.pop(0))
+        exterior_polygon = Polygon(exterior)        
+
+        # Adding all polygons to a list of polygons
+        polygons = []
         for polygon_str in path_str_polygons:
+            polygon_coords = self.create_coordlist_from_string(polygon_str)            
             
-            polygon_points = []           
-            
-            polygon_str = polygon_str.strip() # Trim whitespaces
-            
-            # Split polygon into single points
-            points_str = polygon_str.split(" ");           
-            points_str.remove('L')
-            points_str.remove('M')
-            
-            # Appending point pairs (coordinates) to an array (polygon)
-            for i in range(0, len(points_str), 2):
-                polygon_points.append(
-                    [float(points_str[i]), float(points_str[i+1])]
-                )
-                
-            # Adding first point again
-            polygon_points.append([float(points_str[0]), float(points_str[1])])
-            
-            # Appending the created polygon to an array (multipolygon)
-            # multipolygon.append(polygon_points)
-            polygon = Polygon(polygon_points)
-            
-            # TO DO:
+            # Appending the created polygon to the multipolygon list            
+
             # check if polygon is withon exterior
-            # TRUE add as hole to polygon
+            # TRUE add as polygon_coords to polygons
             # FALSE add as polygon to multipolygon
+            polygon = Polygon(polygon_coords)
             
-            multipolygon.append(polygon)
+            if (polygon.within(exterior_polygon)):
+                polygons.append(polygon_coords)
+            else:
+                multipolygon_list.append(polygon)            
+
+        polygon = Polygon(exterior, polygons)
+        multipolygon_list.insert(0, polygon)
             
         # Extracting the first polygon as outline from the multipolygon array
         #exterior = multipolygon.pop(0)
@@ -96,9 +87,37 @@ class Hachurizator(object):
         # Creating Shapely polygon from outline and remaining polygons
         #polygon = Polygon(exterior, multipolygon)
         
-        polygon = MultiPolygon(multipolygon)
+        multipolygon = MultiPolygon(multipolygon_list)
+        print multipolygon.svg()
 
-        return polygon
+        return multipolygon
+    
+    def create_coordlist_from_string(self, polygon_str):
+        """
+        Returning a list of coordinates representing the input SVG polygon
+        string
+        """
+        
+        # Array for the coordinates (x/y points) of the polygon
+        polygon_coords = []           
+        
+        polygon_str = polygon_str.strip() # Trim whitespaces
+        
+        # Split SVG polygon string into single points
+        points_str = polygon_str.split(" ");           
+        points_str.remove('L')
+        points_str.remove('M')
+        
+        # Appending coordinates to polygon coordinates array
+        for i in range(0, len(points_str), 2):
+            polygon_coords.append(
+                [float(points_str[i]), float(points_str[i+1])]
+            )
+            
+        # Adding first coordinate again
+        polygon_coords.append([float(points_str[0]), float(points_str[1])])
+        
+        return polygon_coords
     
     def create_hachure_lines(self, polygon):
         """
