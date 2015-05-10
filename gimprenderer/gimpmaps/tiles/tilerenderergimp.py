@@ -26,8 +26,8 @@ import logging
 
 from gimpfu import *
 
-from maprenderer.tiles import tilerenderer
-from maprenderer.svgstyling import hachurizator
+from gimpmaps.tiles import tilerenderer
+from gimpmaps.svgstyling import hachurizator
 
 class TileRendererGimp(tilerenderer.TileRenderer):
     """
@@ -213,9 +213,6 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                 
                 svg_commands = row[1] # M 226 176 l -2 -0
                 
-                print "########################################################"
-                print svg_commands
-                
                 if (svg_commands == None or svg_commands ==''):
                     continue                
                 svg_path = svgwrite.path.Path(svg_commands) #
@@ -225,11 +222,13 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         
                 if (not mask and style_feature.geom_type == 3):
                     
-                    svg_renderer = hachurizator.Hachurizator()
-
-                    hachure = svg_renderer.get_svg_hachure(svg_path)                    
+                    spacing = float(line_style[1]*2) # hachure spacing
+                    angle = 30 # hachure angle
                     
-                    if (hachure.tostring() == None or hachure.tostring() ==''):
+                    svg_renderer = hachurizator.Hachurizator(spacing, angle)                    
+
+                    hachure = svg_renderer.get_svg_hachure(svg_path)
+                    if (hachure == None):
                         continue
                     
                     pdb.gimp_vectors_import_from_string(

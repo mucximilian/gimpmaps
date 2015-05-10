@@ -4,26 +4,27 @@ Created on Apr 28, 2015
 @author: mucx
 '''
 
-from shapely.geometry import LineString
-from shapely.geometry import MultiPolygon
-from shapely.geometry import Polygon
 from shapely.geometry import Point
-from shapely.geometry.polygon import LinearRing
+from shapely.geometry import LineString
+from shapely.geometry import MultiLineString
+from shapely.geometry import Polygon
+from shapely.geometry import MultiPolygon
 
 import math
 import svgwrite
-from shapely.geometry.multilinestring import MultiLineString
-from _dbus_bindings import String
 
 class Hachurizator(object):
     '''
     classdocs
     '''
 
-    def __init__(self):
+    def __init__(self, spacing, angle):
         '''
         Constructor
         '''
+        
+        self.spacing = spacing
+        self.angle = angle
         
     def get_svg_hachure(self, path):
         """
@@ -37,9 +38,12 @@ class Hachurizator(object):
         
         hachure_lines = self.create_hachure_lines(polygon)
         
-        hachure = svgwrite.path.Path(hachure_lines)
-        
-        return hachure
+        if (hachure_lines == ''):            
+            print "No hachures created with given parameters"
+            return None
+        else:
+            hachure = svgwrite.path.Path(hachure_lines)        
+            return hachure
     
     def multipolygon_from_svgpath(self, path):
         """
@@ -88,8 +92,6 @@ class Hachurizator(object):
         #polygon = Polygon(exterior, multipolygon)
         
         multipolygon = MultiPolygon(multipolygon_list)
-        print multipolygon.svg()
-
         return multipolygon
     
     def create_coordlist_from_string(self, polygon_str):
@@ -125,7 +127,7 @@ class Hachurizator(object):
         """
                
         # Creating the bounding box hachure lines
-        lines = self.calculate_bbox_hachure(polygon.bounds, 8, 10)     
+        lines = self.calculate_bbox_hachure(polygon.bounds)     
         
         intersections = []
         
@@ -146,9 +148,8 @@ class Hachurizator(object):
         
         #multiline = MultiLineString(hachure_lines)
         #print multiline
-        
-        multiline_svg = self.create_svg_multilinepath(intersections)
-                
+
+        multiline_svg = self.create_svg_multilinepath(intersections)                
         return multiline_svg
     
     def create_svg_multilinepath(self, multiline):
@@ -161,8 +162,7 @@ class Hachurizator(object):
         for line in multiline:
             multiline_svg += "M "
             
-            i = 0
-            
+            i = 0            
             for point in line.coords:
                 
                 multiline_svg += (
@@ -176,28 +176,28 @@ class Hachurizator(object):
 
         return multiline_svg
     
-    def calculate_bbox_hachure(self, bbox, spacing, angle):
+    def calculate_bbox_hachure(self, bbox):
         """
         Returning the hachure lines of a specified bounding box, calculated 
         based on given spacing and angle
         """
         
         # Check if provided angle is valid
-        if (angle > 180 or angle == 90 or angle == 0):
-            print "Angle '" + str(angle) + "' is too large or 90 degrees"                
+        if (self.angle > 180 or self.angle == 90 or self.angle == 0):
+            print "Angle '" + str(self.angle) + "' is too large or 90 degrees"                
             return
         
-        angle = 180 - angle # Necessary as SVG coordinates are flipped
+        angle = 180 - self.angle # Necessary as SVG coordinates are flipped
                
         bbox_anglespacing = self.calculate_hachure_bounds(
             bbox,
-            spacing,
+            self.spacing,
             angle
         )
                 
         # Creating lines with respect to the x-shift calculated before
         lines = []        
-        position_x = bbox_anglespacing[0] + (spacing/2) # 
+        position_x = bbox_anglespacing[0] + (self.spacing/2) # 
         while (position_x <= bbox_anglespacing[2]):
             point_1 = (position_x, bbox_anglespacing[1])
             point_2 = self.calculate_line_point_x(
@@ -207,7 +207,7 @@ class Hachurizator(object):
             )            
             line = LineString([point_1, point_2])
             lines.append(line)
-            position_x += spacing
+            position_x += self.spacing
             
         multiline = MultiLineString(lines)
         
@@ -254,14 +254,6 @@ class Hachurizator(object):
         else:
             bbox_anglespacing = (bbox[0], bbox[1], bbox[2] + oversize, bbox[3])
         
-#         print "-------------"
-#         print bbox
-#         print spacing
-#         print hachure_x
-#         print oversize
-#         print bbox_anglespacing
-#         print "-------------"
-        
         return bbox_anglespacing
         
     def calculateIntersection(self, line, polygon, intersections):
@@ -272,7 +264,9 @@ class Hachurizator(object):
         intersection = polygon.intersection(line)
         
         if (type(intersection) == LineString):
-            intersections.append(intersection)
+            # Only consider lines which are at least as big as the brush size
+            if (intersection.length >= self.spacing/2):
+                intersections.append(intersection)
         
         # Recursive function call to split up multilinestrings 
         elif(type(intersection) == MultiLineString):

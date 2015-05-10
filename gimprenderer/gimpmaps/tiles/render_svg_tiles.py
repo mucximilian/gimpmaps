@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from maprenderer.tiles import tilerenderer
+from gimpmaps.tiles import tilerenderer
 
 zoom_min = 12
 zoom_max = 13

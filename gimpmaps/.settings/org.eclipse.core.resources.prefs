@@ -1,6 +1,0 @@
-eclipse.preferences.version=1
-encoding//maprenderer/styles.py=utf-8
-encoding//maprenderer/test_db_osm_style.py=utf-8
-encoding//maprenderer/tiles/render_svg_tiles.py=utf-8
-encoding//maprenderer/tiles/tilerenderer.py=utf-8
-encoding//maprenderer/tiles/tilerenderergimp.py=utf-8

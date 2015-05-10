@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-from maprenderer import styles
+from gimpmaps import styles
 
 zoom = 14
 

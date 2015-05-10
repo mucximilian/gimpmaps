@@ -6,7 +6,7 @@ import os
 import datetime
 import logging
 
-from maprenderer import styles
+from gimpmaps import styles
 
 class TileRenderer(object):
     
