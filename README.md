@@ -1,12 +1,12 @@
 # GIMPmaps
 
-Collection of Python scripts to create a single map or map tiles using Gimp brushes and different dynamics from an *OpenStreetMap* (OSM) *PostGIS* database.
+Collection of Python scripts and packages to create a single map or map tiles from an *OpenStreetMap* (OSM) *PostGIS* database using GIMP brushes and different dynamics.
 
 ## Database setup
 
 For the scripts in this repository, a spatial *PostGIS* database with OSM data imported via *osm2pgsql* has to be set up containing the provided SQL/PLPGSQL functions. *osm2pgsql* along with *Osmosis* can be used to keep the data up to date.
 
-Furthermore the style rules are stored in a separate PostgreSQL database which is not part of the repository yet but an example setup script will be added soon.
+Furthermore the style rules are stored in a separate PostgreSQL database which is not part of the repository yet but an example SQL script will be added soon.
 
 ## GIMP setup
 

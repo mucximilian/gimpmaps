@@ -2,7 +2,7 @@ gimp/
 results/
 gimprenderer/gimpmaps/log/
 gimprenderer/gimpmaps/img/
-sql/old/
+gimprenderer/gimpmaps/sql/old/
 gimprenderer/.settings
 gimprenderer/.project
 gimprenderer/.pydevproject
