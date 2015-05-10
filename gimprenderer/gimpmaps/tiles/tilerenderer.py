@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
+'''
+Created on May 11, 2015
+
+@author: mucx
+'''
+
 import psycopg2
 import math
-import svgwrite
 import os
 import datetime
 import logging
@@ -9,6 +13,9 @@ import logging
 from gimpmaps import styles
 
 class TileRenderer(object):
+    '''
+    classdocs
+    '''
     
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0
@@ -81,6 +88,68 @@ class TileRenderer(object):
         ########################################################################                  
         
         self.finish(t_start, t_form)
+        
+    def get_feature_styles(self, zoom_level):
+        """
+        Get style and tag info of all feature of a type for a zoom level.
+        """
+        
+        # Defining database connection for different zoom level styles
+        conn_zoom = psycopg2.connect(
+            'dbname=gimp_osm_styles '
+            'user=gis '
+            'password=gis '
+            'host=localhost '
+            'port=5432'
+        )
+        
+        curs_zoom = conn_zoom.cursor()
+        
+        sql = "SELECT * FROM get_tags_and_style(%s, %s)"                            
+        curs_zoom.execute(sql, (zoom_level, self.style))
+        
+        # Store feature data in an array
+        features = []               
+        for row in curs_zoom.fetchall():
+            
+            if (row[1] == 2):
+                style_object = styles.StyleObjectLine(
+                    row[1], # geometry type
+                    row[2], # tags
+                    row[3], # z order
+                    row[4], # brush
+                    row[5], # brush_size
+                    row[6], # color
+                    row[7], # opacity_brush
+                    row[8]  # dynamics
+                )
+                features.append(style_object)
+
+                logging.info(style_object.string_style())
+                
+            elif (row[1] == 3):
+                
+                print row
+                
+                style_object = styles.StyleObjectPolygon(
+                    row[1], # geometry type
+                    row[2], # tags
+                    row[3], # z order
+                    row[4], # brush
+                    row[5], # brush_size
+                    row[6], # color
+                    row[7], # opacity_brush
+                    row[8], # dynamics
+                    row[9], # image
+                    row[10] # image opacity
+                )
+                features.append(style_object)
+                
+                logging.info(style_object.string_style())
+            
+        curs_zoom.close()
+        
+        return features   
     
     def get_tile_of_point(self, point_ul, zoom):
         """
@@ -142,69 +211,7 @@ class TileRenderer(object):
         print "tiles in y = " + str(tiles_count_y)
         print "tiles count = " + str(tiles_count)
         
-        return tiling_data
-        
-    def get_feature_styles(self, zoom_level):
-        """
-        Get style and tag info of all feature of a type for a zoom level
-        """
-        
-        # Defining database connection for different zoom level styles
-        conn_zoom = psycopg2.connect(
-            'dbname=gimp_osm_styles '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
-        
-        curs_zoom = conn_zoom.cursor()
-        
-        sql = "SELECT * FROM get_tags_and_style(%s)"                            
-        curs_zoom.execute(sql, (zoom_level,))
-        
-        # Store feature data in an array
-        features = []               
-        for row in curs_zoom.fetchall():
-            
-            if (row[1] == 2):
-                style_object = styles.StyleObjectLine(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8]  # dynamics
-                )
-                features.append(style_object)
-
-                logging.info(style_object.string_style())
-                
-            elif (row[1] == 3):
-                
-                print row
-                
-                style_object = styles.StyleObjectPolygon(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8], # dynamics
-                    row[9], # image
-                    row[10] # image opacity
-                )
-                features.append(style_object)
-                
-                logging.info(style_object.string_style())
-            
-        curs_zoom.close()
-        
-        return features         
+        return tiling_data  
     
     def calculate_tile_bbox(self, x, y, tile_size):    
         """
@@ -315,93 +322,3 @@ class TileRenderer(object):
     def log_tile_bbox_info(self, tile_bbox):
         out = self.print_tile_bbox_info(tile_bbox)
         logging.info(out)
-        
-    def draw_features(self, features, tile_bbox, out_path):
-        """
-        Drawing function for SVG image files   
-        """
-        
-        conn_osm = psycopg2.connect(
-            'dbname=osm_muc '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )        
-        
-        # Create SVG file name with extension
-        dwg = svgwrite.Drawing(
-            out_path + ".svg",
-            height = self.tile_size,
-            width = self.tile_size
-        )
-        print "creating SVG: " + out_path + ".svg"
-        
-        for style_feature in features:
-                        
-            sql_selection = style_feature.get_selection_tags()
-            line_style = style_feature.get_line_style()
-            
-            curs_osm = conn_osm.cursor()
-            
-            if (style_feature.geom_type == 2):        
-                sql = """
-                SELECT 
-                    ROW_NUMBER() OVER () AS id,
-                    get_scaled_svg_line(
-                        way, %s, %s, %s, %s, %s
-                    ) AS svg
-                FROM (
-                    SELECT
-                        *
-                    FROM planet_osm_line 
-                    WHERE ST_Intersects ( 
-                        way, 
-                        get_tile_bbox(
-                            %s, %s, %s, %s, %s, %s
-                        ) 
-                    )
-                ) t
-                WHERE (""" + sql_selection + ")"
-            elif (style_feature.geom_type == 3):
-                sql = """
-                SELECT 
-                    ROW_NUMBER() OVER () AS id,
-                    get_scaled_svg_polygon(
-                        ST_Union(way), %s, %s, %s, %s, %s
-                    ) AS svg
-                FROM (
-                    SELECT
-                        *
-                    FROM planet_osm_polygon
-                    WHERE ST_Intersects ( 
-                        way, 
-                        get_tile_bbox(
-                            %s, %s, %s, %s, %s, %s
-                        ) 
-                    )
-                ) t
-                WHERE (""" + sql_selection + ")"            
-        
-            curs_osm.execute(sql, (
-                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                self.tile_size,
-                tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                self.tile_size,
-                line_style[1]
-                )
-            )     
-    
-            # Drawing vectors and displaying count
-            i = 1
-            for row in curs_osm.fetchall():
-                
-                if (row[1] == None or row[1] ==''): continue                
-                dwg.add(dwg.path(d=row[1]))
-                i += 1
-                
-            out = "      " + sql_selection + " (" + str(i) + ")"
-            logging.info(out)
-            print(out)
-            
-        dwg.save()

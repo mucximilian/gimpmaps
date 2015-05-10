@@ -28,6 +28,7 @@ def run():
     tile_size = 256
  
     out_dir = os.getcwd() + "/results/"
+    map_style = 1
     create_xcf = True
 
     tile_renderer = tilerenderergimp.TileRendererGimp(
@@ -35,6 +36,7 @@ def run():
 		zoom_levels,
 		tile_size,
 		out_dir,
+        map_style,
         create_xcf
     )
     

@@ -1,47 +1,33 @@
-# -*- coding: utf-8 -*-
-"""
-********************************************************************************
-TileRendererGimp
-                              -------------------
-        begin                : 2015-03-28
-        copyright            : (C) 2015 by Maximilian Hartl
-        email                : mucximilian@gmail.com
-        
-    
-********************************************************************************
+'''
+Created on May 11, 2015
 
-********************************************************************************
-*                                                                              *
-*   This program is free software; you can redistribute it and/or modify       *
-*   it under the terms of the GNU General Public License as published by       *
-*   the Free Software Foundation; either version 2 of the License, or          *
-*   (at your option) any later version.                                        *
-*                                                                              *
-********************************************************************************
-"""
+@author: mucx
+'''
+
 import psycopg2
 import svgwrite
 import os
 import logging
 
-from gimpfu import *
-
 from gimpmaps.tiles import tilerenderer
-from gimpmaps.svgstyling import hachurizator
+from svgsketch import hachurizator
+
+from gimpfu import *
 
 class TileRendererGimp(tilerenderer.TileRenderer):
     """
-    This subclass of tilerenderer implements different 'setup' and
+    This subclass of tilerenderersvg implements different 'setup' and
     'draw_features' methods for the creation of GIMP tiles as PNG and if defined
     in the 'create_xcf' variable also as XCF files. 
     can be defined )
     """
     
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir, create_xcf):
+    def __init__(self, bbox, zoom_levels, tile_size, out_dir, style, create_xcf):
         self.bbox = bbox
         self.zoom_levels = zoom_levels
         self.tile_size = tile_size
         self.out_dir = out_dir
+        self.style = style
         self.create_xcf = create_xcf
         
     def setup(self, t_start, t_form):
@@ -372,4 +358,4 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         
         conn_osm.close()        
         pdb.gimp_image_delete(image)
-        pdb.gimp_context_pop()   
+        pdb.gimp_context_pop()
