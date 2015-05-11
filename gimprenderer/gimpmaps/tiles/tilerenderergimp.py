@@ -37,7 +37,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         into the output directory.
         """
         
-        filepath = os.path.dirname(
+        self.filepath = os.path.dirname(
             os.path.abspath(
                 inspect.getfile(
                     inspect.currentframe()
@@ -45,12 +45,10 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             )
         )
         
-        # TO DO:
-        # Set default out_dir if not specified in __init__
         if (self.out_dir is None):
-            out_dir = ""
+            self.out_dir = self.filepath + "/../results/"
         
-        log_file = filepath + "/../log/gimp_rendering_"
+        log_file = self.filepath + "/../log/gimp_rendering_"
         self.start_logging(t_start, t_form, log_file)
         
         result_dir = self.out_dir # storing the original directory for later
@@ -61,10 +59,12 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             os.makedirs(self.out_dir)
             
         # Copying the HTML file to view the tiles in the browser
-        os.system ("cp %s %s" % (
-                                   result_dir + "index.html",
-                                   self.out_dir + "index.html")
-                   )      
+        os.system (
+            "cp %s %s" % (
+                result_dir + "index.html",
+                self.out_dir + "index.html"
+            )
+        )      
         
     def draw_features(self, feature_styles, tile_bbox, out_path):
         """
@@ -257,11 +257,14 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
                 
-        # Background image       
+        # Background image
+        img_dir = self.filepath + "/../img/"
+        
         background = pdb.gimp_file_load_layer(image, 
-                           "img/texture_blackboard.png")
-        pdb.gimp_image_insert_layer(image, background,
-                                    group_top, 2)            
+            img_dir + "texture_blackboard.png"
+        )
+        pdb.gimp_image_insert_layer(image, background, group_top, 2)            
+        
         # pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                       
         # Save images as PNG and XCF

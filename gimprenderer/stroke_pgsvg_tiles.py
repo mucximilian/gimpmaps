@@ -10,7 +10,7 @@ Run this file from the bash script provided in the directory above.
 
 def run():
     zoom_min = 12
-    zoom_max = 13
+    zoom_max = 12
 
     zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
 
@@ -25,17 +25,7 @@ def run():
 
     # Defining the pixel size of the output map tiles
     tile_size = 256
-    
-    filepath = os.path.dirname(
-        os.path.abspath(
-            inspect.getfile(
-                inspect.currentframe()
-            )
-        )
-    )
- 
-    out_dir = filepath + "/gimprenderer/gimpmaps/results/"
-    
+       
     map_style = 1
     create_xcf = True
     
@@ -43,7 +33,7 @@ def run():
 		bbox, 
 		zoom_levels,
 		tile_size,
-		out_dir,
+		None, # out_dir undefined, default used
         map_style,
         create_xcf
     )

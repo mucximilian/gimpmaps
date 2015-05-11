@@ -39,7 +39,7 @@ class Hachurizator(object):
         hachure_lines = self.create_hachure_lines(polygon)
         
         if (hachure_lines == ''):            
-            print "No hachures created with given parameters"
+            print "No hachures created for polygon with given parameters"
             return None
         else:
             hachure = svgwrite.path.Path(hachure_lines)        
