@@ -13,7 +13,7 @@ RETURNS TABLE(
 	tags text[],
 	z_order integer,
 	brush character varying(20),
-	brush_size numeric,
+	brush_size integer,
 	color integer[],
 	opacity_brush integer,
 	dynamics character varying(20),

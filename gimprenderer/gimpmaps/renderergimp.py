@@ -4,8 +4,11 @@ Created on May 7, 2015
 @author: mucx
 '''
 import os
+import psycopg2
 
-class GimpRenderer(object):
+from gimpmaps.renderer import Renderer
+
+class RendererGimp(Renderer):
     '''
     This is a renderer to create a GIMP image from map data in a provided 
     bounding box with a specified styling
@@ -45,9 +48,9 @@ class GimpRenderer(object):
                                    self.out_dir + "index.html")
                    )      
         
-    def draw_features(self, features, tile_bbox, out_path):
+    def draw_features(self, feature_styles, tile_bbox, out_path):
         """
-        Drawing the features as GIMP images and saving to PNG and/or XCF
+        Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
         """
         
         conn_osm = psycopg2.connect(
@@ -87,7 +90,7 @@ class GimpRenderer(object):
         mask = False
         
         # Geometry feature loop END
-        for style_feature in features:
+        for style_feature in feature_styles:
                         
             sql_selection = style_feature.get_selection_tags()
             line_style = style_feature.get_line_style()
@@ -231,7 +234,7 @@ class GimpRenderer(object):
             out = ("      " + sql_selection + " (" + str(len(image.vectors)) + ")")
             logging.info(out)
                        
-            # Drawing line features
+            # Drawing line feature_styles
             if (style_feature.geom_type == 2):
                 
                 # Creating image layer for geometry feature
@@ -250,7 +253,7 @@ class GimpRenderer(object):
                     pdb.gimp_edit_stroke_vectors(layer, vector)                    
                     pdb.gimp_image_remove_vectors(image, vector)
             
-            # Drawing polygon features
+            # Drawing polygon feature_styles
             elif (style_feature.geom_type == 3):
                 
                 if (mask):

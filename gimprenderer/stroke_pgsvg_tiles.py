@@ -2,12 +2,11 @@
 import os
 from gimpfu import *
 
-from maprenderer.tiles import tilerenderergimp
+from gimpmaps.tiles import tilerenderergimp
 
 """
 Run this file from the bash script provided in the directory above.
 """
-
 
 def run():
     zoom_min = 12

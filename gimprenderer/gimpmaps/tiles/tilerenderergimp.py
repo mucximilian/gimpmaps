@@ -4,7 +4,6 @@ Created on May 11, 2015
 @author: mucx
 '''
 
-import psycopg2
 import svgwrite
 import os
 import logging
@@ -17,17 +16,17 @@ from gimpfu import *
 class TileRendererGimp(tilerenderer.TileRenderer):
     """
     This subclass of tilerenderersvg implements different 'setup' and
-    'draw_features' methods for the creation of GIMP tiles as PNG and if defined
-    in the 'create_xcf' variable also as XCF files. 
-    can be defined )
+    'draw_features' methods for the creation of GIMP tiles as PNG and (if 
+    defined in the 'create_xcf' variable) as XCF files as well.
     """
     
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir, style, create_xcf):
+    def __init__(self, 
+                 bbox, zoom_levels, tile_size, out_dir, map_style, create_xcf):
         self.bbox = bbox
         self.zoom_levels = zoom_levels
         self.tile_size = tile_size
         self.out_dir = out_dir
-        self.style = style
+        self.map_style = map_style
         self.create_xcf = create_xcf
         
     def setup(self, t_start, t_form):
@@ -53,18 +52,12 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                                    self.out_dir + "index.html")
                    )      
         
-    def draw_features(self, features, tile_bbox, out_path):
+    def draw_features(self, feature_styles, tile_bbox, out_path):
         """
-        Drawing the features as GIMP images and saving to PNG and/or XCF
+        Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
         """
         
-        conn_osm = psycopg2.connect(
-            'dbname=osm_muc '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
+        self.conn_osm = self.connect_to_osm_db()
        
         # Create GIMP image with layer group
         image = pdb.gimp_image_new(
@@ -95,88 +88,15 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         mask = False
         
         # Geometry feature loop END
-        for style_feature in features:
+        for feature_style in feature_styles:
                         
-            sql_selection = style_feature.get_selection_tags()
-            line_style = style_feature.get_line_style()
+            sql_selection = feature_style.get_selection_tags()
+            line_style = feature_style.get_line_style()
 
-            # Query svg tiles from database               
-            curs_osm = conn_osm.cursor()
-            
-            if (style_feature.geom_type == 2):
-                
-                sql = """
-                    SELECT 
-                        ROW_NUMBER() OVER () AS id,
-                        get_scaled_svg_line(
-                            way, %s, %s, %s, %s, %s
-                        ) AS svg
-                    FROM (
-                        SELECT
-                            *
-                        FROM planet_osm_line 
-                        WHERE ST_Intersects ( 
-                            way, 
-                            get_tile_bbox(
-                                %s, %s, %s, %s, %s, %s
-                            ) 
-                        )
-                    ) t
-                    WHERE (""" + sql_selection + ")"   
-                    
-                # Get SVG tile geometry from database
-                curs_osm.execute(sql, (
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                    self.tile_size,
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                    self.tile_size,
-                    line_style[1]
-                    )
-                )               
-            elif (style_feature.geom_type == 3):   
-                
-                # TO DO:
-                # tile_size/brush_size instead of 100
-                
-                way_select = "way"
-                if (mask):
-                    way_select = "ST_Union(way)"
-                
-                sql = """
-                SELECT * FROM (
-                    SELECT 
-                        ROW_NUMBER() OVER () AS id,
-                        get_scaled_svg_polygon(
-                            way,
-                            %s, %s, %s, %s,
-                            %s, %s
-                        ) AS svg
-                    FROM (
-                        SELECT
-                            *
-                        FROM planet_osm_polygon 
-                        WHERE ST_Intersects ( 
-                            way, 
-                            get_tile_bbox(
-                                %s, %s, %s, %s,
-                                %s, %s
-                            ) 
-                        )
-                    ) t
-                    WHERE
-                        """ + sql_selection + """
-                ) x 
-                WHERE coalesce(svg, '') <> ''"""                
-                    
-                # Get SVG tile geometry from database
-                curs_osm.execute(sql, (
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                    self.tile_size, line_style[1],
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
-                    self.tile_size,
-                    line_style[1]
-                    )
-                )               
+            svg_geoms = self.get_svg_features(
+                tile_bbox, 
+                feature_style
+            )             
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -193,11 +113,8 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             pdb.gimp_context_push()
                
             # Import SVG data into SVG drawing from database
-            for row in curs_osm.fetchall():
+            for svg_commands in svg_geoms:
                 # Escape if no SVG geometry is provided
-                # TO DO: Fix in SQL query: no row number even with empty result
-                
-                svg_commands = row[1] # M 226 176 l -2 -0
                 
                 if (svg_commands == None or svg_commands ==''):
                     continue                
@@ -206,7 +123,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                 
                 # print "path string = " + svg_path_str
         
-                if (not mask and style_feature.geom_type == 3):
+                if (not mask and feature_style.geom_type == 3):
                     
                     spacing = float(line_style[1]*2) # hachure spacing
                     angle = 30 # hachure angle
@@ -236,8 +153,8 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             out = ("      " + sql_selection + " (" + str(len(image.vectors)) + ")")
             logging.info(out)
                        
-            # Drawing line features
-            if (style_feature.geom_type == 2):
+            # Drawing line feature_styles
+            if (feature_style.geom_type == 2):
                 
                 # Creating image layer for geometry feature
                 layer = pdb.gimp_layer_new(
@@ -255,8 +172,8 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                     pdb.gimp_edit_stroke_vectors(layer, vector)                    
                     pdb.gimp_image_remove_vectors(image, vector)
             
-            # Drawing polygon features
-            elif (style_feature.geom_type == 3):
+            # Drawing polygon feature_styles
+            elif (feature_style.geom_type == 3):
                 
                 if (mask):
                 
@@ -278,7 +195,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                                             )
                     
                     # Adding background image to use the mask on
-                    mask_image = "img/" + style_feature.get_image_data()[0]
+                    mask_image = "img/" + feature_style.get_image_data()[0]
                     layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
                     pdb.gimp_image_insert_layer(image, layer_mask_image, 
                                                 vector_raster_group, 1)
@@ -322,9 +239,6 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                     for vector in image.vectors:
                         pdb.gimp_edit_stroke_vectors(layer, vector)                    
                         pdb.gimp_image_remove_vectors(image, vector)              
-                    
-                
-            curs_osm.close()
             
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
@@ -356,6 +270,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                 out_path_xcf
             )
         
-        conn_osm.close()        
+        self.conn_osm.close()
+            
         pdb.gimp_image_delete(image)
         pdb.gimp_context_pop()

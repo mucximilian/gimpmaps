@@ -4,28 +4,25 @@ Created on May 11, 2015
 @author: mucx
 '''
 
-import psycopg2
 import math
 import os
 import datetime
 import logging
 
-from gimpmaps import styles
+from abc import ABCMeta
 
-class TileRenderer(object):
+from gimpmaps.renderer import Renderer
+
+class TileRenderer(Renderer):
     '''
-    classdocs
+    An abstract metaclass that handles the tiling
     '''
+    
+    __metaclass__ = ABCMeta
     
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0
-    
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir):
-        self.bbox = bbox
-        self.zoom_levels = zoom_levels
-        self.tile_size = tile_size
-        self.out_dir = out_dir
-        
+         
     def render_tiles(self):
         """
         Basic tile rendering function. Loops over the specified bounding box in
@@ -50,7 +47,7 @@ class TileRenderer(object):
                 os.makedirs(out_dir_zoom)
             
             # Get OSM tags and styles for zoom level
-            features = self.get_feature_styles(zoom)
+            feature_styles = self.get_feature_styles(zoom)
             
             ####################################################################            
             # X-direction loop
@@ -76,7 +73,7 @@ class TileRenderer(object):
                     # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
                     
-                    self.draw_features(features, tile_bbox, out_path)
+                    self.draw_features(feature_styles, tile_bbox, out_path)
                     
                 # Y-direction loop END
                 ################################################################
@@ -88,68 +85,6 @@ class TileRenderer(object):
         ########################################################################                  
         
         self.finish(t_start, t_form)
-        
-    def get_feature_styles(self, zoom_level):
-        """
-        Get style and tag info of all feature of a type for a zoom level.
-        """
-        
-        # Defining database connection for different zoom level styles
-        conn_zoom = psycopg2.connect(
-            'dbname=gimp_osm_styles '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
-        
-        curs_zoom = conn_zoom.cursor()
-        
-        sql = "SELECT * FROM get_tags_and_style(%s, %s)"                            
-        curs_zoom.execute(sql, (zoom_level, self.style))
-        
-        # Store feature data in an array
-        features = []               
-        for row in curs_zoom.fetchall():
-            
-            if (row[1] == 2):
-                style_object = styles.StyleObjectLine(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8]  # dynamics
-                )
-                features.append(style_object)
-
-                logging.info(style_object.string_style())
-                
-            elif (row[1] == 3):
-                
-                print row
-                
-                style_object = styles.StyleObjectPolygon(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8], # dynamics
-                    row[9], # image
-                    row[10] # image opacity
-                )
-                features.append(style_object)
-                
-                logging.info(style_object.string_style())
-            
-        curs_zoom.close()
-        
-        return features   
     
     def get_tile_of_point(self, point_ul, zoom):
         """
@@ -223,22 +158,6 @@ class TileRenderer(object):
         lr_x = ul_x + tile_size
         lr_y = ul_y - tile_size
         return [ul_x, ul_y, lr_x, lr_y]
-    
-    def setup(self, t_start, t_form):
-        
-        log_file = "../../../log/svg_rendering_"     
-        self.start_logging(t_start, t_form, log_file)
-        
-        # Create a directory containing the date and time
-        self.out_dir += "svg_" + t_form + "/"
-        if not os.path.exists(self.out_dir):
-            os.makedirs(self.out_dir)
-    
-    def finish(self, t_start, t_form):
-        
-        self.finish_logging(t_start, t_form)
-        
-        print "Finished processing"
                    
     ############################################################################
     # Printing functions
@@ -267,41 +186,7 @@ class TileRenderer(object):
         return out
     
     ############################################################################
-    # Logging functions
-    def start_logging(self, t_start, t_form, log_file):
-        
-        log_line = "###########################################################"
-        
-        # logging setup
-        logging.basicConfig(
-            format = '%(message)s',
-            # filename = os.getcwd() + "/log/gimp_rendering_" + t_form + ".log",
-            filename = log_file + t_form + ".log",
-            filemode = 'w',
-            level = logging.INFO
-        )            
-        logging.info(log_line)
-        logging.info("Start of Gimp Tile processing at " + str(t_start))
-        logging.info(log_line)
-        
-        return t_start
-    
-    def finish_logging(self, t_start, t_form):
-        
-        log_line = "###########################################################"
-        
-        t_end = datetime.datetime.now()
-        delta_t = t_end - t_start
-        
-        logging.info(log_line)
-        logging.info("End of Gimp Tile processing at " + str(t_end))
-        logging.info("processing duration: " + 
-            str(delta_t.total_seconds()) +
-            " seconds"
-        )
-        logging.info(log_line)
-        
-    
+    # Logging functions    
     def log_tiling_data_info_zoom(self, zoom, tiling_data):
         logging.info("zoom level: " + str(zoom))
         logging.info("tile ul: " + str(tiling_data[0]))
