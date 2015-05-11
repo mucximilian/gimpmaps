@@ -6,6 +6,7 @@ Created on May 11, 2015
 
 import svgwrite
 import os
+import inspect 
 
 from gimpmaps.tiles import tilerenderer
 from svgsketch import hachurizator
@@ -27,7 +28,15 @@ class TileRendererSvg(tilerenderer.TileRenderer):
         Defining the log file and the results directory
         """
         
-        log_file = "../log/svg_rendering_"     
+        filepath = os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        )
+        
+        log_file = filepath + "/../log/svg_rendering_"     
         self.start_logging(t_start, t_form, log_file)
         
         # Create a directory containing the date and time

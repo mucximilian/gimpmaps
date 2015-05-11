@@ -5,6 +5,7 @@ Created on May 11, 2015
 '''
 
 import svgwrite
+import inspect
 import os
 import logging
 
@@ -36,7 +37,15 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         into the output directory.
         """
         
-        log_file = os.getcwd() + "/log/gimp_rendering_"
+        filepath = os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        )
+        
+        log_file = filepath + "/../log/gimp_rendering_"
         self.start_logging(t_start, t_form, log_file)
         
         result_dir = self.out_dir # storing the original directory for later

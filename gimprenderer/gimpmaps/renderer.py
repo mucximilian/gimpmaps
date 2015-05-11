@@ -5,6 +5,7 @@ Created on May 11, 2015
 
 '''
 
+import inspect, os
 import psycopg2
 import logging
 import datetime
@@ -236,4 +237,3 @@ class Renderer(object):
         )
         
         return conn
-        

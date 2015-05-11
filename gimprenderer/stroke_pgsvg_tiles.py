@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import os
+import inspect, os
 from gimpfu import *
 
 from gimpmaps.tiles import tilerenderergimp
@@ -25,11 +25,20 @@ def run():
 
     # Defining the pixel size of the output map tiles
     tile_size = 256
+    
+    filepath = os.path.dirname(
+        os.path.abspath(
+            inspect.getfile(
+                inspect.currentframe()
+            )
+        )
+    )
  
-    out_dir = os.getcwd() + "/results/"
+    out_dir = filepath + "/gimprenderer/gimpmaps/results/"
+    
     map_style = 1
     create_xcf = True
-
+    
     tile_renderer = tilerenderergimp.TileRendererGimp(
 		bbox, 
 		zoom_levels,
