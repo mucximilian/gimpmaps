@@ -46,8 +46,9 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         )
         
         # TO DO:
-        # Set default out_dir if not specified in __init__ 
-        out_dir = ""
+        # Set default out_dir if not specified in __init__
+        if (self.out_dir is None):
+            out_dir = ""
         
         log_file = filepath + "/../log/gimp_rendering_"
         self.start_logging(t_start, t_form, log_file)
