@@ -1,10 +1,11 @@
-results/
-gimprenderer/gimpmaps/log/
-gimprenderer/gimpmaps/img/
-sql/old/
 gimprenderer/.settings
 gimprenderer/.project
 gimprenderer/.pydevproject
+gimprenderer/gimpmaps/log/
+gimprenderer/gimpmaps/img/
+gimprenderer/gimpmaps/results/
+gimprenderer/test/
+sql/old/
 *.pyc
 *.xcf
 *.png
