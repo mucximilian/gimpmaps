@@ -1,2 +1,2 @@
 #! /bin/bash
-gimp -i -b '(python-fu-background-test RUN-NONINTERACTIVE)' '(gimp-quit 1)'
+gimp -i -b '(python-fu-background-path RUN-NONINTERACTIVE)' '(gimp-quit 1)'
