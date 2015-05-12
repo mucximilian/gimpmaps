@@ -100,13 +100,13 @@ def run():
     )
 
 register(
-    "stroke_mask_path_test", 
+    "stroke_mask_path", 
     "", 
     "", 
     "Max Hartl", 
     "Max Hartl", 
     "2015",
-    "<Toolbox>/Scripts/StrokeMaskPathTest", "",
+    "<Toolbox>/Scripts/StrokeMaskPath", "",
     [],
     [],
     run

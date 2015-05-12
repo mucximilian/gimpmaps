@@ -48,7 +48,7 @@ class RendererGimp(Renderer):
                                    self.out_dir + "index.html")
                    )      
         
-    def draw_features(self, feature_styles, tile_bbox, out_path):
+    def draw_features(self, feature_styles, bbox_tile, out_path):
         """
         Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
         """
@@ -121,9 +121,9 @@ class RendererGimp(Renderer):
                     
                 # Get SVG tile geometry from database
                 curs_osm.execute(sql, (
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
                     self.tile_size,
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
                     self.tile_size,
                     line_style[1]
                     )
@@ -165,9 +165,9 @@ class RendererGimp(Renderer):
                     
                 # Get SVG tile geometry from database
                 curs_osm.execute(sql, (
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
                     self.tile_size, line_style[1],
-                    tile_bbox[0], tile_bbox[1], tile_bbox[2], tile_bbox[3],
+                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
                     self.tile_size,
                     line_style[1]
                     )

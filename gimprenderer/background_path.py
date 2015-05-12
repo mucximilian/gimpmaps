@@ -67,7 +67,7 @@ def run():
     )
 
 register(
-    "background_test", 
+    "background_path", 
     "", 
     "", 
     "Max Hartl", 

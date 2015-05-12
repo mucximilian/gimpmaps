@@ -7,6 +7,7 @@ Created on May 11, 2015
 import svgwrite
 import os
 import inspect 
+import datetime
 
 from gimpmaps.tiles import tilerenderer
 from svgsketch import hachurizator
@@ -23,11 +24,14 @@ class TileRendererSvg(tilerenderer.TileRenderer):
         self.out_dir = out_dir
         self.map_style = map_style
         
-    def setup(self, t_start, t_form):
+    def setup(self):
         """
         Defining the log file and the results directory
         """
         
+        t_start = datetime.datetime.now()
+        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
+                
         filepath = os.path.dirname(
             os.path.abspath(
                 inspect.getfile(
@@ -43,8 +47,10 @@ class TileRendererSvg(tilerenderer.TileRenderer):
         self.out_dir += "svg_" + t_form + "/"
         if not os.path.exists(self.out_dir):
             os.makedirs(self.out_dir)
+            
+        return t_start
         
-    def draw_features(self, feature_styles, tile_bbox, out_path):
+    def draw_features(self, feature_styles, bbox_tile, out_path):
         """
         Drawing function for SVG image files   
         """
@@ -61,7 +67,7 @@ class TileRendererSvg(tilerenderer.TileRenderer):
         for feature_style in feature_styles:
             
             svg_geoms = self.get_svg_features(
-                tile_bbox, 
+                bbox_tile, 
                 feature_style
             )
     

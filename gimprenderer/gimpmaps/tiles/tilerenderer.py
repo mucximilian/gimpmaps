@@ -6,7 +6,6 @@ Created on May 11, 2015
 
 import math
 import os
-import datetime
 import logging
 
 from abc import ABCMeta
@@ -29,10 +28,7 @@ class TileRenderer(Renderer):
         different zoom levels.
         """
         
-        t_start = datetime.datetime.now()
-        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-        
-        self.setup(t_start, t_form)       
+        t_start = self.setup()       
         
         ########################################################################
         # Zoom level loop
@@ -73,18 +69,9 @@ class TileRenderer(Renderer):
                     # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
                     
-                    self.draw_features(feature_styles, tile_bbox, out_path)
-                    
-                # Y-direction loop END
-                ################################################################
-            
-            # Y-direction loop END
-            ####################################################################
-                
-        # Zoom-level loop END
-        ########################################################################                  
+                    self.draw_features(feature_styles, tile_bbox, out_path)               
         
-        self.finish(t_start, t_form)
+        self.finish(t_start)
     
     def get_tile_of_point(self, point_ul, zoom):
         """

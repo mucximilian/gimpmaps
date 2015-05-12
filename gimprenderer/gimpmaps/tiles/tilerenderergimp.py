@@ -8,11 +8,13 @@ import svgwrite
 import inspect
 import os
 import logging
+import datetime
 
 from gimpmaps.tiles import tilerenderer
 from svgsketch import hachurizator
 
 from gimpfu import *
+
 
 class TileRendererGimp(tilerenderer.TileRenderer):
     """
@@ -20,6 +22,8 @@ class TileRendererGimp(tilerenderer.TileRenderer):
     'draw_features' methods for the creation of GIMP tiles as PNG and (if 
     defined in the 'create_xcf' variable) as XCF files as well.
     """
+    
+    pdb = gimp.pdb
     
     def __init__(self, 
                  bbox, zoom_levels, tile_size, out_dir, map_style, create_xcf):
@@ -30,12 +34,15 @@ class TileRendererGimp(tilerenderer.TileRenderer):
         self.map_style = map_style
         self.create_xcf = create_xcf
         
-    def setup(self, t_start, t_form):
+    def setup(self):
         """
         Setting up the logging environment and the output directory. Also 
         copies the 'index.html' file to view the tile result in a web browser
         into the output directory.
         """
+        
+        t_start = datetime.datetime.now()
+        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
         self.filepath = os.path.dirname(
             os.path.abspath(
@@ -64,9 +71,11 @@ class TileRendererGimp(tilerenderer.TileRenderer):
                 result_dir + "index.html",
                 self.out_dir + "index.html"
             )
-        )      
+        )
         
-    def draw_features(self, feature_styles, tile_bbox, out_path):
+        return t_start 
+        
+    def draw_features(self, feature_styles, bbox_tile, out_path):
         """
         Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
         """
@@ -108,7 +117,7 @@ class TileRendererGimp(tilerenderer.TileRenderer):
             line_style = feature_style.get_line_style()
 
             svg_geoms = self.get_svg_features(
-                tile_bbox, 
+                bbox_tile, 
                 feature_style
             )             
             

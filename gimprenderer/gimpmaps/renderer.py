@@ -22,6 +22,16 @@ class Renderer(object):
     __metaclass__ = ABCMeta
     
     log_line = "###########################################################"
+    
+    ############################################################################
+    def render_map(self):
+        
+        zoom = self.get_zoom_level(bbox, resolution)
+        
+        feature_styles = self.get_feature_styles(zoom)
+        
+        self.draw_features(feature_styles, bbox, out_path)
+        
         
     ############################################################################
     def get_feature_styles(self, zoom_level):
@@ -186,9 +196,9 @@ class Renderer(object):
         return svg_geometries
     
     ############################################################################
-    def finish(self, t_start, t_form):
+    def finish(self, t_start):
         
-        self.finish_logging(t_start, t_form)
+        self.finish_logging(t_start)
         
         print "Finished processing"
     
@@ -210,7 +220,7 @@ class Renderer(object):
         
         return t_start
     
-    def finish_logging(self, t_start, t_form):      
+    def finish_logging(self, t_start):      
         
         t_end = datetime.datetime.now()
         delta_t = t_end - t_start
