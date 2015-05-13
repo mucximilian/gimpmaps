@@ -9,6 +9,7 @@ import os
 import logging
 
 from abc import ABCMeta
+from gimpfu import *
 
 from gimpmaps import renderer
 

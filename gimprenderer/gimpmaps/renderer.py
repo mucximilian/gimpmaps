@@ -13,6 +13,7 @@ import inspect
 import svgwrite
 
 from abc import ABCMeta
+from gimpfu import *
 
 from gimpmaps import styles
 
