@@ -16,6 +16,7 @@ from abc import ABCMeta
 from gimpfu import *
 
 from gimpmaps import styles
+from svgsketch import hachurizator
 
 class Renderer(object):
     '''

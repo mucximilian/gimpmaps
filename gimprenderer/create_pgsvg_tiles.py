@@ -1,6 +1,8 @@
+#! /usr/bin/env python
+
 from gimpfu import *
 
-from gimpmaps.tiles import tilerenderergimp
+from gimpmaps import tilerenderer
 
 """
 Run this file from the bash script provided in the directory above.
@@ -14,7 +16,7 @@ def run(zoom_min, zoom_max,
     bbox = [[ul_x, ul_y], [lr_x, lr_y]]
     zoom_levels = range(zoom_min,zoom_max+1) # last number is excluded
     
-    tile_renderer = tilerenderergimp.TileRendererGimp(
+    tile_renderer = tilerenderer.TileRendererGimp(
 		bbox, 
 		zoom_levels,
 		tile_size,
