@@ -12,7 +12,7 @@ from abc import ABCMeta, abstractmethod
 
 from gimpmaps import renderer
 
-class TileRenderer(renderer.Renderer):
+class TileRenderer(object):
     '''
     An abstract metaclass that handles the tiling
     '''

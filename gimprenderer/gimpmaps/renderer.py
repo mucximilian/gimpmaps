@@ -85,7 +85,7 @@ class Renderer(object):
         
         feature_styles = self.get_feature_styles(zoom)
         
-        out_file = self.out_dir + "map_"
+        out_file = self.out_dir + "map_" + self.type
         
         self.draw_features(feature_styles,
                            self.bbox,

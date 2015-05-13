@@ -4,7 +4,7 @@ Created on May 11, 2015
 @author: mucx
 '''
 
-from gimpmaps import gimprenderer
+from gimpmaps import renderer
 
 ul_x = 1275000
 ul_y = 6131500
@@ -17,12 +17,11 @@ create_xcf = False
 
 bbox = [[ul_x, ul_y], [lr_x, lr_y]]
     
-gimp_renderer = gimprenderer.RendererGimp(
+svg_renderer = renderer.RendererSvg(
     bbox, 
     scale,
     None, # out_dir undefined, default used
-    map_style_id,
-    create_xcf
+    map_style_id
 )
 
-gimp_renderer.render()
+svg_renderer.render()
