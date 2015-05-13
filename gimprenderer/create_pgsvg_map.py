@@ -2,7 +2,7 @@
 
 from gimpfu import *
 
-from gimpmaps import renderer
+from gimpmaps import gimprenderer
 
 """
 Run this file from the bash script provided in the directory above.
@@ -15,7 +15,7 @@ def run(ul_x, ul_y, lr_x, lr_y,
     
     bbox = [[ul_x, ul_y], [lr_x, lr_y]]
     
-    gimp_renderer = renderer.RendererGimp(
+    gimp_renderer = gimprenderer.RendererGimp(
 		bbox, 
 		scale,
 		None, # out_dir undefined, default used

@@ -8,8 +8,7 @@ import math
 import os
 import logging
 
-from abc import ABCMeta
-from gimpfu import *
+from abc import ABCMeta, abstractmethod
 
 from gimpmaps import renderer
 
@@ -22,6 +21,17 @@ class TileRenderer(renderer.Renderer):
     
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0
+    
+    @abstractmethod
+    def __init__(self, 
+                 bbox, zoom_levels, tile_size, out_dir, map_style_id, tile_type):
+        
+        self.bbox = bbox
+        self.zoom_levels = zoom_levels
+        self.tile_size = [tile_size, tile_size]
+        self.out_dir = out_dir
+        self.map_style_id = map_style_id
+        self.type = tile_type    
          
     def render(self):
         """
@@ -204,28 +214,8 @@ class TileRendererSvg(TileRenderer, renderer.RendererSvg):
     '''
     classdocs
     '''
-    
-    def __init__(self, bbox, zoom_levels, tile_size, out_dir, map_style_id):
-        self.bbox = bbox
-        self.zoom_levels = zoom_levels
-        self.tile_size = [tile_size, tile_size]
-        self.out_dir = out_dir
-        self.map_style_id = map_style_id
-        self.type = "tiles_svg"        
-        
-class TileRendererGimp(TileRenderer, renderer.RendererGimp):
-    """
-    This subclass of tilerenderersvg implements different 'setup' and
-    'draw_features' methods for the creation of GIMP tiles as PNG and (if 
-    defined in the 'create_xcf' variable) as XCF files as well.
-    """
-    
     def __init__(self, 
-                 bbox, zoom_levels, tile_size, out_dir, map_style_id, create_xcf):
-        self.bbox = bbox
-        self.zoom_levels = zoom_levels
-        self.tile_size = [tile_size, tile_size]
-        self.out_dir = out_dir
-        self.map_style_id = map_style_id
-        self.create_xcf = create_xcf
-        self.type = "tiles_gimp"
+                 bbox, zoom_levels, tile_size, out_dir, map_style_id):
+        super(TileRendererSvg, self).__init__(bbox, zoom_levels, tile_size, 
+                                              out_dir, map_style_id, 
+                                              "tiles_svg")
