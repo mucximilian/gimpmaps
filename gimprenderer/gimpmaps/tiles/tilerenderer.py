@@ -22,13 +22,13 @@ class TileRenderer(Renderer):
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0
          
-    def render_tiles(self):
+    def render(self):
         """
         Basic tile rendering function. Loops over the specified bounding box in
         different zoom levels.
         """
         
-        t_start = self.setup()       
+        t_start = self.setup(self.out_dir)       
         
         ########################################################################
         # Zoom level loop
@@ -69,7 +69,10 @@ class TileRenderer(Renderer):
                     # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
                     
-                    self.draw_features(feature_styles, tile_bbox, out_path)               
+                    self.draw_features(feature_styles, 
+                                       tile_bbox, 
+                                       self.tile_size, 
+                                       out_path)               
         
         self.finish(t_start)
     
@@ -114,21 +117,21 @@ class TileRenderer(Renderer):
         tiles_count_y = tile_lr[1] - tile_ul[1] + 1
         
         tile_size_0 = 2 * self.origin_y
-        tile_size = tile_size_0 / int(math.pow(2, zoom))
+        tile_size_m = tile_size_0 / int(math.pow(2, zoom))
         tiles_count = tiles_count_x * tiles_count_y
         
         tiling_data= [
             [tile_ul[0],tile_ul[1]],
             [tile_lr[0],tile_lr[1]],
             [tiles_count_x, tiles_count_y],
-            tile_size
+            tile_size_m
         ]
         
         print "------------------------------------------"
         print "zoom = " + str(zoom)
         print "tile_ul = " + str(tile_ul)
         print "tile_lr = " + str(tile_lr)
-        print "tile_size = " + str(tile_size)
+        print "tile_size = " + str(tile_size_m)
         print "tiles in x = " + str(tiles_count_x)
         print "tiles in y = " + str(tiles_count_y)
         print "tiles count = " + str(tiles_count)
@@ -144,7 +147,7 @@ class TileRenderer(Renderer):
         ul_y = self.origin_y - y * tile_size
         lr_x = ul_x + tile_size
         lr_y = ul_y - tile_size
-        return [ul_x, ul_y, lr_x, lr_y]
+        return [[ul_x, ul_y], [lr_x, lr_y]]
                    
     ############################################################################
     # Printing functions
@@ -165,10 +168,10 @@ class TileRenderer(Renderer):
     def print_tile_bbox_info(self, tile_bbox):
         indent = "  "
         out = (indent + indent + "tile bbox:\n" + 
-               indent + indent + str(tile_bbox[0]) + ",\n" +
-               indent + indent + str(tile_bbox[1]) + ",\n" +
-               indent + indent + str(tile_bbox[2]) + ",\n" +
-               indent + indent + str(tile_bbox[3]))
+               indent + indent + str(tile_bbox[0][0]) + ",\n" +
+               indent + indent + str(tile_bbox[0][1]) + ",\n" +
+               indent + indent + str(tile_bbox[1][0]) + ",\n" +
+               indent + indent + str(tile_bbox[1][1]))
         print out
         return out
     
@@ -182,6 +185,7 @@ class TileRenderer(Renderer):
         logging.info("tiles in y: " + str(tiling_data[2][1]))
         logging.info("tiles total: "
             + str(tiling_data[2][0] + tiling_data[2][1]))
+        logging.info("-------------------------------------")
         
     def log_tiling_data_info_x(self, x, tiling_data):
         out = self.print_tiling_data_info_x(x, tiling_data)

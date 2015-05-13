@@ -10,6 +10,7 @@ from shapely.geometry import MultiLineString
 from shapely.geometry import Polygon
 from shapely.geometry import MultiPolygon
 
+import shapely
 import math
 import svgwrite
 
@@ -37,12 +38,14 @@ class Hachurizator(object):
         polygon = self.multipolygon_from_svgpath(path)
         
         hachure_lines = self.create_hachure_lines(polygon)
+                      
+        # multiline_svg = self.create_svg_multilinepath(intersections)
         
-        if (hachure_lines == ''):            
+        if (len(hachure_lines) == 0):            
             print "No hachures created for polygon with given parameters"
             return None
         else:
-            hachure = svgwrite.path.Path(hachure_lines)        
+            hachure = hachure_lines.svg()  
             return hachure
     
     def multipolygon_from_svgpath(self, path):
@@ -132,29 +135,21 @@ class Hachurizator(object):
         intersections = []
         
         for line in lines:
-
             # Calculating the intersection of hachure lines and polygon
             self.calculateIntersection(line, polygon, intersections)
-        
-        # TO DO check if can be deleted as type is checked earlier now
-        for item in intersections:
-            if (type(item) == Point):
-                intersections.remove(item)
 
         # Filter and randomize hachure lines
-        # TO DO: function
+        # TO DO:
         # hachure_lines = randomizeLines(intersection)
-        #hachure_lines = None
-        
-        #multiline = MultiLineString(hachure_lines)
-        #print multiline
 
-        multiline_svg = self.create_svg_multilinepath(intersections)                
-        return multiline_svg
+        multiline = MultiLineString(intersections)
+               
+        return multiline
     
     def create_svg_multilinepath(self, multiline):
         """
-        Returning a Shapely multilinestring as a SVG multiline path string
+        Returning a Shapely multilinestring as a SVG multiline path string.
+        Deprecated, Shapely .svg() function used now.
         """
         
         multiline_svg = ""
@@ -261,14 +256,20 @@ class Hachurizator(object):
         Returning the intersecting lines of a polygon an the hachure lines
         """
         
-        intersection = polygon.intersection(line)
-        
-        if (type(intersection) == LineString):
-            # Only consider lines which are at least as big as the brush size
-            if (intersection.length >= self.spacing/2):
-                intersections.append(intersection)
-        
-        # Recursive function call to split up multilinestrings 
-        elif(type(intersection) == MultiLineString):
-            for linestring in intersection:
-                self.calculateIntersection(linestring, polygon, intersections)
+        try:        
+            intersection = polygon.intersection(line)
+            
+            if (type(intersection) == LineString):
+                # Only consider lines which are at least as big as the brush size
+                if (intersection.length >= self.spacing/2):
+                    intersections.append(intersection)
+            
+            # Recursive function call to split up multilinestrings 
+            elif(type(intersection) == MultiLineString):
+                for linestring in intersection:
+                    self.calculateIntersection(linestring,
+                                               polygon,
+                                               intersections)
+        except shapely.geos.TopologicalError:
+            print "INVALID GEOMETRY:"
+            print polygon.svg()

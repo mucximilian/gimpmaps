@@ -5,10 +5,11 @@ Created on May 11, 2015
 
 '''
 
-import inspect, os
 import psycopg2
 import logging
 import datetime
+import os
+import inspect
 
 from abc import ABCMeta
 
@@ -23,15 +24,144 @@ class Renderer(object):
     
     log_line = "###########################################################"
     
-    ############################################################################
-    def render_map(self):
+    def setup(self, out_dir):
+        """
+        Defining the log file and the results directory
+        """
         
-        zoom = self.get_zoom_level(bbox, resolution)
+        t_start = datetime.datetime.now()
+        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
+                
+        filepath = os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        )
+        
+        # Check and set log directory
+        log_dir = filepath + "/log/"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)     
+        self.start_logging(t_start, t_form, log_dir + self.type)
+        
+        # Create a directory containing the date and time
+        if (self.out_dir is None):
+            self.out_dir = filepath + "/results/"
+            
+        self.out_dir += self.type + "_" + t_form + "/"
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
+        
+        # Copying the HTML file to view the tiles in the browser for GIMP tiles
+        if(self.type == "tiles_gimp"):           
+            os.system (
+                "cp %s %s" % (
+                    filepath + "/results/index.html",
+                    self.out_dir + "index.html"
+                )
+            )
+            
+        # Setting the directory for background images
+        self.img_dir = filepath + "/img/"
+            
+        return t_start
+
+    def render(self):
+        """
+        Rendering function. Defines the structure for subclasses. 
+        'draw_features' is defined in subclasses with appropriate logic.
+        """
+        
+        t_start = self.setup(self.out_dir)
+        
+        zoom = self.get_zoom_level_for_scale(self.scale)
+        resolution = self.calculate_resolution()
+        
+        self.log_map_data(zoom, resolution)
         
         feature_styles = self.get_feature_styles(zoom)
         
-        self.draw_features(feature_styles, bbox, out_path)
+        out_file = self.out_dir + "map_"
         
+        self.draw_features(feature_styles,
+                           self.bbox,
+                           resolution,
+                           out_file)
+        
+        self.finish(t_start)   
+        
+    ############################################################################        
+    def calculate_resolution(self):
+                
+        bbox_width = abs(self.bbox[0][0] - self.bbox[1][0])
+        bbox_height = abs(self.bbox[0][1] - self.bbox[1][1])
+        
+        map_width = self.get_pixel_size(bbox_width/self.scale, 300)
+        map_height = self.get_pixel_size(bbox_height/self.scale, 300)
+        
+        return [map_width, map_height]
+    
+    def get_pixel_size(self, size_cm, dpi):
+        size_inch = size_cm * 2.54
+        size_pixel = int(round(size_inch * dpi))
+        
+        return size_pixel
+    
+    def get_zoom_level_for_scale(self, scale):        
+        
+        """
+        Returning the appropriate zoom level for a given scale
+        See scales here: http://wiki.openstreetmap.org/wiki/Zoom_levels
+        """
+        zoom = 0
+        
+        if (scale <= 0):
+            print "Invalid scale"
+            exit
+        elif(scale > 0 and scale <= 1000):
+            zoom = 19
+        elif(scale > 0 and scale <= 2000):
+            zoom = 18
+        elif(scale > 0 and scale <= 4000):
+            zoom = 17
+        elif(scale > 0 and scale <= 8000):
+            zoom = 16
+        elif(scale > 0 and scale <= 15000):
+            zoom = 15
+        elif(scale > 0 and scale <= 35000):
+            zoom = 14
+        elif(scale > 0 and scale <= 70000):
+            zoom = 13
+        elif(scale > 0 and scale <= 150000):
+            zoom = 12
+        elif(scale > 0 and scale <= 250000):
+            zoom = 11
+        elif(scale > 0 and scale <= 500000):
+            zoom = 10
+        elif(scale > 0 and scale <= 1000000):
+            zoom = 9
+        elif(scale > 0 and scale <= 2000000):
+            zoom = 8
+        elif(scale > 0 and scale <= 4000000):
+            zoom = 7
+        elif(scale > 0 and scale <= 10000000):
+            zoom = 6
+        elif(scale > 0 and scale <= 15000000):
+            zoom = 5
+        elif(scale > 0 and scale <= 35000000):
+            zoom = 4
+        elif(scale > 0 and scale <= 70000000):
+            zoom = 3
+        elif(scale > 0 and scale <= 150000000):
+            zoom = 2
+        elif(scale > 0 and scale <= 250000000):
+            zoom = 1
+        elif(scale > 0 and scale <= 500000000):
+            zoom = 0
+        
+        return zoom
         
     ############################################################################
     def get_feature_styles(self, zoom_level):
@@ -51,7 +181,7 @@ class Renderer(object):
         curs_zoom = conn_zoom.cursor()
         
         sql = "SELECT * FROM get_tags_and_style(%s, %s)"                            
-        curs_zoom.execute(sql, (self.map_style, zoom_level))
+        curs_zoom.execute(sql, (self.map_style_id, zoom_level))
         
         # Store feature data in an array
         features = []               
@@ -96,7 +226,7 @@ class Renderer(object):
         return features
     
     ############################################################################
-    def get_svg_features(self, bbox, style_feature):
+    def get_svg_features(self, bbox, resolution, style_feature):
         """
         Returning a list of SVG commands to draw a geometry feature
         """
@@ -113,10 +243,10 @@ class Renderer(object):
             
             sql = """
                 SELECT 
-                    get_scaled_svg_line(
+                    gimpmaps_scale_svg_line(
                         way, 
                         %s, %s, %s, %s, 
-                        %s
+                        %s, %s
                     ) AS svg
                 FROM (
                     SELECT
@@ -124,9 +254,10 @@ class Renderer(object):
                     FROM planet_osm_line 
                     WHERE ST_Intersects ( 
                         way, 
-                        get_tile_bbox(
+                        gimpmaps_get_bbox(
                             %s, %s, %s, %s, 
-                            %s, %s
+                            %s, %s,
+                            %s
                         ) 
                     )
                 ) t
@@ -134,10 +265,11 @@ class Renderer(object):
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, (
-                bbox[0], bbox[1], bbox[2], bbox[3],
-                self.tile_size,
-                bbox[0], bbox[1], bbox[2], bbox[3],
-                self.tile_size, line_style[1]
+                bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+                resolution[0], resolution[1],
+                bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+                resolution[0], resolution[1],
+                line_style[1]
                 )
             )               
         elif (style_feature.geom_type == 3):   
@@ -145,10 +277,11 @@ class Renderer(object):
             sql = """
             SELECT * FROM (
                 SELECT
-                    get_scaled_svg_polygon(
+                    gimpmaps_scale_svg_polygon(
                         way,
                         %s, %s, %s, %s,
-                        %s, %s
+                        %s, %s,
+                        %s
                     ) AS svg
                 FROM (
                     SELECT
@@ -156,9 +289,10 @@ class Renderer(object):
                     FROM planet_osm_polygon 
                     WHERE ST_Intersects ( 
                         way, 
-                        get_tile_bbox(
+                        gimpmaps_get_bbox(
                             %s, %s, %s, %s,
-                            %s, %s
+                            %s, %s,
+                            %s
                         ) 
                     )
                 ) t
@@ -171,25 +305,26 @@ class Renderer(object):
             curs_osm.execute(
                 sql, 
                 (
-                    bbox[0], bbox[1], bbox[2], bbox[3],
-                    self.tile_size, line_style[1],
-                    bbox[0], bbox[1], bbox[2], bbox[3],
-                    self.tile_size, line_style[1]
+                bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+                resolution[0], resolution[1],
+                line_style[1],
+                bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+                resolution[0], resolution[1],
+                line_style[1]
                 )
             )    
             
         # Getting vectors and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
-        i = 1
         for row in curs_osm.fetchall():
             
+            # Escape if no SVG geometry is provided               
             if (row[0] == None or row[0] ==''): 
                 continue # Skipping empty rows              
             
             svg_geometries.append(row[0])
-            i += 1
             
-        out = "      " + sql_selection + " (" + str(i) + ")"
+        out = "      " + sql_selection + " (" + str(len(svg_geometries)) + ")"
         logging.info(out)
         print(out)
         
@@ -204,21 +339,32 @@ class Renderer(object):
     
     ############################################################################
     # Logging functions
-    def start_logging(self, t_start, t_form, log_file):
+    def start_logging(self, t_start, t_form, log_dir):
         
         # logging setup
         logging.basicConfig(
             format = '%(message)s',
             # filename = os.getcwd() + "/log/gimp_rendering_" + t_form + ".log",
-            filename = log_file + t_form + ".log",
+            filename = log_dir + "_" + t_form + ".log",
             filemode = 'w',
             level = logging.INFO
         )            
         logging.info(self.log_line)
-        logging.info("Start of Gimp Tile processing at " + str(t_start))
+        logging.info("Start of GIMP processing at " + str(t_start))
         logging.info(self.log_line)
         
         return t_start
+    
+    def log_map_data(self, zoom, resolution):
+        logging.info("scale: " + str(self.scale))
+        logging.info("zoom level: " + str(zoom))
+        logging.info("bbox ul x: " + str(self.bbox[0][0]))
+        logging.info("bbox ul y: " + str(self.bbox[0][1]))
+        logging.info("bbox lr x: " + str(self.bbox[1][0]))
+        logging.info("bbox lr y: " + str(self.bbox[1][1]))
+        logging.info("map width in px: " + str(resolution[0]))
+        logging.info("map height in px: " + str(resolution[1]))
+        logging.info(self.log_line)
     
     def finish_logging(self, t_start):      
         

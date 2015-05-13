@@ -1,12 +1,10 @@
 #! /bin/bash
-gimp -i -b '(python-fu-create-pgsvg-tiles RUN-NONINTERACTIVE
-	12
-	14
+gimp -i -b '(python-fu-create-pgsvg-map RUN-NONINTERACTIVE
 	1275000
 	6131500
 	1289700
 	6118200
-	256
+	10000
 	1
 	TRUE
 )' '(gimp-quit 1)'

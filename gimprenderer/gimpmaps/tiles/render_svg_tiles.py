@@ -17,13 +17,12 @@ tile_size = 256
 map_style = 1
 
 # out_dir = os.getcwd() + "/results/"
-out_dir = "../results/"
 
 tile_renderer = tilerenderersvg.TileRendererSvg(
     bbox, 
     zoom_levels,
     tile_size,
-    out_dir,
+    None,
     map_style
 )
 tile_renderer.render_tiles()

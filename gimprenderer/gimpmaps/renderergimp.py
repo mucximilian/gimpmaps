@@ -3,10 +3,13 @@ Created on May 7, 2015
 
 @author: mucx
 '''
-import os
-import psycopg2
+
+import svgwrite
+
+from gimpfu import *
 
 from gimpmaps.renderer import Renderer
+from svgsketch import hachurizator
 
 class RendererGimp(Renderer):
     '''
@@ -14,164 +17,58 @@ class RendererGimp(Renderer):
     bounding box with a specified styling
     '''
 
-
-    def __init__(self, bbox, map_size, out_dir, create_xcf):
+    def __init__(self, bbox, scale, out_dir, map_style_id, create_xcf):
         '''
         Constructor
         '''
         
         self.bbox = bbox
-        self.map_size = map_size
+        self.scale = scale
         self.out_dir = out_dir
+        self.map_style_id = map_style_id
         self.create_xcf = create_xcf
+        self.type = "map_gimp"
         
-    def setup(self, t_start, t_form):
-        """
-        Setting up the logging environment and the output directory. Also 
-        copies the 'index.html' file to view the tile result in a web browser
-        into the output directory.
-        """
-        
-        log_file = os.getcwd() + "/log/gimp_rendering_"
-        self.start_logging(t_start, t_form, log_file)
-        
-        result_dir = self.out_dir # storing the original directory for later
-        
-        # Create a directory containing the date and time
-        self.out_dir += "tiles_" + t_form + "/"
-        if not os.path.exists(self.out_dir):
-            os.makedirs(self.out_dir)
-            
-        # Copying the HTML file to view the tiles in the browser
-        os.system ("cp %s %s" % (
-                                   result_dir + "index.html",
-                                   self.out_dir + "index.html")
-                   )      
-        
-    def draw_features(self, feature_styles, bbox_tile, out_path):
+    def draw_features(self, feature_styles, bbox, resolution, out_path = ""):
         """
         Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
         """
         
-        conn_osm = psycopg2.connect(
-            'dbname=osm_muc '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
+        self.conn_osm = self.connect_to_osm_db()
        
         # Create GIMP image with layer group
         image = pdb.gimp_image_new(
-           self.tile_size,
-           self.tile_size,
+           resolution[0],
+           resolution[1],
            RGB
         )
+        
+        # Resetting GIMP image context
+        pdb.gimp_context_set_defaults()
+        pdb.gimp_context_push()        
         pdb.gimp_context_set_background((255,255,255,255))
         
         # Creating a 'top' layer group that will contain all the
         # layer groups added in the following steps
-        group_top = pdb.gimp_layer_group_new(image)
-        pdb.gimp_image_insert_layer(image, group_top, None, 0)
+        parent = pdb.gimp_layer_group_new(image)
+        pdb.gimp_image_insert_layer(image, parent, None, 0)
         
         # Create a layer group for the feature type groups 
         group_line = pdb.gimp_layer_group_new(image)
         group_polygon = pdb.gimp_layer_group_new(image)
         
-        pdb.gimp_image_insert_layer(image, group_line, group_top, 0)
-        pdb.gimp_image_insert_layer(image, group_polygon, group_top, 1)
+        pdb.gimp_image_insert_layer(image, group_line, parent, 0)
+        pdb.gimp_image_insert_layer(image, group_polygon, parent, 1)
         
-        layer_pos_group = 0
-        
-        # Resetting GIMP image context
-        pdb.gimp_context_set_defaults()
-        pdb.gimp_context_push()
+        layer_pos_group = 0       
         
         mask = False
         
         # Geometry feature loop END
-        for style_feature in feature_styles:
+        for feature_style in feature_styles:
                         
-            sql_selection = style_feature.get_selection_tags()
-            line_style = style_feature.get_line_style()
-
-            # Query svg tiles from database               
-            curs_osm = conn_osm.cursor()
-            
-            if (style_feature.geom_type == 2):
-                
-                sql = """
-                    SELECT 
-                        ROW_NUMBER() OVER () AS id,
-                        get_scaled_svg_line(
-                            way, %s, %s, %s, %s, %s
-                        ) AS svg
-                    FROM (
-                        SELECT
-                            *
-                        FROM planet_osm_line 
-                        WHERE ST_Intersects ( 
-                            way, 
-                            get_tile_bbox(
-                                %s, %s, %s, %s, %s, %s
-                            ) 
-                        )
-                    ) t
-                    WHERE (""" + sql_selection + ")"   
-                    
-                # Get SVG tile geometry from database
-                curs_osm.execute(sql, (
-                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
-                    self.tile_size,
-                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
-                    self.tile_size,
-                    line_style[1]
-                    )
-                )               
-            elif (style_feature.geom_type == 3):   
-                
-                # TO DO:
-                # tile_size/brush_size instead of 100
-                
-                way_select = "way"
-                if (mask):
-                    way_select = "ST_Union(way)"
-                
-                sql = """
-                SELECT * FROM (
-                    SELECT 
-                        ROW_NUMBER() OVER () AS id,
-                        get_scaled_svg_polygon(
-                            way,
-                            %s, %s, %s, %s,
-                            %s, %s
-                        ) AS svg
-                    FROM (
-                        SELECT
-                            *
-                        FROM planet_osm_polygon 
-                        WHERE ST_Intersects ( 
-                            way, 
-                            get_tile_bbox(
-                                %s, %s, %s, %s,
-                                %s, %s
-                            ) 
-                        )
-                    ) t
-                    WHERE
-                        """ + sql_selection + """
-                ) x 
-                WHERE coalesce(svg, '') <> ''"""                
-                    
-                # Get SVG tile geometry from database
-                curs_osm.execute(sql, (
-                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
-                    self.tile_size, line_style[1],
-                    bbox_tile[0], bbox_tile[1], bbox_tile[2], bbox_tile[3],
-                    self.tile_size,
-                    line_style[1]
-                    )
-                )               
+            sql_selection = feature_style.get_selection_tags()
+            line_style = feature_style.get_line_style()
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -186,60 +83,50 @@ class RendererGimp(Renderer):
             ))
             pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
             pdb.gimp_context_push()
-               
-            # Import SVG data into SVG drawing from database
-            for row in curs_osm.fetchall():
-                # Escape if no SVG geometry is provided
-                # TO DO: Fix in SQL query: no row number even with empty result
-                if (row[1] == None or row[1] ==''):
-                    continue                
-                path = svgwrite.path.Path(row[1]) # M 226 176 l -2 -0
-                path_str = path.tostring() # <path d="M 226 176 l -2 -0" />
-                
-                # print "path string = " + path_str
-        
-                if (not mask and style_feature.geom_type == 3):
-                    
-                    svg_renderer = hachurizator.Hachurizator()
-                    
-                    print path
+            
+            spacing = float(line_style[1]*2) # hachure spacing
+            angle = 30 # hachure angle
 
-                    hachure = svg_renderer.get_svg_hachure(path)
-                    
-                    print 1
-                    
-                    hachure = svgwrite.path.Path(hachure)
-                    
-                    print 2 
-                    
-                    if (hachure.tostring() == None or hachure.tostring() ==''):
-                        continue
-                    
-                    pdb.gimp_vectors_import_from_string(
-                        image, 
-                        hachure.tostring(), 
-                        -1, 1, 1,
-                    )
-                    
-                else:
-                    pdb.gimp_vectors_import_from_string(
-                        image, 
-                        path_str, 
-                        -1, 1, 1,
-                    )
-                
-                # TO DO:
-                # Import from modified string (hachure)
+            # Import SVG data into SVG drawing from database
+            svg_geoms = self.get_svg_features(
+                bbox,
+                resolution, 
+                feature_style
+            )
+            for svg_commands in svg_geoms:
+                         
+                svg_path = svgwrite.path.Path(svg_commands)
+                svg_path_str = svg_path.tostring()
         
-            out = ("      " + sql_selection + " (" + str(len(image.vectors)) + ")")
-            logging.info(out)
-                       
+                # Import vectors to GIMP image
+                if (not mask and feature_style.geom_type == 3):                    
+                    # Creating hachure vectors
+                    # TO DO: Adding outlines
+                    svg_renderer = hachurizator.Hachurizator(spacing, angle)                    
+
+                    hachure = svg_renderer.get_svg_hachure(svg_path)
+                    if (hachure is not None):                   
+                        pdb.gimp_vectors_import_from_string(
+                            image, 
+                            hachure, 
+                            -1, 1, 1,
+                        )
+                    else:
+                        continue
+                else:
+                    # Adding vectors for stroking of lines, outlines/mask
+                    pdb.gimp_vectors_import_from_string(
+                        image, 
+                        svg_path_str, 
+                        -1, 1, 1,
+                    )
+                               
             # Drawing line feature_styles
-            if (style_feature.geom_type == 2):
+            if (feature_style.geom_type == 2):
                 
                 # Creating image layer for geometry feature
                 layer = pdb.gimp_layer_new(
-                    image, self.tile_size, self.tile_size,
+                    image, resolution[0], resolution[1],
                     RGBA_IMAGE,
                     sql_selection,
                     100, NORMAL_MODE
@@ -254,19 +141,20 @@ class RendererGimp(Renderer):
                     pdb.gimp_image_remove_vectors(image, vector)
             
             # Drawing polygon feature_styles
-            elif (style_feature.geom_type == 3):
+            elif (feature_style.geom_type == 3):
                 
                 if (mask):
                 
                     # Creating a layer group for vector and raster layers
                     vector_raster_group = pdb.gimp_layer_group_new(image)
                     pdb.gimp_image_insert_layer(image,
-                                                vector_raster_group, group_polygon,
+                                                vector_raster_group, 
+                                                group_polygon,
                                                 0)
                     
                     # Creating vector layer
                     layer_vector = pdb.gimp_layer_new(
-                        image, self.tile_size, self.tile_size,
+                        image, resolution[0], resolution[1],
                         RGBA_IMAGE,
                         sql_selection,
                         100, NORMAL_MODE
@@ -276,19 +164,20 @@ class RendererGimp(Renderer):
                                             )
                     
                     # Adding background image to use the mask on
-                    mask_image = "img/" + style_feature.get_image_data()[0]
-                    layer_mask_image = pdb.gimp_file_load_layer(image, mask_image)
+                    mask_image = "img/" + feature_style.get_image_data()[0]
+                    layer_mask_image = pdb.gimp_file_load_layer(image, 
+                                                                mask_image)
                     pdb.gimp_image_insert_layer(image, layer_mask_image, 
                                                 vector_raster_group, 1)
                     
+                    # TO DO: Check why duplicate for loop?
                     # Drawing and selecting vectors in GIMP layer
                     for vector in image.vectors:
                         pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
                         
                     # Drawing and selecting vectors in GIMP layer
                     for vector in image.vectors:
-                        pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)
-                        
+                        pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)                        
                         pdb.gimp_image_remove_vectors(image, vector)
                         
                     # Grow and shrink selection to even out small selections
@@ -307,7 +196,7 @@ class RendererGimp(Renderer):
                     
                     # Creating image layer for geometry feature
                     layer = pdb.gimp_layer_new(
-                        image, self.tile_size, self.tile_size,
+                        image, resolution[0], resolution[1],
                         RGBA_IMAGE,
                         sql_selection,
                         100, NORMAL_MODE
@@ -320,25 +209,23 @@ class RendererGimp(Renderer):
                     for vector in image.vectors:
                         pdb.gimp_edit_stroke_vectors(layer, vector)                    
                         pdb.gimp_image_remove_vectors(image, vector)              
-                    
-                
-            curs_osm.close()
             
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
                 
-        # Background image       
+        # Background image        
         background = pdb.gimp_file_load_layer(image, 
-                           "img/texture_blackboard.png")
-        pdb.gimp_image_insert_layer(image, background,
-                                    group_top, 2)            
+            self.img_dir + "texture_blackboard.png"
+        )
+        pdb.gimp_image_insert_layer(image, background, parent, 2)            
+        
         # pdb.gimp_edit_fill(background, BACKGROUND_FILL)
                       
         # Save images as PNG and XCF
         out_path_png = out_path + ".png"
         pdb.file_png_save_defaults(
             image, 
-            group_top,
+            parent,
             out_path_png,
             out_path_png
         )
@@ -349,11 +236,12 @@ class RendererGimp(Renderer):
             pdb.gimp_xcf_save(
                 0,
                 image,
-                group_top,
+                parent,
                 out_path_xcf,
                 out_path_xcf
             )
         
-        conn_osm.close()        
+        self.conn_osm.close()
+            
         pdb.gimp_image_delete(image)
         pdb.gimp_context_pop()   

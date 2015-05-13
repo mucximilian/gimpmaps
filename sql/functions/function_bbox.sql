@@ -1,18 +1,20 @@
-﻿/*DROP FUNCTION get_tile_bbox(
+﻿DROP FUNCTION gimpmaps_get_bbox(
 	ul_x numeric,
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size integer,
+	size_x integer,
+	size_y integer,
 	brush_size integer
-);*/
+);
 
-CREATE OR REPLACE FUNCTION get_tile_bbox(
+CREATE FUNCTION gimpmaps_get_bbox(
 	ul_x numeric,
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size integer,
+	size_x integer,
+	size_y integer,
 	brush_size integer
 )
 RETURNS geometry
@@ -22,22 +24,23 @@ DECLARE
 	bbox geometry;
 BEGIN  
 	bbox = ST_MakeEnvelope( 
-		ul_x - ((lr_x-ul_x)/tile_size)*(brush_size/2),  
-		ul_y + ((ul_y-lr_y)/tile_size)*(brush_size/2),  
-		lr_x + ((lr_x-ul_x)/tile_size)*(brush_size/2),  
-		lr_y - ((ul_y-lr_y)/tile_size)*(brush_size/2),
+		ul_x - ((lr_x-ul_x)/size_x)*(brush_size/2),  
+		ul_y + ((ul_y-lr_y)/size_y)*(brush_size/2),  
+		lr_x + ((lr_x-ul_x)/size_x)*(brush_size/2),  
+		lr_y - ((ul_y-lr_y)/size_y)*(brush_size/2),
 		900913
 	);
 	RETURN bbox;
 END;
 $BODY$
 LANGUAGE plpgsql STABLE;
-ALTER FUNCTION get_tile_bbox(
+ALTER FUNCTION gimpmaps_get_bbox(
 	ul_x numeric,
 	ul_y numeric,
 	lr_x numeric,
 	lr_y numeric,
-	tile_size integer,
+	size_x integer,
+	size_y integer,
 	brush_size integer
 	)
 OWNER TO gis;

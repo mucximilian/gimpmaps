@@ -1,9 +1,9 @@
-﻿/* DROP FUNCTION get_tags_and_style(
+﻿DROP FUNCTION get_tags_and_style(
 	map_style integer,
 	zoom_level integer
-); */
+);
 
-CREATE OR REPLACE FUNCTION get_tags_and_style(
+CREATE FUNCTION get_tags_and_style(
 	map_style integer,
 	zoom_level integer
 )
@@ -66,9 +66,9 @@ LEFT JOIN
 ON (
 	s.feature_style = i.style
 )
-WHERE map_style = map_style
-AND f.zoom_max <= zoom_level
-AND f.zoom_min >= zoom_level
+WHERE s.map_style = $1
+AND f.zoom_max <= $2
+AND f.zoom_min >= $2
 ORDER BY f.geometry, f.z_order ASC
 $$
 LANGUAGE sql STABLE;
