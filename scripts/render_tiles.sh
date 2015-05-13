@@ -1,7 +1,7 @@
 #! /bin/bash
 gimp -i -b '(python-fu-create-pgsvg-tiles RUN-NONINTERACTIVE
 	12
-	14
+	12
 	1275000
 	6131500
 	1289700

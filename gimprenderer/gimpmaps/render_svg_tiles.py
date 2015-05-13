@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from gimpmaps.tiles import tilerenderersvg
+from gimpmaps import tilerenderer
 
 zoom_min = 12
 zoom_max = 12
@@ -18,11 +18,11 @@ map_style = 1
 
 # out_dir = os.getcwd() + "/results/"
 
-tile_renderer = tilerenderersvg.TileRendererSvg(
+tile_renderer = tilerenderer.TileRendererSvg(
     bbox, 
     zoom_levels,
     tile_size,
     None,
     map_style
 )
-tile_renderer.render_tiles()
+tile_renderer.render()

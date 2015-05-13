@@ -4,7 +4,7 @@ Created on May 11, 2015
 @author: mucx
 '''
 
-from gimpmaps import renderergimp
+from gimpmaps import renderer
 
 ul_x = 1275000
 ul_y = 6131500
@@ -17,7 +17,7 @@ create_xcf = False
 
 bbox = [[ul_x, ul_y], [lr_x, lr_y]]
     
-gimp_renderer = renderergimp.RendererGimp(
+gimp_renderer = renderer.RendererGimp(
     bbox, 
     scale,
     None, # out_dir undefined, default used
