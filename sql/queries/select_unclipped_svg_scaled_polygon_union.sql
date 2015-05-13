@@ -1,12 +1,13 @@
 ﻿SELECT 
 	ROW_NUMBER() OVER () AS id,
-	get_scaled_svg_polygon(
+	gimpmaps_scale_svg_polygon(
 		ST_Union(way),
 		1271912.15067,
 		6134530.14206,
 		1281696.09029,
 		6124746.20243,
-		256
+		256, 256,
+		12
 	) AS svg
 FROM (
 	SELECT
@@ -14,12 +15,12 @@ FROM (
 	FROM planet_osm_polygon
 	WHERE ST_Intersects (
 		way, 
-		get_tile_bbox(
+		gimpmaps_get_bbox(
 			1271912.15067,
 			6134530.14206,
 			1281696.09029,
 			6124746.20243,
-			256,
+			256, 256,
 			12
 		) 
 	)
