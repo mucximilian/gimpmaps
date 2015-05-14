@@ -80,10 +80,8 @@ class TileRenderer(object):
                     # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
                     
-                    self.draw_features(feature_styles, 
-                                       tile_bbox, 
-                                       self.tile_size, 
-                                       out_path)               
+                    self.draw(feature_styles, tile_bbox, 
+                              self.tile_size, out_path)               
         
         self.finish(t_start)
     

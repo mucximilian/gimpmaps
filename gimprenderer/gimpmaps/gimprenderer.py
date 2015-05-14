@@ -31,13 +31,10 @@ class RendererGimp(Renderer):
         self.create_xcf = create_xcf
         self.type = "map_gimp"
         
-    def draw_features(self, feature_styles, bbox, resolution, out_path = ""):
-        """
-        Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
-        """
-        
+    def draw(self, feature_styles, bbox, resolution, out_path = ""):
+
         self.conn_osm = self.connect_to_osm_db()
-       
+        
         # Create GIMP image with layer group
         image = pdb.gimp_image_new(
            resolution[0],
@@ -53,20 +50,63 @@ class RendererGimp(Renderer):
         # Creating a 'top' layer group that will contain all the
         # layer groups added in the following steps
         parent = pdb.gimp_layer_group_new(image)
-        pdb.gimp_image_insert_layer(image, parent, None, 0)
+        pdb.gimp_image_insert_layer(image, parent, None, 0)     
         
-        # Create a layer group for the feature type groups 
+        mask = False
+        
+        self.create_image(image, parent, 
+                          feature_styles, bbox, resolution, 
+                          mask)
+        
+        self.conn_osm.close()
+        
+        # Background image        
+        background = pdb.gimp_file_load_layer(image, 
+            self.img_dir + "texture_blackboard.png"
+        )
+        pdb.gimp_image_insert_layer(image, background, parent, 2)            
+        
+        # pdb.gimp_edit_fill(background, BACKGROUND_FILL)
+                      
+        # Save images as PNG and XCF
+        out_path_png = out_path + ".png"
+        pdb.file_png_save_defaults(
+            image, 
+            parent,
+            out_path_png,
+            out_path_png
+        )
+        
+        if (self.create_xcf):
+        
+            out_path_xcf = out_path + ".xcf"   
+            pdb.gimp_xcf_save(
+                0,
+                image,
+                parent,
+                out_path_xcf,
+                out_path_xcf
+            )
+            
+        pdb.gimp_image_delete(image)
+        pdb.gimp_context_pop()
+        
+    def create_image(self, image, parent, 
+                      feature_styles, bbox, resolution, 
+                      mask):
+        """
+        Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
+        """
+        
+        # Creating a layer group for the feature type groups 
         group_line = pdb.gimp_layer_group_new(image)
         group_polygon = pdb.gimp_layer_group_new(image)
         
         pdb.gimp_image_insert_layer(image, group_line, parent, 0)
-        pdb.gimp_image_insert_layer(image, group_polygon, parent, 1)
+        pdb.gimp_image_insert_layer(image, group_polygon, parent, 1)  
         
-        layer_pos_group = 0       
+        layer_pos_group = 0
         
-        mask = False
-        
-        # Geometry feature loop END
         for feature_style in feature_styles:
                         
             sql_selection = feature_style.get_selection_tags()
@@ -214,7 +254,52 @@ class RendererGimp(Renderer):
             
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
-                
+        
+class TileRendererGimp(TileRenderer, RendererGimp):
+    """
+    This subclass of tilerenderersvg implements different 'setup' and
+    'draw_features' methods for the creation of GIMP tiles as PNG and (if 
+    defined in the 'create_xcf' variable) as XCF files as well.
+    """
+    
+    def __init__(self, 
+                 bbox, zoom_levels, tile_size, out_dir, map_style_id, 
+                 create_xcf):
+        super(TileRendererGimp, self).__init__(bbox, zoom_levels, tile_size,
+                                               out_dir, map_style_id, 
+                                               "tiles_gimp")
+
+        self.create_xcf = create_xcf
+        
+    def draw(self, feature_styles, bbox, resolution, out_path = ""):
+
+        self.conn_osm = self.connect_to_osm_db()
+        
+        # Create GIMP image with layer group
+        image = pdb.gimp_image_new(
+           resolution[0],
+           resolution[1],
+           RGB
+        )
+        
+        # Resetting GIMP image context
+        pdb.gimp_context_set_defaults()
+        pdb.gimp_context_push()        
+        pdb.gimp_context_set_background((255,255,255,255))
+        
+        # Creating a 'top' layer group that will contain all the
+        # layer groups added in the following steps
+        parent = pdb.gimp_layer_group_new(image)
+        pdb.gimp_image_insert_layer(image, parent, None, 0)     
+        
+        mask = False
+        
+        self.create_image(image, parent, 
+                          feature_styles, bbox, resolution, 
+                          mask)
+        
+        self.conn_osm.close()
+        
         # Background image        
         background = pdb.gimp_file_load_layer(image, 
             self.img_dir + "texture_blackboard.png"
@@ -242,24 +327,7 @@ class RendererGimp(Renderer):
                 out_path_xcf,
                 out_path_xcf
             )
-        
-        self.conn_osm.close()
             
+                    
         pdb.gimp_image_delete(image)
         pdb.gimp_context_pop()
-        
-class TileRendererGimp(TileRenderer, RendererGimp):
-    """
-    This subclass of tilerenderersvg implements different 'setup' and
-    'draw_features' methods for the creation of GIMP tiles as PNG and (if 
-    defined in the 'create_xcf' variable) as XCF files as well.
-    """
-    
-    def __init__(self, 
-                 bbox, zoom_levels, tile_size, out_dir, map_style_id, 
-                 create_xcf):
-        super(TileRendererGimp, self).__init__(bbox, zoom_levels, tile_size,
-                                               out_dir, map_style_id, 
-                                               "tiles_gimp")
-
-        self.create_xcf = create_xcf

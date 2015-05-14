@@ -25,6 +25,8 @@ class Renderer(object):
     __metaclass__ = ABCMeta
     
     log_line = "###########################################################"
+    img_dir = None
+    conn_osm = None
     
     def setup(self, out_dir):
         """
@@ -67,7 +69,7 @@ class Renderer(object):
             
         # Setting the directory for background images
         self.img_dir = filepath + "/img/"
-            
+                    
         return t_start
 
     def render(self):
@@ -85,9 +87,9 @@ class Renderer(object):
         
         feature_styles = self.get_feature_styles(zoom)
         
-        out_file = self.out_dir + "map_" + self.type
+        out_file = self.out_dir + self.type
         
-        self.draw_features(feature_styles,
+        self.draw(feature_styles,
                            self.bbox,
                            resolution,
                            out_file)
@@ -172,7 +174,7 @@ class Renderer(object):
         """
         
         # Defining database connection for different zoom level styles
-        conn_zoom = psycopg2.connect(
+        conn_zoom_style = psycopg2.connect(
             'dbname=gimp_osm_styles '
             'user=gis '
             'password=gis '
@@ -180,7 +182,7 @@ class Renderer(object):
             'port=5432'
         )
         
-        curs_zoom = conn_zoom.cursor()
+        curs_zoom = conn_zoom_style.cursor()
         
         sql = "SELECT * FROM get_tags_and_style(%s, %s)"                            
         curs_zoom.execute(sql, (self.map_style_id, zoom_level))
@@ -393,12 +395,43 @@ class Renderer(object):
             'host=localhost '
             'port=5432'
         )
-        
-        return conn
+        return conn   
     
+    def create_svg_image(self, feature_styles, bbox, resolution, out_path = ""):
+        """
+        Drawing function for SVG image files
+        """
+        
+        # Create SVG file name with extension
+        dwg = svgwrite.Drawing(
+            out_path + ".svg",
+            height = resolution[0],
+            width = resolution[1]
+        )
+        
+        for feature_style in feature_styles:
+            
+            grp = dwg.g() # Creating SVG Group
+            
+            svg_geoms = self.get_svg_features(
+                bbox,
+                resolution, 
+                feature_style
+            )
+    
+            # Adding vectors to the group
+            for svg_commands in svg_geoms:            
+                grp.add(dwg.path(d=svg_commands))
+                
+            dwg.add(grp)
+         
+        # Saving SVG file    
+        dwg.save()
+        print "creating SVG: " + out_path + ".svg"
+        
 class RendererSvg(Renderer):
     '''
-    classdocs
+    A class to create a single SVG map
     '''
 
     def __init__(self, bbox, scale, out_dir, map_style_id):
@@ -412,33 +445,10 @@ class RendererSvg(Renderer):
         self.map_style_id = map_style_id
         self.type = "map_svg"
         
-    def draw_features(self, feature_styles, bbox, resolution, out_path = ""):
-        """
-        Drawing function for SVG image files   
-        """
+    def draw(self, feature_styles, bbox, resolution, out_file):
         
         self.conn_osm = self.connect_to_osm_db()
         
-        # Create SVG file name with extension
-        dwg = svgwrite.Drawing(
-            out_path + ".svg",
-            height = resolution[0],
-            width = resolution[1]
-        )
+        self.create_svg_image(feature_styles, self.bbox, resolution, out_file)
         
-        for feature_style in feature_styles:
-            
-            svg_geoms = self.get_svg_features(
-                bbox,
-                resolution, 
-                feature_style
-            )
-    
-            # Drawing vectors
-            for svg_commands in svg_geoms:            
-                dwg.add(dwg.path(d=svg_commands))
-            
-        dwg.save()
-        print "creating SVG: " + out_path + ".svg"
-        
-        self.conn_osm.close()
+        self.conn_osm.close()                              
