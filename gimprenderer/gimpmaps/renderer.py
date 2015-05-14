@@ -402,6 +402,8 @@ class Renderer(object):
         Drawing function for SVG image files
         """
         
+        self.conn_osm = self.connect_to_osm_db()
+        
         # Create SVG file name with extension
         dwg = svgwrite.Drawing(
             out_path + ".svg",
@@ -429,6 +431,8 @@ class Renderer(object):
         dwg.save()
         print "creating SVG: " + out_path + ".svg"
         
+        self.conn_osm.close()
+        
 class RendererSvg(Renderer):
     '''
     A class to create a single SVG map
@@ -447,8 +451,4 @@ class RendererSvg(Renderer):
         
     def draw(self, feature_styles, bbox, resolution, out_file):
         
-        self.conn_osm = self.connect_to_osm_db()
-        
         self.create_svg_image(feature_styles, self.bbox, resolution, out_file)
-        
-        self.conn_osm.close()                              

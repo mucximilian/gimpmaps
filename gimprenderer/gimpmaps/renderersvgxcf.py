@@ -5,7 +5,7 @@ Created on May 14, 2015
 '''
 
 from renderer import Renderer
-from gimpfactory import GimpFactory
+from gimphelper import gimprenderer
 
 class RendererSvgXcf(Renderer):
     '''
@@ -32,5 +32,7 @@ class RendererSvgXcf(Renderer):
                            resolution,
                            out_file)
                   
-        gimpfactory = GimpFactory()
-        gimpfactory.create_gimp_image(resolution, out_file)
+        gimp_renderer = gimprenderer.RendererGimp(self.bbox, self.scale,
+                                                  out_file, self.map_style_id,
+                                                  True)
+        gimp_renderer.create_gimp_image(resolution, out_file, True, True)
