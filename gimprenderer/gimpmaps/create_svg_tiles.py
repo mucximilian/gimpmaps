@@ -14,7 +14,7 @@ bbox = [bbox_ul, bbox_lr]
 
 tile_size = 256
 
-map_style = 1
+map_style_id = 1
 
 # out_dir = os.getcwd() + "/results/"
 
@@ -23,6 +23,6 @@ tile_renderer = tilerenderer.TileRendererSvg(
     zoom_levels,
     tile_size,
     None,
-    map_style
+    map_style_id
 )
 tile_renderer.render()

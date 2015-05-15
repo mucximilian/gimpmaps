@@ -56,6 +56,9 @@ def run():
 
 	pdb.gimp_context_push()
 
+	pdb.gimp_paintbrush(layer,100,4,[10, 10, 200, 10],0,0)
+	pdb.gimp_paintbrush(layer,200,4,[10, 10, 200, 10],0,0)
+	
 	# TO DO: emulate brush dynamics?????
 	for vector in vectors:
 		pdb.gimp_edit_stroke_vectors(layer, vector)
@@ -70,7 +73,7 @@ def run():
 	pdb.gimp_edit_fill(background, BACKGROUND_FILL)
 
 	print "saving..."
-	out_dir = os.getcwd()	
+	out_dir = os.getcwd() + "/gimpmaps/results/test"
 	out_time = datetime.datetime.now()
 	date_str = out_time.strftime('%Y%m%d_%H%M')   
 	out_file = "/script_test_" + date_str

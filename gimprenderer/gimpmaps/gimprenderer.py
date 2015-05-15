@@ -8,7 +8,7 @@ import svgwrite
 
 from gimpfu import *
 
-from svgsketch import hachurizator
+from svgsketch import hachurizer
 
 from renderer import Renderer
 from tilerenderer import TileRenderer
@@ -98,7 +98,7 @@ class RendererGimp(Renderer):
                 if (not mask and feature_style.geom_type == 3):                    
                     # Creating hachure vectors
                     # TO DO: Adding outlines
-                    svg_renderer = hachurizator.Hachurizator(spacing, angle)                    
+                    svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
 
                     hachure = svg_renderer.get_svg_hachure(svg_path)
                     if (hachure is not None):                   
@@ -229,6 +229,8 @@ class RendererGimp(Renderer):
         pdb.gimp_context_set_background((255,255,255,255))
         
     def set_context(self, line_style):
+        
+        pdb.gimp_context_set_paint_method('gimp-paintbrush')
         pdb.gimp_context_pop()
         pdb.gimp_context_set_brush(line_style[0])
         pdb.gimp_context_set_brush_size(line_style[1])

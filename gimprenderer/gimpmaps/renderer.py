@@ -15,7 +15,7 @@ import svgwrite
 from abc import ABCMeta
 
 from gimpmaps import styles
-from svgsketch import hachurizator
+from svgsketch import hachurizer
 
 class Renderer(object):
     '''

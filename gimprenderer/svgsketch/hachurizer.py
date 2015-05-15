@@ -4,7 +4,6 @@ Created on Apr 28, 2015
 @author: mucx
 '''
 
-from shapely.geometry import Point
 from shapely.geometry import LineString
 from shapely.geometry import MultiLineString
 from shapely.geometry import Polygon
@@ -12,9 +11,9 @@ from shapely.geometry import MultiPolygon
 
 import shapely
 import math
-import svgwrite
+from shapely.ops import linemerge, cascaded_union, unary_union
 
-class Hachurizator(object):
+class Hachurizer(object):
     '''
     classdocs
     '''
@@ -45,7 +44,8 @@ class Hachurizator(object):
             print "No hachures created for polygon with given parameters"
             return None
         else:
-            hachure = hachure_lines.svg()  
+            lines = MultiLineString(hachure_lines)
+            hachure = lines.svg()  
             return hachure
     
     def multipolygon_from_svgpath(self, path):
