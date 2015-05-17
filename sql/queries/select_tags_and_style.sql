@@ -1,12 +1,12 @@
 ﻿SELECT
 	s.id,
-	f.geometry,
+	f.feature_type,
 	f.tags,
 	f.z_order,
 	b.brush,
-	fs.brush_size,
+	sl.brush_size,
 	c.color,
-	fs.opacity,
+	sl.opacity,
 	d.dynamics,
 	i.image,
 	i.opacity AS opacity_image 
@@ -18,24 +18,24 @@ ON (
 	s.feature = f.id
 )
 LEFT JOIN
-	feature_style fs
+	style_line sl
 ON (
-	s.feature_style = fs.id
+	s.feature_style = sl.id
 )
 LEFT JOIN	
 	brush b 
 ON (
-	fs.brush = b.id
+	sl.brush = b.id
 )
 LEFT JOIN	
 	color c
 ON (
-	fs.color = c.id
+	sl.color = c.id
 )
 LEFT JOIN	
 	dynamics d 
 ON (
-	fs.dynamics = d.id
+	sl.dynamics = d.id
 )
 LEFT JOIN
 	image i

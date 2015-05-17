@@ -1,0 +1,1143 @@
+{
+    "zoom_levels": {
+        "0": {
+            "features": [
+                {
+                    "lines": []
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "1": {
+            "features": [
+                {
+                    "lines": []
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "2": {
+            "features": [
+                {
+                    "lines": []
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "3": {
+            "features": [
+                {
+                    "lines": []
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "4": {
+            "features": [
+                {
+                    "lines": []
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "5": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "6": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "7": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "8": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "9": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": []
+                }
+            ]
+        }, 
+        "10": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "11": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "12": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "13": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "14": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "15": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "16": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='village_green'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "17": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='riverbank'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "18": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='riverbank'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "19": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='riverbank'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }, 
+        "20": {
+            "features": [
+                {
+                    "lines": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 10
+                            }, 
+                            "osm_tags": [
+                                "highway='motorway' OR highway='motorway_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='trunk' OR highway='trunk_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 8
+                            }, 
+                            "osm_tags": [
+                                "highway='primary' OR highway='primary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "highway='secondary' OR highway='secondary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 4
+                            }, 
+                            "osm_tags": [
+                                "highway='tertiary' OR highway='tertiary_link'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='river'"
+                            ]
+                        }
+                    ]
+                }, 
+                {
+                    "polygons": [
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "building='yes'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "landuse='forest' OR leisure='park'"
+                            ]
+                        }, 
+                        {
+                            "stroke_line": {
+                                "brush": "Oils 02", 
+                                "brush_size": 6
+                            }, 
+                            "osm_tags": [
+                                "waterway='riverbank'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }, 
+    "type": "Hachure map", 
+    "name": "Chalk map"
+}
