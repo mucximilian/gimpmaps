@@ -11,15 +11,16 @@ import datetime
 import os
 import inspect
 import svgwrite
+import json
 
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 from gimpmaps import styles
-from svgsketch import hachurizer
 
 class Renderer(object):
     '''
-    An abstract metaclass that handles the map creation
+    An abstract metaclass that provides the basic functionality for map and tile 
+    creation.
     '''
     
     __metaclass__ = ABCMeta
@@ -28,33 +29,29 @@ class Renderer(object):
     img_dir = None
     conn_osm = None
     
-    def setup(self, out_dir):
+    @abstractmethod
+    def __init__(self, config_file):
+        self.read_file_config(config_file)
+    
+    def setup(self):
         """
         Defining the log file and the results directory
         """
         
-        t_start = datetime.datetime.now()
-        t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-                
-        filepath = os.path.dirname(
-            os.path.abspath(
-                inspect.getfile(
-                    inspect.currentframe()
-                )
-            )
-        )
+        self.t_start = datetime.datetime.now()
+        self.t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
         # Check and set log directory
-        log_dir = filepath + "/log/"
+        log_dir = self.filepath + "/log/"
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)     
-        self.start_logging(t_start, t_form, log_dir + self.type)
+        self.start_logging(self.t_start, self.t_form, log_dir + self.type)
         
         # Create a directory containing the date and time
         if (self.out_dir is None):
-            self.out_dir = filepath + "/results/"
+            self.out_dir = self.filepath + "/results/"
             
-        self.out_dir += self.type + "_" + t_form + "/"
+        self.out_dir += self.type + "_" + self.t_form + "/"
         if not os.path.exists(self.out_dir):
             os.makedirs(self.out_dir)
         
@@ -62,15 +59,13 @@ class Renderer(object):
         if(self.type == "tiles_gimp"):           
             os.system (
                 "cp %s %s" % (
-                    filepath + "/results/index.html",
+                    self.filepath + "/results/index.html",
                     self.out_dir + "index.html"
                 )
             )
             
         # Setting the directory for background images
-        self.img_dir = filepath + "/img/"
-                    
-        return t_start
+        self.img_dir = self.filepath + "/img/"
 
     def render(self):
         """
@@ -78,23 +73,23 @@ class Renderer(object):
         'draw_features' is defined in subclasses with appropriate logic.
         """
         
-        t_start = self.setup(self.out_dir)
+        self.setup()
         
         zoom = self.get_zoom_level_for_scale(self.scale)
         resolution = self.calculate_resolution()
         
         self.log_map_data(zoom, resolution)
         
-        feature_styles = self.get_feature_styles(zoom)
-        
         out_file = self.out_dir + self.type
         
-        self.draw(feature_styles,
-                           self.bbox,
-                           resolution,
-                           out_file)
+        self.draw(
+            zoom,
+            self.bbox,
+            resolution,
+            out_file
+        )
         
-        self.finish(t_start)   
+        self.finish()   
         
     ############################################################################        
     def calculate_resolution(self):
@@ -166,68 +161,147 @@ class Renderer(object):
             zoom = 0
         
         return zoom
+    
+    def read_file_config(self, config_file):
+        """
+        Reading the provided config file and storing the dictionary with the
+        object.
+        """
+        
+        self.filepath = self.get_filepath() + "/conf/"
+    
+        read_file = open(self.filepath + config_file, "r")
+        json_config = json.load(read_file)
+        
+        self.config = json_config
+        
+    def read_file_style(self):
+        """
+        Reading the provided path of the style file. If "None", read file from
+        default style directory of the project.
+        """
+        
+        style_file = None
+        
+        if (self.config["style"]["style_path"] is None):        
+            style_file += self.filepath + "/styles/"            
+        else:
+            style_file += self.config["style"]["style_path"]
+
+        style_file += self.config["style"]["style_name"]
+        style_file += "/style.json"
+        
+        read_file = open(style_file, "r")        
+        json_style = json.load(read_file)
+        
+        return json_style
         
     ############################################################################
     def get_feature_styles(self, zoom_level):
         """
-        Get style and tag info of all feature of a type for a zoom level.
+        Getting feature styles and tags of all geometry types for a zoom level.
+        """
+    
+        features = {}
+    
+        # Reading the style file from the config
+        style_config = self.read_style_file()    
+        
+        zoom_level = style_config["zoom_levels"][str(zoom_level)]
+        features_lines = zoom_level["features"]["lines"]
+        
+        lines = []
+        for line in features_lines:
+            style_object = styles.StyleObjectLine(
+                2,
+                line["osm_tags"],
+                line["z_order"],
+                line["stroke_line"]["brush"],
+                line["stroke_line"]["brush_size"],
+                line["stroke_line"]["color"],
+                line["stroke_line"]["dynamics"]
+            )
+          
+            lines.append(style_object)
+
+            logging.info(style_object.string_style())
+            
+        features["lines"] = lines
+                
+        features_polygons = zoom_level["features"]["polygons"]
+        
+        polygons = []
+        for polygon in features_polygons:
+            style_object = styles.StyleObjectPolygon(
+                3,
+                polygon["osm_tags"],
+                polygon["z_order"],
+                polygon["stroke_line"]["brush"],
+                polygon["stroke_line"]["brush_size"],
+                polygon["stroke_line"]["color"],
+                polygon["stroke_line"]["dynamics"],
+                polygon["stroke_hachure"]["brush"],
+                polygon["stroke_hachure"]["brush_size"],
+                polygon["stroke_hachure"]["color"],
+                polygon["stroke_hachure"]["dynamics"],
+                polygon["image"],
+            )
+          
+            polygons.append(style_object)
+
+            logging.info(style_object.string_style())
+            
+        features["polygons"] = polygons
+
+        return features
+    
+    ############################################################################
+    def get_text_styles(self, zoom_level):
+        """
+        Getting text styles and tags of all geometry types type for a zoom 
+        level.
+        """
+    
+        features = []
+        
+        # Reading the style file from the config
+        style_config = self.read_style_file()    
+        
+        zoom_level = style_config["zoom_levels"][str(zoom_level)]
+        features_polygons = zoom_level["text"]["polygons"]
+        
+        for polygon in features_polygons:
+            style_object = styles.StyleObjectText(
+                3,
+                polygon["osm_tags"],
+                polygon["z_order"],
+                polygon["stroke_line"]["brush"],
+                polygon["stroke_line"]["brush_size"],
+                polygon["stroke_line"]["color"],
+                polygon["stroke_line"]["dynamics"],
+                polygon["font"],
+                polygon["font_size"],
+                polygon["color"]
+            )
+          
+            features.append(style_object)
+
+            logging.info(style_object.string_style())
+
+        return features
+    
+    ############################################################################
+    def get_background(self, zoom_level):
+        """
+        Getting the background image for a zoom level.
         """
         
-        # Defining database connection for different zoom level styles
-        conn_zoom_style = psycopg2.connect(
-            'dbname=gimp_osm_styles '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
+        style_config = self.read_style_file()    
         
-        curs_zoom = conn_zoom_style.cursor()
-        
-        sql = "SELECT * FROM get_tags_and_style(%s, %s)"                            
-        curs_zoom.execute(sql, (self.map_style_id, zoom_level))
-        
-        # Store feature data in an array
-        features = []               
-        for row in curs_zoom.fetchall():
-            
-            if (row[1] == 2):
-                
-                style_object = styles.StyleObjectLine(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8]  # dynamics
-                )
-                features.append(style_object)
+        zoom_level = style_config["zoom_levels"][str(zoom_level)]
+        background = zoom_level["background"]
 
-                logging.info(style_object.string_style())
-                
-            elif (row[1] == 3):
-                
-                style_object = styles.StyleObjectPolygon(
-                    row[1], # geometry type
-                    row[2], # tags
-                    row[3], # z order
-                    row[4], # brush
-                    row[5], # brush_size
-                    row[6], # color
-                    row[7], # opacity_brush
-                    row[8], # dynamics
-                    row[9], # image
-                    row[10] # image opacity
-                )
-                features.append(style_object)
-                
-                logging.info(style_object.string_style())
-            
-        curs_zoom.close()
-        
-        return features
+        return background
     
     ############################################################################
     def get_svg_features(self, bbox, resolution, style_feature):
@@ -433,6 +507,16 @@ class Renderer(object):
         
         self.conn_osm.close()
         
+    def get_filepath(self):
+        filepath = os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        )
+        return filepath
+        
 class RendererSvg(Renderer):
     '''
     A class to create a single SVG map
@@ -449,6 +533,8 @@ class RendererSvg(Renderer):
         self.map_style_id = map_style_id
         self.type = "map_svg"
         
-    def draw(self, feature_styles, bbox, resolution, out_file):
+    def draw(self, zoom, bbox, resolution, out_file):
+        
+        feature_styles = self.get_feature_styles(zoom)
         
         self.create_svg_image(feature_styles, self.bbox, resolution, out_file)

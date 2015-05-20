@@ -19,7 +19,7 @@ class RendererGimp(Renderer):
     bounding box with a specified styling
     '''
 
-    def __init__(self, bbox, scale, out_dir, map_style_id, create_xcf):
+    def __init__(self, bbox, scale, out_dir, map_style_file, create_xcf):
         '''
         Constructor
         '''
@@ -27,11 +27,15 @@ class RendererGimp(Renderer):
         self.bbox = bbox
         self.scale = scale
         self.out_dir = out_dir
-        self.map_style_id = map_style_id
+        self.map_style_file = map_style_file
         self.create_xcf = create_xcf
         self.type = "map_gimp"
         
-    def draw(self, feature_styles, bbox, resolution, out_path = ""):   
+    def draw(self, zoom, bbox, resolution, out_path = ""):
+        
+        feature_styles = self.get_feature_styles(zoom)
+        text_styles = self.get_text_styles(zoom)
+        background = self.get_background(zoom) 
         
         # Create GIMP image with layer group
         image = self.create_image(resolution)
@@ -49,7 +53,7 @@ class RendererGimp(Renderer):
         self.draw_text()
         # Background image
         # TO DO: Get background from style database
-        self.create_layer_image(image, parent, "texture_blackboard.png", 2)           
+        self.create_layer_image(image, parent, background, 2)           
                       
         # Save images as PNG and XCF
         self.save_image(out_path, image, parent, True, self.create_xcf)
@@ -70,9 +74,50 @@ class RendererGimp(Renderer):
         group_polygon = self.create_layer_group(image, parent, 1)
         
         layer_pos_group = 0
-        
-        for feature_style in feature_styles:
+
+        for feature_style in feature_styles["lines"]:
                         
+            sql_selection = feature_style.get_selection_tags()
+            line_style = feature_style.get_line_style()
+            
+            # Style settings
+            # TO DO: emulate brush dynamics?????
+            self.set_context(line_style)
+
+            # Import SVG data into SVG drawing from database
+            svg_geoms = self.get_svg_features(
+                bbox,
+                resolution, 
+                feature_style
+            )
+            
+            for svg_commands in svg_geoms:
+                         
+                svg_path = svgwrite.path.Path(svg_commands)
+                svg_path_str = svg_path.tostring()
+                
+                # Adding vectors for stroking of lines, outlines/mask
+                pdb.gimp_vectors_import_from_string(
+                    image, 
+                    svg_path_str, 
+                    -1, 1, 1,
+                )
+        
+            # Creating image layer for geometry feature
+            layer = self.create_layer(image, resolution, 
+                                      sql_selection, group_line, 
+                                      layer_pos_group)  
+            
+            # Drawing vectors into GIMP layer
+            self.draw_vectors(image, layer)             
+            
+            # Incrementing current layer position
+            layer_pos_group =+ layer_pos_group + 1
+            
+        ########################################################################
+        # POLYGONS
+        for feature_style in feature_styles["polygons"]:
+            
             sql_selection = feature_style.get_selection_tags()
             line_style = feature_style.get_line_style()
             
@@ -90,12 +135,12 @@ class RendererGimp(Renderer):
                 feature_style
             )
             for svg_commands in svg_geoms:
-                         
+                
                 svg_path = svgwrite.path.Path(svg_commands)
                 svg_path_str = svg_path.tostring()
         
                 # Import vectors to GIMP image
-                if (not mask and feature_style.geom_type == 3):                    
+                if (not mask):                    
                     # Creating hachure vectors
                     # TO DO: Adding outlines
                     svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
@@ -116,65 +161,53 @@ class RendererGimp(Renderer):
                         svg_path_str, 
                         -1, 1, 1,
                     )
-                               
-            # Drawing line feature_styles
-            if (feature_style.geom_type == 2):
+                    
+                # Drawing polygon feature_styles
+                
+            if (mask):
+            
+                # Creating a layer group for vector and raster layers
+                vector_raster_group = self.create_layer_group(image, 
+                                                              group_polygon,
+                                                              0)
+                
+                # Creating vector layer
+                layer_vector = self.create_layer(self, image, resolution, 
+                                                 sql_selection,
+                                                 vector_raster_group, 0) 
+                
+                # Adding background image to use the mask on
+                mask_image = "img/" + feature_style.get_image_data()[0]
+                layer_mask_image = pdb.gimp_file_load_layer(image, 
+                                                            mask_image)
+                pdb.gimp_image_insert_layer(image, layer_mask_image, 
+                                            vector_raster_group, 1)
+                
+                # TO DO: Check why duplicate for loop?
+                # Drawing and selecting vectors in GIMP layer
+                for vector in image.vectors:
+                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
+                    
+                # Drawing and selecting vectors in GIMP layer
+                for vector in image.vectors:
+                    pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)                        
+                    pdb.gimp_image_remove_vectors(image, vector)
+                
+                # Apply mask of collected vectors on background image
+                mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
+                pdb.gimp_layer_add_mask(layer_mask_image, mask)
+                
+                pdb.gimp_selection_clear(image)
+                
+            else :
                 
                 # Creating image layer for geometry feature
-                layer = self.create_layer(image, resolution, 
-                                          sql_selection, group_line, 
-                                          layer_pos_group)  
+                layer = self.create_layer(image, resolution, sql_selection,
+                                          group_line, layer_pos_group) 
                 
                 # Drawing vectors into GIMP layer
                 self.draw_vectors(image, layer)
-            
-            # Drawing polygon feature_styles
-            elif (feature_style.geom_type == 3):
                 
-                if (mask):
-                
-                    # Creating a layer group for vector and raster layers
-                    vector_raster_group = self.create_layer_group(image, 
-                                                                  group_polygon,
-                                                                  0)
-                    
-                    # Creating vector layer
-                    layer_vector = self.create_layer(self, image, resolution, 
-                                                     sql_selection,
-                                                     vector_raster_group, 0) 
-                    
-                    # Adding background image to use the mask on
-                    mask_image = "img/" + feature_style.get_image_data()[0]
-                    layer_mask_image = pdb.gimp_file_load_layer(image, 
-                                                                mask_image)
-                    pdb.gimp_image_insert_layer(image, layer_mask_image, 
-                                                vector_raster_group, 1)
-                    
-                    # TO DO: Check why duplicate for loop?
-                    # Drawing and selecting vectors in GIMP layer
-                    for vector in image.vectors:
-                        pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
-                        
-                    # Drawing and selecting vectors in GIMP layer
-                    for vector in image.vectors:
-                        pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)                        
-                        pdb.gimp_image_remove_vectors(image, vector)
-                    
-                    # Apply mask of collected vectors on background image
-                    mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
-                    pdb.gimp_layer_add_mask(layer_mask_image, mask)
-                    
-                    pdb.gimp_selection_clear(image)
-                    
-                else :
-                    
-                    # Creating image layer for geometry feature
-                    layer = self.create_layer(image, resolution, sql_selection,
-                                              group_line, layer_pos_group) 
-                    
-                    # Drawing vectors into GIMP layer
-                    self.draw_vectors(image, layer)             
-            
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
             
@@ -234,13 +267,13 @@ class RendererGimp(Renderer):
         pdb.gimp_context_pop()
         pdb.gimp_context_set_brush(line_style[0])
         pdb.gimp_context_set_brush_size(line_style[1])
-        pdb.gimp_context_set_dynamics(line_style[4])
+        pdb.gimp_context_set_dynamics(line_style[3])
         pdb.gimp_context_set_foreground((
             line_style[2][0],
             line_style[2][1],
             line_style[2][2]                
         ))
-        pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
+        # pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
         pdb.gimp_context_push()
         
     def draw_vectors(self, image, layer):
@@ -293,7 +326,7 @@ class RendererGimp(Renderer):
         
 class TileRendererGimp(TileRenderer, RendererGimp):
     """
-    This subclass of tilerenderersvg implements different 'setup' and
+    This subclass of TileRenderer implements different 'setup' and
     'draw_features' methods for the creation of GIMP tiles as PNG and (if 
     defined in the 'create_xcf' variable) as XCF files as well.
     """

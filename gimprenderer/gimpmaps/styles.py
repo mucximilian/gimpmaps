@@ -1,8 +1,14 @@
-# -*- coding: utf-8 -*-
+'''
+Created on May 03, 2015
+
+@author: mucx
+'''
 
 class StyleObject(object):
     """
-    Represents geometry features with assigned style
+    Represents geometry features with assigned style.
+    
+    TO DO: should be abstract!
     """
     
     def __init__(self, geom_type, tags, z_order):
@@ -30,7 +36,12 @@ class StyleObject(object):
             geometry_type_name = "polygon"
 
         return geometry_type_name
-        
+    
+    def string_color(self, color):
+        out = (
+               ",".join(str(x) for x in color)
+        )
+        return out
 
 class StyleObjectLine(StyleObject):
     """
@@ -40,13 +51,12 @@ class StyleObjectLine(StyleObject):
     def __init__(
         self, 
         geom_type, tags, z_order,
-        brush, brush_size, color, opacity_brush, dynamics):
+        brush, brush_size, color, dynamics):
             
         StyleObject.__init__(self, geom_type, tags, z_order)
         self.brush = brush
         self.brush_size = brush_size
         self.color = color
-        self.opacity_brush = opacity_brush
         self.dynamics = dynamics
         
     def get_z_order(self):
@@ -61,7 +71,6 @@ class StyleObjectLine(StyleObject):
             self.brush,
             self.brush_size,
             self.color,
-            self.opacity_brush,
             self.dynamics
         ]
         
@@ -87,47 +96,111 @@ class StyleObjectLine(StyleObject):
                 " (" + str(self.geom_type) + ")\n" +
             "z-order: " + str(self.z_order) + "\n" +
             "Brush style: " + self.brush + "(" + str(self.brush_size) + ")\n" +
-            "Brush color: " + self.string_color() + "\n" +
+            "Brush color: " + self.string_color(self.color) + "\n" +
             "Brush dynamics: " + self.dynamics + "\n"
         )
         return out
-        
-    def string_color(self):
-        out = (
-               ",".join(str(x) for x in self.color) + "," +
-               str(self.opacity_brush)
-        )
-        return out
     
-class StyleObjectPolygon(StyleObjectLine):
+class StyleObjectPolygon(StyleObject):
     """
     Specification of the StyleObject class for line features
     """
     def __init__(
         self, 
         geom_type, tags, z_order,
-        brush, brush_size, color, opacity_brush, dynamics,
-        image, opacity_image):
+        brush, brush_size, color, dynamics,
+        brush_hachure, brush_hachure_size, color_hachure, dynamics_hachure,
+        image):
             
         StyleObject.__init__(self, geom_type, tags, z_order)
         self.brush = brush
         self.brush_size = brush_size
         self.color = color
-        self.opacity_brush = opacity_brush
         self.dynamics = dynamics
+        self.brush_hachure = brush_hachure
+        self.brush_hachure_size = brush_hachure_size
+        self.color_hachure = color_hachure
+        self.dynamics_hachure = dynamics_hachure
         self.image = image
-        self.opacity_image = opacity_image
         
     def string_style(self):
-        
-        out = StyleObjectLine.string_style(self)
-        try:
-            out += (
-                "Image: " + self.image + " (" + str(self.opacity_image) + ")\n"
-            )        
-        except TypeError:
-            out = "No image or image type error"
+        """
+        Prints information about the style object
+        """
+              
+        out = (
+            "OSM feature(s): " + ", ".join(self.tags) +
+                " (" + str(self.geom_type) + ")\n" +
+            "z-order: " + str(self.z_order) + "\n" +
+            "Brush style: " + self.brush + "(" + str(self.brush_size) + ")\n" +
+            "Brush color: " + self.string_color(self.color) + "\n" +
+            "Brush dynamics: " + self.dynamics + "\n"
+            "Hachure style: " + self.brush_hachure + "(" + str(self.brush_hachure_size) + ")\n" +
+            "Hachure color: " + self.string_color(self.color_hachure) + "\n" +
+            "Hachure dynamics: " + self.dynamics_hachure + "\n" +
+            "Image: " + self.image + "\n"
+        )
         return out
     
+    def get_line_style(self):
+        """
+        Returns line style parameters
+        """
+        
+        return [
+            self.brush,
+            self.brush_size,
+            self.color,
+            self.dynamics
+        ]
+        
+    def get_hachure_style(self):
+        """
+        Returns line style parameters
+        """
+        
+        return [
+            self.brush_hachure,
+            self.brush_hachure_size,
+            self.hachure_color,
+            self.hachure_dynamics
+        ]
+    
     def get_image_data(self):
-        return [self.image, self.opacity_image]
+        return self.image
+    
+class StyleObjectText(StyleObject):
+    """
+    Specification of the StyleObject class for line features
+    """
+    def __init__(
+        self, 
+        geom_type, tags, z_order,
+        brush, brush_size, color, dynamics,
+        font, font_size, font_color):
+            
+        StyleObject.__init__(self, geom_type, tags, z_order)
+        self.brush = brush
+        self.brush_size = brush_size
+        self.color = color
+        self.dynamics = dynamics
+        self.font = font
+        self.font_size = font_size
+        self.font_color = font_color
+        
+    def string_style(self):
+        """
+        Prints information about the style object
+        """
+              
+        out = (
+            "OSM feature(s): " + ", ".join(self.tags) +
+                " (" + str(self.geom_type) + ")\n" +
+            "z-order: " + str(self.z_order) + "\n" +
+            "Brush style: " + self.brush + "(" + str(self.brush_size) + ")\n" +
+            "Brush color: " + self.string_color(self.color) + "\n" +
+            "Brush dynamics: " + self.dynamics + "\n"
+            "Font style: " + self.font + "(" + str(self.font_size) + ")\n" +
+            "Font color: " + self.string_color(self.font_color) + "\n"
+        )
+        return out

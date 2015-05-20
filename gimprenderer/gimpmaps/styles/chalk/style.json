@@ -1,0 +1,2605 @@
+{
+    "zoom_levels": {
+        "0": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "1": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "2": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "3": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "4": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "5": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }
+                ], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "6": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }
+                ], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "7": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }
+                ], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "8": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }
+                ], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "9": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }
+                ], 
+                "polygons": []
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "10": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "11": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "12": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "13": {
+            "text": {
+                "polygons": []
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "14": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "15": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "16": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "17": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='riverbank'"
+                        ], 
+                        "image": "hachure_blue_050708.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "18": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='riverbank'"
+                        ], 
+                        "image": "hachure_blue_050708.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "19": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='riverbank'"
+                        ], 
+                        "image": "hachure_blue_050708.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }, 
+        "20": {
+            "text": {
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "admin_level='9' OR admin_level='10'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "tourism='attraction'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "font_size": 10, 
+                        "osm_tags": [
+                            "building='cathedral'"
+                        ], 
+                        "color": [
+                            255, 
+                            255, 
+                            255
+                        ], 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 2
+                        }, 
+                        "font": "Arial"
+                    }
+                ]
+            }, 
+            "features": {
+                "lines": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                255, 
+                                180, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 10
+                        }, 
+                        "osm_tags": [
+                            "highway='motorway' OR highway='motorway_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='trunk' OR highway='trunk_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 8
+                        }, 
+                        "osm_tags": [
+                            "highway='primary' OR highway='primary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "highway='secondary' OR highway='secondary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 5, 
+                        "stroke_line": {
+                            "color": [
+                                240, 
+                                240, 
+                                240
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }, 
+                        "osm_tags": [
+                            "highway='tertiary' OR highway='tertiary_link'"
+                        ]
+                    }, 
+                    {
+                        "z_order": 6, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='river'"
+                        ]
+                    }
+                ], 
+                "polygons": [
+                    {
+                        "z_order": 1, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "building='yes'"
+                        ], 
+                        "image": "hachure_grey_05.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                100, 
+                                100
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }, 
+                    {
+                        "z_order": 2, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='village_green'"
+                        ], 
+                        "image": "hachure_green_060705.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 3, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "landuse='forest' OR leisure='park'"
+                        ], 
+                        "image": "hachure_green_040504.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                140, 
+                                60
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 4
+                        }
+                    }, 
+                    {
+                        "z_order": 4, 
+                        "stroke_line": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }, 
+                        "osm_tags": [
+                            "waterway='riverbank'"
+                        ], 
+                        "image": "hachure_blue_050708.png", 
+                        "stroke_hachure": {
+                            "color": [
+                                100, 
+                                160, 
+                                255
+                            ], 
+                            "dynamics": "Det3", 
+                            "brush": "Oils 02", 
+                            "brush_size": 6
+                        }
+                    }
+                ]
+            }, 
+            "background": "texture_blackboard.png"
+        }
+    }, 
+    "name": "Test Tiles"
+}
