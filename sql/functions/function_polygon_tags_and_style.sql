@@ -1,17 +1,22 @@
-﻿CREATE OR REPLACE FUNCTION get_polygon_tags_and_style(IN map_style integer, IN zoom_level integer)
-RETURNS TABLE(
-id integer, 
-tags text[], 
-brush character varying, 
-brush_size integer, 
-color integer[], 
-dynamics character varying, 
-brush_hachure character varying, 
-brush_hachure_size integer, 
-color_hachure integer[], 
-dynamics_hachure character varying,
-image character varying,
-z_order integer) AS
+﻿DROP FUNCTION get_polygon_tags_and_style(integer, integer);
+
+CREATE OR REPLACE FUNCTION get_polygon_tags_and_style(IN map_style integer, IN zoom_level integer)
+  RETURNS TABLE(
+  id integer, 
+  tags text[], 
+  brush character varying, 
+  brush_size integer, 
+  color integer[], 
+  dynamics character varying, 
+  brush_hachure character varying, 
+  brush_hachure_size integer, 
+  color_hachure integer[], 
+  dynamics_hachure character varying,
+  hachure_spacing integer,
+  hachure_angle integer,
+  image character varying, 
+  z_order integer
+  ) AS
 $BODY$
 SELECT
 	mfp.id,
@@ -24,6 +29,8 @@ SELECT
 	sh.brush_size,
 	shc.color,
 	shd.dynamics,
+	mfp.hachure_spacing,
+	mfp.hachure_angle,
 	si.image,
 	of.z_order
 FROM

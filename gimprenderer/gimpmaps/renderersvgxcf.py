@@ -4,35 +4,34 @@ Created on May 14, 2015
 @author: mucx
 '''
 
-from renderer import Renderer
-from gimphelper import gimprenderer
+from maprenderer import MapRenderer
+from gimpmodule import GimpImageManager
 
-class RendererSvgXcf(Renderer):
+class MapRendererSvgXcf(MapRenderer):
     '''
-    A class to create a single SVG map. This class is kept separate from the 
-    other SVG Render classes as it usses the GIMP-Fu module which can only be 
-    accessed from a GIMP session.
+    A renderer to create a single SVG map plus a GIMP image with the 
+    corresponding dimensions. 
+    This class is kept separate from the MapRenderer classes as it usses the
+    GIMP-Fu module which can only be accessed from a GIMP session.
     '''
 
-    def __init__(self, bbox, scale, out_dir, map_style_id, create_xcf):
+    def __init__(self, config_file):
         '''
         Constructor
         '''
         
-        self.bbox = bbox
-        self.scale = scale
-        self.out_dir = out_dir
-        self.map_style_id = map_style_id
+        super(MapRendererSvgXcf, self).__init__(config_file)
+        
         self.type = "map_svg"
         
-    def draw(self, feature_styles, bbox, resolution, out_file):
+    def draw(self, zoom, bbox, resolution, out_file):
+        
+        feature_styles = self.get_feature_styles(zoom)
         
         self.create_svg_image(feature_styles,
                            self.bbox,
                            resolution,
                            out_file)
                   
-        gimp_renderer = gimprenderer.RendererGimp(self.bbox, self.scale,
-                                                  out_file, self.map_style_id,
-                                                  True)
-        gimp_renderer.create_gimp_image(resolution, out_file, True, True)
+        gimp = GimpImageManager()
+        gimp.create_gimp_image(resolution, out_file, True, True)

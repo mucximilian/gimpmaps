@@ -19,4 +19,8 @@ print json_config["osm_db"]["user"]
 print json_config["osm_db"]["password"]
 print json_config["osm_db"]["db_name"]
 
-print json_config["style"]["style_file_path"]
+print json_config["style"]["style_path"]
+
+print json_config["map"]["create_xcf"]
+
+print json_config["map"]["bounding_box"]

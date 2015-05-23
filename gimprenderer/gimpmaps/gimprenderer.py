@@ -5,62 +5,31 @@ Created on May 13, 2015
 '''
 
 import svgwrite
-
 from gimpfu import *
+from abc import ABCMeta, abstractmethod
 
 from svgsketch import hachurizer
 
-from renderer import Renderer
+from maprenderer import MapRenderer
 from tilerenderer import TileRenderer
+from gimpmodule import GimpImageManager
 
-class RendererGimp(Renderer):
+class RendererGimp(object):
     '''
-    This is a renderer to create a GIMP image from map data in a provided 
-    bounding box with a specified styling
+    A renderer to create a single PNG map. An editable GIMP XCF file can be 
+    created along with the PNG result.
     '''
+    __metaclass__ = ABCMeta
 
-    def __init__(self, bbox, scale, out_dir, map_style_file, create_xcf):
+    @abstractmethod
+    def __init__(self):
         '''
         Constructor
         '''
         
-        self.bbox = bbox
-        self.scale = scale
-        self.out_dir = out_dir
-        self.map_style_file = map_style_file
-        self.create_xcf = create_xcf
-        self.type = "map_gimp"
-        
-    def draw(self, zoom, bbox, resolution, out_path = ""):
-        
-        feature_styles = self.get_feature_styles(zoom)
-        text_styles = self.get_text_styles(zoom)
-        background = self.get_background(zoom) 
-        
-        # Create GIMP image with layer group
-        image = self.create_image(resolution)
-        
-        # Resetting GIMP image context
-        self.reset_context()
-        
-        # Creating a parent layer group for all the layer (groups) added later
-        parent = self.create_layer_group(image, None, 0)
-        
-        self.draw_features(image, parent, 
-                          feature_styles, bbox, resolution, 
-                          False)
+        pass
     
-        self.draw_text()
-        # Background image
-        # TO DO: Get background from style database
-        self.create_layer_image(image, parent, background, 2)           
-                      
-        # Save images as PNG and XCF
-        self.save_image(out_path, image, parent, True, self.create_xcf)
-        
-        self.close_image(image)
-        
-    def draw_features(self, image, parent, 
+    def draw_features(self, gimp, parent, 
                       feature_styles, bbox, resolution, 
                       mask):
         """
@@ -70,8 +39,8 @@ class RendererGimp(Renderer):
         self.conn_osm = self.connect_to_osm_db()
         
         # Creating layer groups for the feature type groups 
-        group_line = self.create_layer_group(image, parent, 0)        
-        group_polygon = self.create_layer_group(image, parent, 1)
+        group_line = gimp.create_layer_group(parent, 0)        
+        group_polygon = gimp.create_layer_group(parent, 1)
         
         layer_pos_group = 0
 
@@ -82,7 +51,7 @@ class RendererGimp(Renderer):
             
             # Style settings
             # TO DO: emulate brush dynamics?????
-            self.set_context(line_style)
+            gimp.set_context(line_style)
 
             # Import SVG data into SVG drawing from database
             svg_geoms = self.get_svg_features(
@@ -97,19 +66,15 @@ class RendererGimp(Renderer):
                 svg_path_str = svg_path.tostring()
                 
                 # Adding vectors for stroking of lines, outlines/mask
-                pdb.gimp_vectors_import_from_string(
-                    image, 
-                    svg_path_str, 
-                    -1, 1, 1,
-                )
+                gimp.import_vectors(svg_path_str)
         
             # Creating image layer for geometry feature
-            layer = self.create_layer(image, resolution, 
+            layer = gimp.create_layer(resolution, 
                                       sql_selection, group_line, 
                                       layer_pos_group)  
             
             # Drawing vectors into GIMP layer
-            self.draw_vectors(image, layer)             
+            gimp.draw_vectors(layer)             
             
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
@@ -123,11 +88,12 @@ class RendererGimp(Renderer):
             
             # Style settings
             # TO DO: emulate brush dynamics?????
-            self.set_context(line_style)
+            gimp.set_context(line_style)
             
-            spacing = float(line_style[1]*2) # hachure spacing
-            angle = 30 # hachure angle
-
+            # TO DO: Import from style
+            spacing = 10
+            angle = 30
+            
             # Import SVG data into SVG drawing from database
             svg_geoms = self.get_svg_features(
                 bbox,
@@ -147,182 +113,87 @@ class RendererGimp(Renderer):
 
                     hachure = svg_renderer.get_svg_hachure(svg_path)
                     if (hachure is not None):                   
-                        pdb.gimp_vectors_import_from_string(
-                            image, 
-                            hachure, 
-                            -1, 1, 1,
-                        )
+                        gimp.import_vectors(hachure)
                     else:
                         continue
                 else:
                     # Adding vectors for stroking of lines, outlines/mask
-                    pdb.gimp_vectors_import_from_string(
-                        image, 
-                        svg_path_str, 
-                        -1, 1, 1,
-                    )
+                    gimp.import_vectors(svg_path_str)
                     
-                # Drawing polygon feature_styles
-                
+            # Drawing polygon feature_styles                
             if (mask):
-            
-                # Creating a layer group for vector and raster layers
-                vector_raster_group = self.create_layer_group(image, 
-                                                              group_polygon,
-                                                              0)
-                
-                # Creating vector layer
-                layer_vector = self.create_layer(self, image, resolution, 
-                                                 sql_selection,
-                                                 vector_raster_group, 0) 
-                
                 # Adding background image to use the mask on
                 mask_image = "img/" + feature_style.get_image_data()[0]
-                layer_mask_image = pdb.gimp_file_load_layer(image, 
-                                                            mask_image)
-                pdb.gimp_image_insert_layer(image, layer_mask_image, 
-                                            vector_raster_group, 1)
-                
-                # TO DO: Check why duplicate for loop?
-                # Drawing and selecting vectors in GIMP layer
-                for vector in image.vectors:
-                    pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
-                    
-                # Drawing and selecting vectors in GIMP layer
-                for vector in image.vectors:
-                    pdb.gimp_image_select_item(image, CHANNEL_OP_ADD, vector)                        
-                    pdb.gimp_image_remove_vectors(image, vector)
-                
-                # Apply mask of collected vectors on background image
-                mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
-                pdb.gimp_layer_add_mask(layer_mask_image, mask)
-                
-                pdb.gimp_selection_clear(image)
-                
+                gimp.apply_vectors_as_mask(
+                    self, mask_image, group_polygon, resolution, sql_selection
+                )
+                            
             else :
                 
                 # Creating image layer for geometry feature
-                layer = self.create_layer(image, resolution, sql_selection,
-                                          group_line, layer_pos_group) 
+                layer = gimp.create_layer(resolution, sql_selection,
+                                          group_polygon, layer_pos_group) 
                 
                 # Drawing vectors into GIMP layer
-                self.draw_vectors(image, layer)
+                gimp.draw_vectors(layer)
                 
             # Incrementing current layer position
             layer_pos_group =+ layer_pos_group + 1
             
         self.conn_osm.close()
-            
+        
     def draw_text(self):
-        print "bla"
+        pass
         
-    def create_image(self, resolution):
+        # TO DO: Implement!
+       
+class MapRendererGimp(MapRenderer, RendererGimp):
+    '''
+    A renderer to create a single PNG map. An editable GIMP XCF file can be 
+    created along with the PNG result.
+    '''
+    
+    def __init__(self, config_file):
+        '''
+        Constructor
+        '''
         
-        image = pdb.gimp_image_new(
-           resolution[0],
-           resolution[1],
-           RGB
-        )
-        return image
+        super(MapRendererGimp, self).__init__(config_file)
         
-    def create_layer(self, image, resolution, name, parent, pos):
-        layer = pdb.gimp_layer_new(
-            image, 
-            resolution[0], 
-            resolution[1],
-            RGBA_IMAGE,
-            name,
-            100, 
-            NORMAL_MODE
-        )
-        pdb.gimp_image_insert_layer(image, layer, parent, pos)
+        self.type = "map_gimp"
         
-        # pdb.gimp_edit_fill(layer, BACKGROUND_FILL)
+    def draw(self, zoom, bbox, resolution, out_path):
+               
+        # Creating a GIMP Manager instance and an image
+        gimp = GimpImageManager()
+        gimp.create_image(resolution)
         
-        return layer
+        # Resetting GIMP image context
+        gimp.reset_context()
         
-    def create_layer_group(self, image, parent, pos):
-        group = pdb.gimp_layer_group_new(image)
-        pdb.gimp_image_insert_layer(image, group, parent, pos)
+        # Creating a parent layer group for all the layer (groups) added later
+        parent = gimp.create_layer_group(None, 0)
         
-        return group
+        # Drawing geometry features
+        feature_styles = self.get_feature_styles(zoom)
+        self.draw_features(
+            gimp, parent, feature_styles, bbox, resolution, False
+        )    
         
-    def create_layer_image(self, image, parent, background_img, pos):
+        # Drawing the text
+        text_styles = self.get_text_styles(zoom)
+        self.draw_text()
         
-        background = self.img_dir + background_img
+        # Background image
+        bg_image = self.get_bg_img(zoom) 
+        gimp.insert_image_tiled(256, resolution, bg_image, parent, 2)          
+                      
+        # Save images as PNG and XCF
+        gimp.save_image(out_path, parent, True, self.create_xcf)
         
-        layer = pdb.gimp_file_load_layer(image, background)
-        pdb.gimp_image_insert_layer(image, layer, parent, pos)
+        gimp.close_image()
         
-        return background
-        
-    def reset_context(self):
-        pdb.gimp_context_set_defaults()
-        pdb.gimp_context_push()        
-        pdb.gimp_context_set_background((255,255,255,255))
-        
-    def set_context(self, line_style):
-        
-        pdb.gimp_context_set_paint_method('gimp-paintbrush')
-        pdb.gimp_context_pop()
-        pdb.gimp_context_set_brush(line_style[0])
-        pdb.gimp_context_set_brush_size(line_style[1])
-        pdb.gimp_context_set_dynamics(line_style[3])
-        pdb.gimp_context_set_foreground((
-            line_style[2][0],
-            line_style[2][1],
-            line_style[2][2]                
-        ))
-        # pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
-        pdb.gimp_context_push()
-        
-    def draw_vectors(self, image, layer):
-        for vector in image.vectors:
-            pdb.gimp_edit_stroke_vectors(layer, vector)                    
-            pdb.gimp_image_remove_vectors(image, vector)
-            
-    def simplify_selection(self, image):
-        # Grow and shrink selection to even out small selections
-        pdb.gimp_selection_shrink(image, 2)
-        pdb.gimp_selection_grow(image, 2)
-        pdb.gimp_selection_grow(image, 2)
-        pdb.gimp_selection_shrink(image, 2)
-        
-    def save_image(self, out_path, image, drawable, create_png, create_xcf):
-
-        if not create_png and not create_xcf:
-            print "Nothing to save"
-        else:
-            if (create_png):
-                out_path += ".png"
-                pdb.gimp_file_save(
-                    image, 
-                    drawable,
-                    out_path,
-                    out_path
-                )
-            
-            if (create_xcf):            
-                out_path += ".xcf"
-                pdb.gimp_file_save(
-                    image, 
-                    drawable,
-                    out_path,
-                    out_path
-                )
-            
-    def close_image(self, image):
-        
-        pdb.gimp_image_delete(image)
-        pdb.gimp_context_pop()
-        
-    def create_gimp_image(self, resolution, out_path, create_png, create_xcf):
-        
-        image = self.create_image(resolution)        
-        
-        layer = self.create_layer(image, resolution, "layer", None, 0)
-        
-        self.save_image(out_path, image, layer, create_png, create_xcf)
+    
         
 class TileRendererGimp(TileRenderer, RendererGimp):
     """
@@ -331,35 +202,35 @@ class TileRendererGimp(TileRenderer, RendererGimp):
     defined in the 'create_xcf' variable) as XCF files as well.
     """
     
-    def __init__(self, 
-                 bbox, zoom_levels, tile_size, out_dir, map_style_id, 
-                 create_xcf):
-        super(TileRendererGimp, self).__init__(bbox, zoom_levels, tile_size,
-                                               out_dir, map_style_id, 
-                                               "tiles_gimp")
+    def __init__(self, config_file):
 
-        self.create_xcf = create_xcf
+        super(TileRendererGimp, self).__init__(config_file)
         
-    def draw(self, feature_styles, bbox, resolution, out_path = ""):   
+        self.type = "tiles_gimp"
         
-        # Create GIMP image with layer group
-        image = self.create_image(resolution)
+    def draw(self, styles, bbox, resolution, out_path):   
+        
+        # Creating a GIMP Manager instance and an image
+        gimp = GimpImageManager()
+        gimp.create_image(resolution)
         
         # Resetting GIMP image context
-        self.reset_context()
+        gimp.reset_context()
         
         # Creating a parent layer group for all the layer (groups) added later
-        parent = self.create_layer_group(image, None, 0)
+        parent = gimp.create_layer_group(None, 0)
         
-        self.draw_features(image, parent, 
-                          feature_styles, bbox, resolution, 
-                          False)
+        # Drawing geometry features
+        feature_styles = styles["features"]
+        self.draw_features(
+            gimp, parent, feature_styles, bbox, resolution, False
+        )    
     
         # Background image
-        # TO DO: Get background from style database
-        self.create_layer_image(image, parent, "texture_blackboard.png", 2)           
+        bg_image = styles["background_img"]
+        gimp.create_layer_image(parent, bg_image, 2)           
                       
         # Save images as PNG and XCF
-        self.save_image(out_path, image, parent, True, self.create_xcf)
+        gimp.save_image(out_path, parent, True, self.create_xcf)
         
-        self.close_image(image)
+        gimp.close_image()

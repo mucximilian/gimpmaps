@@ -25,32 +25,36 @@ class Renderer(object):
     
     __metaclass__ = ABCMeta
     
-    log_line = "###########################################################"
-    img_dir = None
-    conn_osm = None
-    
+    log_line = "###############################################################"
+       
     @abstractmethod
     def __init__(self, config_file):
-        self.read_file_config(config_file)
-    
+        """
+        Constructor
+        """
+        
+        self.config_file = config_file
+        
     def setup(self):
         """
-        Defining the log file and the results directory
+        Setting the instance variables and defining logfile and the result
+        directory.
         """
+        
+        self.set_filepath() # setting self.filepath        
+        
+        self.set_from_config()
         
         self.t_start = datetime.datetime.now()
         self.t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
-        # Check and set log directory
+        # Checking and setting log directory
         log_dir = self.filepath + "/log/"
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)     
-        self.start_logging(self.t_start, self.t_form, log_dir + self.type)
-        
-        # Create a directory containing the date and time
-        if (self.out_dir is None):
-            self.out_dir = self.filepath + "/results/"
+        self.start_logging(self.t_start, self.t_form, log_dir + self.type)           
             
+        # Checking and setting the output directory
         self.out_dir += self.type + "_" + self.t_form + "/"
         if not os.path.exists(self.out_dir):
             os.makedirs(self.out_dir)
@@ -63,104 +67,55 @@ class Renderer(object):
                     self.out_dir + "index.html"
                 )
             )
-            
-        # Setting the directory for background images
-        self.img_dir = self.filepath + "/img/"
+        
+    ############################################################################
+        
+    def set_from_config(self):
+        """
+        Setting the instance variables
+        """
+        
+        self.read_file_config(self.config_file) # setting self.config   
+        
+        # Setting instance variables
+        self.set_style_path() # self.style_path
+        self.set_out_dir() # self.out_dir
+        self.set_bbox() # self.bbox
+        self.set_database() # self.database
+        self.set_create_xcf() # Setting self.create_xcf  
+        
+    def set_out_dir(self):        
+        out_dir = self.config["out_dir"]
+        
+        if (out_dir is None):        
+            self.out_dir = self.filepath + "/results/"     
+        else:
+            self.out_dir = out_dir
+        
+    def set_bbox(self):        
+        self.bbox = self.config["map"]["bounding_box"]
+        
+    def set_create_xcf(self):        
+        self.create_xcf = self.config["map"]["create_xcf"]
+        
+    def set_database(self):        
+        self.database = self.config["osm_db"]
+        
+    def set_style_path(self):
+        """
+        Setting style path relative (if not defindend inf config) or absolute
+        as instance variable.
+        """
+        style_path = self.config["style"]["style_path"]
+        
+        if (style_path is None):        
+            style_path = self.filepath + "/styles/"            
 
-    def render(self):
-        """
-        Rendering function. Defines the structure for subclasses. 
-        'draw_features' is defined in subclasses with appropriate logic.
-        """
+        style_path += self.config["style"]["style_name"]
         
-        self.setup()
+        self.style_path = style_path  
         
-        zoom = self.get_zoom_level_for_scale(self.scale)
-        resolution = self.calculate_resolution()
-        
-        self.log_map_data(zoom, resolution)
-        
-        out_file = self.out_dir + self.type
-        
-        self.draw(
-            zoom,
-            self.bbox,
-            resolution,
-            out_file
-        )
-        
-        self.finish()   
-        
-    ############################################################################        
-    def calculate_resolution(self):
-                
-        bbox_width = abs(self.bbox[0][0] - self.bbox[1][0])
-        bbox_height = abs(self.bbox[0][1] - self.bbox[1][1])
-        
-        map_width = self.get_pixel_size(bbox_width/self.scale, 300)
-        map_height = self.get_pixel_size(bbox_height/self.scale, 300)
-        
-        return [map_width, map_height]
-    
-    def get_pixel_size(self, size_cm, dpi):
-        size_inch = size_cm * 2.54
-        size_pixel = int(round(size_inch * dpi))
-        
-        return size_pixel
-    
-    def get_zoom_level_for_scale(self, scale):        
-        
-        """
-        Returning the appropriate zoom level for a given scale
-        See scales here: http://wiki.openstreetmap.org/wiki/Zoom_levels
-        """
-        zoom = 0
-        
-        if (scale <= 0):
-            print "Invalid scale"
-            exit
-        elif(scale > 0 and scale <= 1000):
-            zoom = 19
-        elif(scale > 0 and scale <= 2000):
-            zoom = 18
-        elif(scale > 0 and scale <= 4000):
-            zoom = 17
-        elif(scale > 0 and scale <= 8000):
-            zoom = 16
-        elif(scale > 0 and scale <= 15000):
-            zoom = 15
-        elif(scale > 0 and scale <= 35000):
-            zoom = 14
-        elif(scale > 0 and scale <= 70000):
-            zoom = 13
-        elif(scale > 0 and scale <= 150000):
-            zoom = 12
-        elif(scale > 0 and scale <= 250000):
-            zoom = 11
-        elif(scale > 0 and scale <= 500000):
-            zoom = 10
-        elif(scale > 0 and scale <= 1000000):
-            zoom = 9
-        elif(scale > 0 and scale <= 2000000):
-            zoom = 8
-        elif(scale > 0 and scale <= 4000000):
-            zoom = 7
-        elif(scale > 0 and scale <= 10000000):
-            zoom = 6
-        elif(scale > 0 and scale <= 15000000):
-            zoom = 5
-        elif(scale > 0 and scale <= 35000000):
-            zoom = 4
-        elif(scale > 0 and scale <= 70000000):
-            zoom = 3
-        elif(scale > 0 and scale <= 150000000):
-            zoom = 2
-        elif(scale > 0 and scale <= 250000000):
-            zoom = 1
-        elif(scale > 0 and scale <= 500000000):
-            zoom = 0
-        
-        return zoom
+    ############################################################################
     
     def read_file_config(self, config_file):
         """
@@ -168,35 +123,101 @@ class Renderer(object):
         object.
         """
         
-        self.filepath = self.get_filepath() + "/conf/"
-    
-        read_file = open(self.filepath + config_file, "r")
+        filepath = ""
+        
+        print self.filepath
+        
+        if (config_file.startswith("/")):
+            filepath = config_file
+        else:
+            filepath = self.filepath + "/conf/"  + config_file      
+            
+        read_file = open(filepath, "r")            
         json_config = json.load(read_file)
         
         self.config = json_config
         
-    def read_file_style(self):
-        """
-        Reading the provided path of the style file. If "None", read file from
-        default style directory of the project.
-        """
+    def read_file_style(self):        
         
-        style_file = None
-        
-        if (self.config["style"]["style_path"] is None):        
-            style_file += self.filepath + "/styles/"            
-        else:
-            style_file += self.config["style"]["style_path"]
-
-        style_file += self.config["style"]["style_name"]
-        style_file += "/style.json"
+        style_file = self.style_path + "/style.json"
         
         read_file = open(style_file, "r")        
         json_style = json.load(read_file)
         
         return json_style
+    
+    def set_filepath(self):
+        filepath = os.path.dirname(
+            os.path.abspath(
+                inspect.getfile(
+                    inspect.currentframe()
+                )
+            )
+        )
+        self.filepath = filepath
+        
+        print "setting filepath"
+        
+    def connect_to_osm_db(self):
+        """
+        Establishing a connection to the database storing the OSM data.
+        """
+        
+        conn = psycopg2.connect(
+            'dbname=osm_muc '
+            'user=gis '
+            'password=gis '
+            'host=localhost '
+            'port=5432'
+        )
+        return conn
+    
+    def finish(self):
+        
+        self.finish_logging(self.t_start)
+        
+        print "Finished processing"
+    
+    ############################################################################
+    
+    def create_svg_image(self, feature_styles, bbox, resolution, out_file):
+        """
+        Drawing function for SVG image files
+        """
+        
+        self.conn_osm = self.connect_to_osm_db()
+        
+        # Create SVG file name with extension
+        dwg = svgwrite.Drawing(
+            out_file + ".svg",
+            height = resolution[0],
+            width = resolution[1]
+        )
+        
+        for feature_style in feature_styles["lines"]:
+            
+            grp = dwg.g() # Creating SVG Group
+            
+            svg_geoms = self.get_svg_features(
+                bbox,
+                resolution, 
+                feature_style
+            )
+    
+            # Adding vectors to the group
+            for svg_commands in svg_geoms:            
+                grp.add(dwg.path(d=svg_commands))
+                
+            dwg.add(grp)
+         
+        # Saving SVG file    
+        dwg.save()
+        print "creating SVG: " + out_file + ".svg"
+        
+        self.conn_osm.close()
         
     ############################################################################
+    
     def get_feature_styles(self, zoom_level):
         """
         Getting feature styles and tags of all geometry types for a zoom level.
@@ -205,7 +226,7 @@ class Renderer(object):
         features = {}
     
         # Reading the style file from the config
-        style_config = self.read_style_file()    
+        style_config = self.read_file_style()    
         
         zoom_level = style_config["zoom_levels"][str(zoom_level)]
         features_lines = zoom_level["features"]["lines"]
@@ -255,7 +276,6 @@ class Renderer(object):
 
         return features
     
-    ############################################################################
     def get_text_styles(self, zoom_level):
         """
         Getting text styles and tags of all geometry types type for a zoom 
@@ -265,7 +285,7 @@ class Renderer(object):
         features = []
         
         # Reading the style file from the config
-        style_config = self.read_style_file()    
+        style_config = self.read_file_style()    
         
         zoom_level = style_config["zoom_levels"][str(zoom_level)]
         features_polygons = zoom_level["text"]["polygons"]
@@ -290,18 +310,19 @@ class Renderer(object):
 
         return features
     
-    ############################################################################
-    def get_background(self, zoom_level):
+    def get_bg_img(self, zoom_level):
         """
         Getting the background image for a zoom level.
         """
         
-        style_config = self.read_style_file()    
+        style_config = self.read_file_style()    
         
         zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        background = zoom_level["background"]
+        img = zoom_level["background"]
+        
+        img_path = self.style_path + "/img/" + img
 
-        return background
+        return img_path
     
     ############################################################################
     def get_svg_features(self, bbox, resolution, style_feature):
@@ -409,13 +430,6 @@ class Renderer(object):
         return svg_geometries
     
     ############################################################################
-    def finish(self, t_start):
-        
-        self.finish_logging(t_start)
-        
-        print "Finished processing"
-    
-    ############################################################################
     # Logging functions
     def start_logging(self, t_start, t_form, log_dir):
         
@@ -427,9 +441,9 @@ class Renderer(object):
             filemode = 'w',
             level = logging.INFO
         )            
-        logging.info(self.log_line)
+        logging.info(Renderer.log_line)
         logging.info("Start of GIMP processing at " + str(t_start))
-        logging.info(self.log_line)
+        logging.info(Renderer.log_line)
         
         return t_start
     
@@ -442,99 +456,17 @@ class Renderer(object):
         logging.info("bbox lr y: " + str(self.bbox[1][1]))
         logging.info("map width in px: " + str(resolution[0]))
         logging.info("map height in px: " + str(resolution[1]))
-        logging.info(self.log_line)
+        logging.info(Renderer.log_line)
     
     def finish_logging(self, t_start):      
         
         t_end = datetime.datetime.now()
         delta_t = t_end - t_start
         
-        logging.info(self.log_line)
+        logging.info(Renderer.log_line)
         logging.info("End of Gimp Tile processing at " + str(t_end))
         logging.info("processing duration: " + 
             str(delta_t.total_seconds()) +
             " seconds"
         )
-        logging.info(self.log_line)
-        
-    def connect_to_osm_db(self):
-        """
-        Establishing a connection to the database storing the OSM data
-        """
-        
-        conn = psycopg2.connect(
-            'dbname=osm_muc '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
-        )
-        return conn   
-    
-    def create_svg_image(self, feature_styles, bbox, resolution, out_path = ""):
-        """
-        Drawing function for SVG image files
-        """
-        
-        self.conn_osm = self.connect_to_osm_db()
-        
-        # Create SVG file name with extension
-        dwg = svgwrite.Drawing(
-            out_path + ".svg",
-            height = resolution[0],
-            width = resolution[1]
-        )
-        
-        for feature_style in feature_styles:
-            
-            grp = dwg.g() # Creating SVG Group
-            
-            svg_geoms = self.get_svg_features(
-                bbox,
-                resolution, 
-                feature_style
-            )
-    
-            # Adding vectors to the group
-            for svg_commands in svg_geoms:            
-                grp.add(dwg.path(d=svg_commands))
-                
-            dwg.add(grp)
-         
-        # Saving SVG file    
-        dwg.save()
-        print "creating SVG: " + out_path + ".svg"
-        
-        self.conn_osm.close()
-        
-    def get_filepath(self):
-        filepath = os.path.dirname(
-            os.path.abspath(
-                inspect.getfile(
-                    inspect.currentframe()
-                )
-            )
-        )
-        return filepath
-        
-class RendererSvg(Renderer):
-    '''
-    A class to create a single SVG map
-    '''
-
-    def __init__(self, bbox, scale, out_dir, map_style_id):
-        '''
-        Constructor
-        '''
-        
-        self.bbox = bbox
-        self.scale = scale
-        self.out_dir = out_dir
-        self.map_style_id = map_style_id
-        self.type = "map_svg"
-        
-    def draw(self, zoom, bbox, resolution, out_file):
-        
-        feature_styles = self.get_feature_styles(zoom)
-        
-        self.create_svg_image(feature_styles, self.bbox, resolution, out_file)
+        logging.info(Renderer.log_line)

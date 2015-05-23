@@ -10,9 +10,9 @@ import logging
 
 from abc import ABCMeta, abstractmethod
 
-from gimpmaps import renderer
+from renderer import Renderer
 
-class TileRenderer(object):
+class TileRenderer(Renderer):
     '''
     An abstract metaclass that handles the tiling
     '''
@@ -22,16 +22,12 @@ class TileRenderer(object):
     origin_x = -(2 * math.pi * 6378137 / 2.0)
     origin_y = 2 * math.pi * 6378137 / 2.0
     
+    tile_size = 256
+    
     @abstractmethod
-    def __init__(self, 
-                 bbox, zoom_levels, tile_size, out_dir, map_style_id, tile_type):
+    def __init__(self, config_file):
         
-        self.bbox = bbox
-        self.zoom_levels = zoom_levels
-        self.tile_size = [tile_size, tile_size]
-        self.out_dir = out_dir
-        self.map_style_id = map_style_id
-        self.type = tile_type    
+        super(TileRenderer, self).__init__(config_file)
          
     def render(self):
         """
@@ -39,11 +35,13 @@ class TileRenderer(object):
         different zoom levels.
         """
         
-        t_start = self.setup(self.out_dir)       
+        self.setup()   
+        
+        zoom_levels = self.get_zoom_levels()    
         
         ########################################################################
         # Zoom level loop
-        for zoom in self.zoom_levels:
+        for zoom in zoom_levels:
             
             tiling_data = self.get_tiling_data(self.bbox, zoom)
             self.log_tiling_data_info_zoom(zoom, tiling_data) 
@@ -53,8 +51,15 @@ class TileRenderer(object):
             if not os.path.exists(out_dir_zoom):
                 os.makedirs(out_dir_zoom)
             
-            # Get OSM tags and styles for zoom level
             feature_styles = self.get_feature_styles(zoom)
+            text_styles = self.get_text_styles(zoom)
+            bg_image = self.get_bg_img(zoom) 
+            
+            styles = {
+                "features":feature_styles,
+                "text":text_styles,
+                "background_img":bg_image
+            }
             
             ####################################################################            
             # X-direction loop
@@ -80,10 +85,27 @@ class TileRenderer(object):
                     # Assign the Y value as the file name                       
                     out_path = out_dir_zoom_x + str(y)
                     
-                    self.draw(feature_styles, tile_bbox, 
-                              self.tile_size, out_path)               
+                    resolution_tile = [self.tile_size, self.tile_size]
+                    
+                    self.draw(
+                        styles, 
+                        tile_bbox, 
+                        resolution_tile,
+                        out_path
+                    )               
         
-        self.finish(t_start)
+        self.finish()
+        
+    ############################################################################
+        
+    def get_zoom_levels(self):
+        
+        zoom_min = self.config["map"]["tiles"]["zoom_level_min"]
+        zoom_max = self.config["map"]["tiles"]["zoom_level_max"]
+        
+        zoom_levels = range(zoom_min, zoom_max + 1)
+        
+        return zoom_levels
     
     def get_tile_of_point(self, point_ul, zoom):
         """
@@ -208,12 +230,18 @@ class TileRenderer(object):
         out = self.print_tile_bbox_info(tile_bbox)
         logging.info(out)
         
-class TileRendererSvg(TileRenderer, renderer.RendererSvg):
+class TileRendererSvg(TileRenderer):
     '''
     classdocs
     '''
-    def __init__(self, 
-                 bbox, zoom_levels, tile_size, out_dir, map_style_id):
-        super(TileRendererSvg, self).__init__(bbox, zoom_levels, tile_size, 
-                                              out_dir, map_style_id, 
-                                              "tiles_svg")
+    def __init__(self, config_file):
+        
+        super(TileRendererSvg, self).__init__(config_file) 
+                                
+        self.type = "tiles_svg"
+        
+    def draw(self, styles, bbox, resolution_tile, out_file):
+        
+        feature_styles = styles["features"]
+        
+        self.create_svg_image(feature_styles, bbox, resolution_tile, out_file)

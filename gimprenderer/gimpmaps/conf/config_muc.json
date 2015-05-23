@@ -7,15 +7,16 @@
     },
     "map":{
         "bounding_box":[
-            [1275000, 6131500],
-            [1289700, 6118200]
+            [1250000, 6160000],
+            [1310000, 6080000]
             ],
         "image":{
-        	"scale":10000
+        	"scale":10000,
+        	"create_xcf":true
         },
         "tiles":{
         	"zoom_level_min":12,
-        	"zoom_level_max":13
+        	"zoom_level_min":13
         },
         "create_xcf":true
     },

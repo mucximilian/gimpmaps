@@ -100,15 +100,17 @@ def create_stylefile(map_style_id):
                 "brush": row[6],
                 "brush_size": row[7],
                 "color": row[8],
-                "dynamics": row[9]
+                "dynamics": row[9],
+                "spacing": row[10],
+                "angle": row[11]
             }   
             
             feature = {
                 "osm_tags": row[1],
                 "stroke_line": style_stroke,
                 "stroke_hachure": style_hachure,
-                "image": row[10],
-                "z_order": row[11]
+                "image": row[12],
+                "z_order": row[13]
             }
             
             polygons.append(feature)
@@ -174,7 +176,7 @@ def create_stylefile(map_style_id):
         
     json_data["zoom_levels"] = zoom_levels
     
-    file_name = "style_" + map_style_name.lower().replace(" ", "_") + ".json"
+    file_name = "styles/style_" + map_style_name.lower().replace(" ", "_") + ".json"
     
     print file_name
     
