@@ -48,7 +48,7 @@ ON (
 WHERE mfl.map_style = $1
 AND of.zoom_max <= $2
 AND of.zoom_min >= $2
-ORDER BY of.z_order ASC
+ORDER BY of.z_order DESC
 $$
 LANGUAGE sql STABLE;
 ALTER FUNCTION get_line_tags_and_style(

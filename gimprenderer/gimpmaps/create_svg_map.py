@@ -4,7 +4,7 @@ Created on May 11, 2015
 @author: mucx
 '''
 
-from gimpmaps import maprenderer
+from gimpmaps import renderermap
     
-svg_renderer = maprenderer.MapRendererSvg("config_test.json")
+svg_renderer = renderermap.MapRendererSvg("config_test.json")
 svg_renderer.render()

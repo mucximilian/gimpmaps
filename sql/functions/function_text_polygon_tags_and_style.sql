@@ -53,7 +53,7 @@ ON (
 WHERE mtp.map_style = $1
 AND of.zoom_max <= $2
 AND of.zoom_min >= $2
-ORDER BY of.z_order ASC
+ORDER BY of.z_order DESC
 $BODY$
   LANGUAGE sql STABLE
   COST 100

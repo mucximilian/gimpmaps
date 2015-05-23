@@ -4,7 +4,7 @@ Created on May 14, 2015
 @author: mucx
 '''
 
-from maprenderer import MapRenderer
+from gimpmaps.renderermap import MapRenderer
 from gimpmodule import GimpImageManager
 
 class MapRendererSvgXcf(MapRenderer):

@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 
 from svgsketch import hachurizer
 
-from maprenderer import MapRenderer
+from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer
 from gimpmodule import GimpImageManager
 
@@ -29,25 +29,22 @@ class RendererGimp(object):
         
         pass
     
-    def draw_features(self, gimp, parent, 
-                      feature_styles, bbox, resolution, 
-                      mask):
+    def draw_features_line(
+            self, gimp, parent, line_styles, bbox, resolution
+        ):
         """
-        Drawing the feature_styles as GIMP images and saving to PNG and/or XCF
+        Drawing the line features as GIMP images and saving to PNG and/or XCF
         """
         
         self.conn_osm = self.connect_to_osm_db()
         
         # Creating layer groups for the feature type groups 
-        group_line = gimp.create_layer_group(parent, 0)        
-        group_polygon = gimp.create_layer_group(parent, 1)
-        
-        layer_pos_group = 0
+        group_line = gimp.create_layer_group(parent, -1)        
 
-        for feature_style in feature_styles["lines"]:
+        for style_line in line_styles:
                         
-            sql_selection = feature_style.get_selection_tags()
-            line_style = feature_style.get_line_style()
+            sql_selection = style_line.get_selection_tags()
+            line_style = style_line.get_line_style()
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -57,7 +54,7 @@ class RendererGimp(object):
             svg_geoms = self.get_svg_features(
                 bbox,
                 resolution, 
-                feature_style
+                style_line
             )
             
             for svg_commands in svg_geoms:
@@ -71,20 +68,29 @@ class RendererGimp(object):
             # Creating image layer for geometry feature
             layer = gimp.create_layer(resolution, 
                                       sql_selection, group_line, 
-                                      layer_pos_group)  
+                                      -1)  
             
             # Drawing vectors into GIMP layer
-            gimp.draw_vectors(layer)             
+            gimp.draw_vectors(layer)
             
-            # Incrementing current layer position
-            layer_pos_group =+ layer_pos_group + 1
+        self.conn_osm.close()
+        
+    def draw_features_polygon(
+            self, gimp, parent, polygon_styles, bbox, resolution, mask
+        ):
+        """
+        Drawing the geometry features as GIMP images and saving to PNG and/or XCF
+        """
+        
+        self.conn_osm = self.connect_to_osm_db()
+        
+        # Creating layer groups for the feature type groups       
+        group_polygon = gimp.create_layer_group(parent, -1)
+
+        for style_polgon in polygon_styles:
             
-        ########################################################################
-        # POLYGONS
-        for feature_style in feature_styles["polygons"]:
-            
-            sql_selection = feature_style.get_selection_tags()
-            line_style = feature_style.get_line_style()
+            sql_selection = style_polgon.get_selection_tags()
+            line_style = style_polgon.get_line_style()
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -98,7 +104,7 @@ class RendererGimp(object):
             svg_geoms = self.get_svg_features(
                 bbox,
                 resolution, 
-                feature_style
+                style_polgon
             )
             for svg_commands in svg_geoms:
                 
@@ -123,7 +129,8 @@ class RendererGimp(object):
             # Drawing polygon feature_styles                
             if (mask):
                 # Adding background image to use the mask on
-                mask_image = "img/" + feature_style.get_image_data()[0]
+                # TO DO: Get img path from style file
+                mask_image = "img/" + style_polgon.get_image_data()[0]
                 gimp.apply_vectors_as_mask(
                     self, mask_image, group_polygon, resolution, sql_selection
                 )
@@ -132,17 +139,17 @@ class RendererGimp(object):
                 
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, sql_selection,
-                                          group_polygon, layer_pos_group) 
+                                          group_polygon, -1) 
                 
                 # Drawing vectors into GIMP layer
                 gimp.draw_vectors(layer)
-                
-            # Incrementing current layer position
-            layer_pos_group =+ layer_pos_group + 1
             
         self.conn_osm.close()
         
-    def draw_text(self):
+    def draw_text(
+            self, gimp, parent, text_styles, bbox, resolution, 
+            draw_outline, draw_buffer
+        ):
         pass
         
         # TO DO: Implement!
@@ -174,19 +181,28 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         # Creating a parent layer group for all the layer (groups) added later
         parent = gimp.create_layer_group(None, 0)
         
-        # Drawing geometry features
+        # Background image
+        bg_image = self.get_bg_img(zoom) 
+        gimp.insert_image_tiled(256, resolution, bg_image, parent, -1)        
+        
+        # Drawing features
         feature_styles = self.get_feature_styles(zoom)
-        self.draw_features(
-            gimp, parent, feature_styles, bbox, resolution, False
-        )    
+        
+        ## Polygon features
+        self.draw_features_polygon(
+            gimp, parent, feature_styles["polygons"], bbox, resolution, False
+        )
+        
+        ## Line features
+        self.draw_features_line(
+            gimp, parent, feature_styles["lines"], bbox, resolution
+        )
         
         # Drawing the text
         text_styles = self.get_text_styles(zoom)
-        self.draw_text()
-        
-        # Background image
-        bg_image = self.get_bg_img(zoom) 
-        gimp.insert_image_tiled(256, resolution, bg_image, parent, 2)          
+        self.draw_text(
+            gimp, parent, text_styles, bbox, resolution, True, False
+        )  
                       
         # Save images as PNG and XCF
         gimp.save_image(out_path, parent, True, self.create_xcf)
@@ -220,15 +236,19 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         # Creating a parent layer group for all the layer (groups) added later
         parent = gimp.create_layer_group(None, 0)
         
-        # Drawing geometry features
-        feature_styles = styles["features"]
-        self.draw_features(
-            gimp, parent, feature_styles, bbox, resolution, False
-        )    
-    
         # Background image
         bg_image = styles["background_img"]
-        gimp.create_layer_image(parent, bg_image, 2)           
+        gimp.create_layer_image(parent, bg_image, -1)
+        
+        # Drawing polygon features
+        self.draw_features_polygon(
+            gimp, parent, styles["features"]["polygons"], bbox, resolution, False
+        )  
+        
+        # Drawing line features
+        self.draw_features_line(
+            gimp, parent, styles["features"]["lines"], bbox, resolution
+        )      
                       
         # Save images as PNG and XCF
         gimp.save_image(out_path, parent, True, self.create_xcf)
