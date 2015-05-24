@@ -12,6 +12,7 @@ import os
 import inspect
 import svgwrite
 import json
+import operator
 
 from abc import ABCMeta, abstractmethod
 
@@ -156,8 +157,6 @@ class Renderer(object):
         )
         self.filepath = filepath
         
-        print "setting filepath"
-        
     def connect_to_osm_db(self):
         """
         Establishing a connection to the database storing the OSM data.
@@ -229,7 +228,11 @@ class Renderer(object):
         style_config = self.read_file_style()    
         
         zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        features_lines = zoom_level["features"]["lines"]
+        features_lines = sorted(
+            zoom_level["features"]["lines"],
+            key=operator.itemgetter('z_order'),
+            reverse=True
+        )
         
         lines = []
         for line in features_lines:

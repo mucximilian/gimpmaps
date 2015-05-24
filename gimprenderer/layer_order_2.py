@@ -25,7 +25,7 @@ def run():
         100,
         NORMAL_MODE
     )
-    pdb.gimp_image_insert_layer(image, layer_1, group_top, -1)
+    pdb.gimp_image_insert_layer(image, layer_1, group_top, 0)
     
     layer_2 = pdb.gimp_layer_new(
         image,
@@ -36,7 +36,7 @@ def run():
         100,
         NORMAL_MODE
     )
-    pdb.gimp_image_insert_layer(image, layer_2, group_top, -1)
+    pdb.gimp_image_insert_layer(image, layer_2, group_top, 0)
     
     layer_3 = pdb.gimp_layer_new(
         image,
@@ -47,7 +47,7 @@ def run():
         100,
         NORMAL_MODE
     )
-    pdb.gimp_image_insert_layer(image, layer_3, group_top, -1)
+    pdb.gimp_image_insert_layer(image, layer_3, group_top, 0)
     
     layer_4 = pdb.gimp_layer_new(
         image,
@@ -58,7 +58,7 @@ def run():
         100,
         NORMAL_MODE
     )
-    pdb.gimp_image_insert_layer(image, layer_4, group_top, -1)
+    pdb.gimp_image_insert_layer(image, layer_4, group_top, 0)
 
     # Saving
     print "saving..."

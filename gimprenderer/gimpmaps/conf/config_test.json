@@ -22,7 +22,10 @@
     "style":{
     	"style_path":null,
     	"style_name":"chalk",
-        "polygon_fill":"hachure"
+        "polygon_fill":{
+        	"type":"hachure",
+        	"color_fill":false
+        }
     },
     "out_dir":null
 }

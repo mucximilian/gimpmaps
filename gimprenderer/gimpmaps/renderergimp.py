@@ -68,7 +68,7 @@ class RendererGimp(object):
             # Creating image layer for geometry feature
             layer = gimp.create_layer(resolution, 
                                       sql_selection, group_line, 
-                                      -1)  
+                                      0)  
             
             # Drawing vectors into GIMP layer
             gimp.draw_vectors(layer)
@@ -112,7 +112,10 @@ class RendererGimp(object):
                 svg_path_str = svg_path.tostring()
         
                 # Import vectors to GIMP image
-                if (not mask):                    
+                if (mask):                    
+                    # Adding vectors for stroking of lines, outlines/mask
+                    gimp.import_vectors(svg_path_str)
+                else:
                     # Creating hachure vectors
                     # TO DO: Adding outlines
                     svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
@@ -122,9 +125,6 @@ class RendererGimp(object):
                         gimp.import_vectors(hachure)
                     else:
                         continue
-                else:
-                    # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(svg_path_str)
                     
             # Drawing polygon feature_styles                
             if (mask):
@@ -139,7 +139,7 @@ class RendererGimp(object):
                 
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, sql_selection,
-                                          group_polygon, -1) 
+                                          group_polygon, 0) 
                 
                 # Drawing vectors into GIMP layer
                 gimp.draw_vectors(layer)
