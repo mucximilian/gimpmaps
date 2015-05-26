@@ -110,7 +110,8 @@ def create_stylefile(map_style_id):
                 "stroke_line": style_stroke,
                 "stroke_hachure": style_hachure,
                 "image": row[12],
-                "z_order": row[13]
+                "fill_color": row[13],
+                "z_order": row[14]
             }
             
             polygons.append(feature)
@@ -175,6 +176,161 @@ def create_stylefile(map_style_id):
         curs_zoom.close()
         
     json_data["zoom_levels"] = zoom_levels
+    
+    file_name = "styles/style_" + map_style_name.lower().replace(" ", "_") + ".json"
+    
+    print file_name
+    
+    out_file = open(file_name,"w")
+    json.dump(json_data, out_file, indent=4)
+    
+    print "Done"
+    
+def create_stylefile_new(map_style_id):
+    
+    print "Start"
+
+    map_style_name = get_map_style_name(map_style_id)
+    json_data = {"name": map_style_name}
+
+    
+    conn_zoom_style = psycopg2.connect(
+        'dbname=gimp_osm_styles '
+        'user=gis '
+        'password=gis '
+        'host=localhost '
+        'port=5432'
+    )
+    
+    curs_zoom = conn_zoom_style.cursor()
+    
+    ########################################################################
+    # FEATURES
+    
+    features_dict = {}
+    
+    # LINES
+    lines = []
+    
+    sql = "SELECT * FROM get_line_tags_and_style(%s)"                            
+    curs_zoom.execute(sql, (map_style_id,))
+    
+    # Store feature data in an array       
+    for row in curs_zoom.fetchall():
+        
+        style_stroke = {
+            "brush": row[2],
+            "brush_size": row[3],
+            "color": row[4],
+            "dynamics": row[5]
+        }        
+        feature = {
+            "osm_tags": row[1],
+            "stroke_line":style_stroke,
+            "z_order": row[6],
+            "zoom_min":row[7],
+            "zoom_max":row[8]
+        }   
+        lines.append(feature)
+                
+    features_dict["lines"] = lines
+        
+    # POLYGONS
+    polygons = []
+    
+    sql = "SELECT * FROM get_polygon_tags_and_style(%s)"                            
+    curs_zoom.execute(sql, (map_style_id,))
+    
+    # Store feature data in an array       
+    for row in curs_zoom.fetchall():
+        
+        style_stroke = {
+            "brush": row[2],
+            "brush_size": row[3],
+            "color": row[4],
+            "dynamics": row[5]
+        }
+        style_hachure = {
+            "brush": row[6],
+            "brush_size": row[7],
+            "color": row[8],
+            "dynamics": row[9],
+            "spacing": row[10],
+            "angle": row[11]
+        }   
+        
+        feature = {
+            "osm_tags": row[1],
+            "stroke_line": style_stroke,
+            "stroke_hachure": style_hachure,
+            "image": row[12],
+            "fill_color": row[13],
+            "z_order": row[14],
+            "zoom_min":row[15],
+            "zoom_max":row[16]
+        }
+        
+        polygons.append(feature)
+            
+        features_dict["polygons"] = polygons
+        
+        ############################################################################
+        # TEXT
+        text_dict = {}           
+        
+        # TEXT POLYGONS
+        text_polygons = []    
+        sql = "SELECT * FROM get_text_polygon_tags_and_style(%s)"                            
+        curs_zoom.execute(sql, (map_style_id,))
+        
+        # Store feature data in an array       
+        for row in curs_zoom.fetchall():
+            
+            style_stroke = {
+                "brush": row[2],
+                "brush_size": row[3],
+                "color": row[4],
+                "dynamics": row[5]
+            }
+            
+            feature = {
+                "osm_tags": row[1],
+                "stroke_line":style_stroke,
+                "font": row[6],
+                "font_size": row[7],
+                "color": row[8],
+                "z_order": row[9],
+                "zoom_min":row[10],
+                "zoom_max":row[11]
+            }
+            
+            text_polygons.append(feature)
+            
+        text_dict["polygons"] = text_polygons
+        
+        json_data["text"] = text_dict   
+        
+        ############################################################################
+        # BACKGROUND IMAGE
+        bg_images = []
+        sql = "SELECT * FROM get_background_image(%s)"                            
+        curs_zoom.execute(sql, (map_style_id,))
+        
+        # Store feature data in an array       
+        for row in curs_zoom.fetchall():        
+            
+            image = {
+                "image":row[1],
+                "zoom_min":row[2],
+                "zoom_max":row[3]
+            }
+            bg_images.append(image)
+            
+        json_data["background"] = bg_images    
+
+    curs_zoom.close()
+        
+    json_data["features"] = features_dict
     
     file_name = "styles/style_" + map_style_name.lower().replace(" ", "_") + ".json"
     

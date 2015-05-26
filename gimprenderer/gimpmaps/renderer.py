@@ -231,7 +231,6 @@ class Renderer(object):
         features_lines = sorted(
             zoom_level["features"]["lines"],
             key=operator.itemgetter('z_order'),
-            reverse=True
         )
         
         lines = []
@@ -252,7 +251,10 @@ class Renderer(object):
             
         features["lines"] = lines
                 
-        features_polygons = zoom_level["features"]["polygons"]
+        features_polygons = sorted(
+            zoom_level["features"]["polygons"],
+            key=operator.itemgetter('z_order'),
+        )
         
         polygons = []
         for polygon in features_polygons:
@@ -291,7 +293,10 @@ class Renderer(object):
         style_config = self.read_file_style()    
         
         zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        features_polygons = zoom_level["text"]["polygons"]
+        features_polygons = sorted(
+            zoom_level["text"]["polygons"],
+            key=operator.itemgetter('z_order'),
+        )
         
         for polygon in features_polygons:
             style_object = styles.StyleObjectText(

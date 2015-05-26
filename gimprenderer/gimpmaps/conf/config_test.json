@@ -24,7 +24,8 @@
     	"style_name":"chalk",
         "polygon_fill":{
         	"type":"hachure",
-        	"color_fill":false
+        	"color_fill":true,
+        	"outline":true
         }
     },
     "out_dir":null

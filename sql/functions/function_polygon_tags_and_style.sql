@@ -11,27 +11,29 @@ CREATE OR REPLACE FUNCTION get_polygon_tags_and_style(IN map_style integer, IN z
   brush_hachure character varying, 
   brush_hachure_size integer, 
   color_hachure integer[], 
-  dynamics_hachure character varying,
-  hachure_spacing integer,
-  hachure_angle integer,
-  image character varying, 
+  dynamics_hachure character varying, 
+  hachure_spacing integer, 
+  hachure_angle integer, 
+  image character varying,
+  color_fill integer[],
   z_order integer
   ) AS
 $BODY$
 SELECT
 	mfp.id,
 	of.tags,
-	slb.brush,
+	sbl.brush,
 	sl.brush_size,
-	slc.color,
-	sld.dynamics,
-	shb.brush,
-	sh.brush_size,
-	shc.color,
-	shd.dynamics,
-	mfp.hachure_spacing,
-	mfp.hachure_angle,
+	scl.color,
+	sdl.dynamics,
+	sbh.brush,
+	slh.brush_size,
+	sch.color,
+	sdh.dynamics,
+	sh.spacing,
+	sh.angle,
 	si.image,
+	scp.color,
 	of.z_order
 FROM
 	map_feature_polygon mfp
@@ -41,35 +43,40 @@ ON (
 	mfp.style_line = sl.id
 )
 LEFT JOIN 
-	style_brush slb
+	style_brush sbl
 ON (
-	sl.brush = slb.id
+	sl.brush = sbl.id
 )
-LEFT JOIN style_color slc
+LEFT JOIN style_color scl
 ON (
-	sl.color = slc.id
+	sl.color = scl.id
 )
-LEFT JOIN style_dynamics sld
+LEFT JOIN style_dynamics sdl
 ON (
-	sl.dynamics = sld.id
+	sl.dynamics = sdl.id
 )
 LEFT JOIN
-	style_line sh
+	style_hachure sh
 ON (
 	mfp.style_hachure = sh.id
 )
+LEFT JOIN
+	style_line slh
+ON (
+	sh.style_line = slh.id
+)
 LEFT JOIN 
-	style_brush shb
+	style_brush sbh
 ON (
-	sl.brush = shb.id
+	slh.brush = sbh.id
 )
-LEFT JOIN style_color shc
+LEFT JOIN style_color sch
 ON (
-	sh.color = shc.id
+	slh.color = sch.id
 )
-LEFT JOIN style_dynamics shd
+LEFT JOIN style_dynamics sdh
 ON (
-	sl.dynamics = shd.id
+	slh.dynamics = sdh.id
 )
 LEFT JOIN style_image si
 ON (
@@ -78,6 +85,10 @@ ON (
 LEFT JOIN osm_feature of
 ON (
 	mfp.osm_feature = of.id
+)
+LEFT JOIN style_color scp
+ON (
+	mfp.color = scp.id
 )
 WHERE mfp.map_style = $1
 AND of.zoom_max <= $2

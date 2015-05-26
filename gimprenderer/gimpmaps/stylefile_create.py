@@ -6,4 +6,4 @@ Created on May 18, 2015
 
 import stylefile
 
-stylefile.create_stylefile(1)
+stylefile.create_stylefile_new(1)
