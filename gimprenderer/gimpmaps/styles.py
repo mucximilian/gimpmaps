@@ -204,3 +204,11 @@ class StyleObjectText(StyleObject):
             "Font color: " + self.string_color(self.font_color) + "\n"
         )
         return out
+    
+    def get_text_style(self):
+        
+        return [
+            self.font,
+            self.font_size,
+            self.font_color
+        ]

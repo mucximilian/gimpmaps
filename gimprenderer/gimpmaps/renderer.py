@@ -473,6 +473,65 @@ class Renderer(object):
         
         return svg_geometries
     
+    def get_text(self, bbox, resolution, style_feature):
+        
+        text_points = []
+        
+        sql_selection = style_feature.get_selection_tags()
+        line_style = style_feature.get_line_style()
+        
+        # Query svg tiles from database               
+        curs_osm = self.conn_osm.cursor()
+        
+        sql = """
+            SELECT 
+                name,
+                gimpmaps_scale_text_polygon_point(
+                    way, 
+                    %s, %s, %s, %s, 
+                    %s, %s
+                ) AS svg
+            FROM (
+                SELECT
+                    *
+                FROM planet_osm_polygon 
+                WHERE ST_Intersects ( 
+                    way, 
+                    gimpmaps_get_bbox(
+                        %s, %s, %s, %s, 
+                        %s, %s,
+                        %s
+                    ) 
+                )
+            ) t
+            WHERE (""" + sql_selection + ")"
+            
+        # Get SVG tile geometry from database
+        curs_osm.execute(sql, (
+            bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+            resolution[0], resolution[1],
+            bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
+            resolution[0], resolution[1],
+            100 # Tile bbox buffer. TO DO: Determine by text length?
+            )
+        )
+        
+        # Getting text points and displaying count
+        # TO DO: Fix in SQL query: no row number even with empty result
+        for row in curs_osm.fetchall():
+            
+            # Escape if no SVG geometry is provided               
+            if (row[0] == None or row[0] ==''): 
+                continue # Skipping empty rows              
+            
+            text_points.append([row[0], row[1]])
+            
+        out = "      " + sql_selection + " (" + str(len(text_points)) + ")"
+        logging.info(out)
+        print(out)
+        
+        return text_points  
+    
     ############################################################################
     # Logging functions
     def start_logging(self, t_start, t_form, log_dir):

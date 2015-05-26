@@ -87,10 +87,10 @@ class RendererGimp(object):
         # Creating layer groups for the feature type groups       
         group_polygon = gimp.create_layer_group(parent, -1)
 
-        for style_polgon in polygon_styles:
+        for style_polygon in polygon_styles:
             
-            sql_selection = style_polgon.get_selection_tags()
-            line_style = style_polgon.get_line_style()
+            sql_selection = style_polygon.get_selection_tags()
+            line_style = style_polygon.get_line_style()
             
             # Style settings
             # TO DO: emulate brush dynamics?????
@@ -104,7 +104,7 @@ class RendererGimp(object):
             svg_geoms = self.get_svg_features(
                 bbox,
                 resolution, 
-                style_polgon
+                style_polygon
             )
             for svg_commands in svg_geoms:
                 
@@ -130,7 +130,7 @@ class RendererGimp(object):
             if (mask):
                 # Adding background image to use the mask on
                 # TO DO: Get img path from style file
-                mask_image = "img/" + style_polgon.get_image_data()[0]
+                mask_image = "img/" + style_polygon.get_image_data()[0]
                 gimp.apply_vectors_as_mask(
                     self, mask_image, group_polygon, resolution, sql_selection
                 )
@@ -150,9 +150,43 @@ class RendererGimp(object):
             self, gimp, parent, text_styles, bbox, resolution, 
             draw_outline, draw_buffer
         ):
-        pass
         
-        # TO DO: Implement!
+        self.conn_osm = self.connect_to_osm_db()
+        
+        # Creating layer groups for the feature type groups       
+        group_polygon_text = gimp.create_layer_group(parent, -1)
+        
+        for style_text in text_styles:
+            
+            sql_selection = style_text.get_selection_tags()
+            line_style = style_text.get_line_style()
+            text_style = style_text.get_text_style()
+            
+            # Style settings
+            # TO DO: emulate brush dynamics?????
+            gimp.set_context(line_style)
+                        
+            # Import SVG data into SVG drawing from database
+            text_points = self.get_text(
+                bbox,
+                resolution, 
+                style_text
+            )
+            for text_point in text_points:
+                
+                group_text_point = gimp.create_layer_group(
+                    group_polygon_text,
+                    -1
+                )
+                
+                text_layer = gimp.create_layer(resolution, 
+                                      sql_selection, group_text_point, 
+                                      -1)  
+                
+                gimp.set_foreground(text_style[2])
+                
+                gimp.draw_text(text_point, text_style)
+                
        
 class MapRendererGimp(MapRenderer, RendererGimp):
     '''

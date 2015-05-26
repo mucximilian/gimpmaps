@@ -90,6 +90,39 @@ class GimpImageManager():
         # pdb.gimp_context_set_opacity(line_style[3]) # Not working...?
         pdb.gimp_context_push()
         
+    def set_foreground(self, color):
+        pdb.gimp_context_set_foreground((color[0],color[1],color[2],100))
+        
+    def draw_text(self, text_point, text_style):
+        pdb.gimp_text_fontname(
+            self.image,
+            None, # Drawable for floating sel or None for text
+            text_point[1][0],
+            text_point[1][1],
+            text_point[0],
+            0,
+            True,
+            text_style[1],
+            UNIT_PIXEL,
+            text_style[0]
+        )
+        
+    def draw_text_outline(self, parent, text_point, text_style):
+        text = pdb.gimp_text_fontname(
+            self.image,
+            parent, # Drawable for floating sel or None for text
+            text_point[1][0],
+            text_point[1][1],
+            text_point[0],
+            0,
+            True,
+            text_style[1],
+            UNIT_PIXEL,
+            text_style[0]
+        )
+        
+        return text
+        
     def draw_vectors(self, layer):
         for vector in self.image.vectors:
             pdb.gimp_edit_stroke_vectors(layer, vector)                    
