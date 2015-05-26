@@ -222,64 +222,76 @@ class Renderer(object):
         Getting feature styles and tags of all geometry types for a zoom level.
         """
     
-        features = {}
+        zoom_style = {}
     
         # Reading the style file from the config
-        style_config = self.read_file_style()    
+        style_config = self.read_file_style()        
+        features = style_config["features"]        
         
-        zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        features_lines = sorted(
-            zoom_level["features"]["lines"],
-            key=operator.itemgetter('z_order'),
-        )
+        # LINES
+        features_lines = features["lines"]
         
         lines = []
         for line in features_lines:
-            style_object = styles.StyleObjectLine(
-                2,
-                line["osm_tags"],
-                line["z_order"],
-                line["stroke_line"]["brush"],
-                line["stroke_line"]["brush_size"],
-                line["stroke_line"]["color"],
-                line["stroke_line"]["dynamics"]
-            )
-          
-            lines.append(style_object)
-
-            logging.info(style_object.string_style())
             
-        features["lines"] = lines
+            zoom_min = line["zoom_min"]
+            zoom_max = line["zoom_max"]
+            
+            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+                style_object = styles.StyleObjectLine(
+                    2,
+                    line["osm_tags"],
+                    line["z_order"],
+                    line["stroke_line"]["brush"],
+                    line["stroke_line"]["brush_size"],
+                    line["stroke_line"]["color"],
+                    line["stroke_line"]["dynamics"]
+                )
+          
+                lines.append(style_object)
                 
-        features_polygons = sorted(
-            zoom_level["features"]["polygons"],
-            key=operator.itemgetter('z_order'),
-        )
-        
+                logging.info(style_object.string_style())
+                
+        # Sorting lines by z-order
+        lines.sort(key=lambda x: x.z_order, reverse=True)
+                
+        zoom_style["lines"] = lines
+
+        # POLYGONS
+        features_polygons = features["polygons"]
+
         polygons = []
         for polygon in features_polygons:
-            style_object = styles.StyleObjectPolygon(
-                3,
-                polygon["osm_tags"],
-                polygon["z_order"],
-                polygon["stroke_line"]["brush"],
-                polygon["stroke_line"]["brush_size"],
-                polygon["stroke_line"]["color"],
-                polygon["stroke_line"]["dynamics"],
-                polygon["stroke_hachure"]["brush"],
-                polygon["stroke_hachure"]["brush_size"],
-                polygon["stroke_hachure"]["color"],
-                polygon["stroke_hachure"]["dynamics"],
-                polygon["image"],
-            )
-          
-            polygons.append(style_object)
-
-            logging.info(style_object.string_style())
             
-        features["polygons"] = polygons
+            zoom_min = polygon["zoom_min"]
+            zoom_max = polygon["zoom_max"]
+            
+            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+                style_object = styles.StyleObjectPolygon(
+                    3,
+                    polygon["osm_tags"],
+                    polygon["z_order"],
+                    polygon["stroke_line"]["brush"],
+                    polygon["stroke_line"]["brush_size"],
+                    polygon["stroke_line"]["color"],
+                    polygon["stroke_line"]["dynamics"],
+                    polygon["stroke_hachure"]["brush"],
+                    polygon["stroke_hachure"]["brush_size"],
+                    polygon["stroke_hachure"]["color"],
+                    polygon["stroke_hachure"]["dynamics"],
+                    polygon["image"],
+                )
+              
+                polygons.append(style_object)
+    
+                logging.info(style_object.string_style())
+                
+        # Sorting polygons by z-order
+        polygons.sort(key=lambda x: x.z_order, reverse=True)
+            
+        zoom_style["polygons"] = polygons
 
-        return features
+        return zoom_style
     
     def get_text_styles(self, zoom_level):
         """
@@ -287,50 +299,74 @@ class Renderer(object):
         level.
         """
     
-        features = []
-        
-        # Reading the style file from the config
-        style_config = self.read_file_style()    
-        
-        zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        features_polygons = sorted(
-            zoom_level["text"]["polygons"],
-            key=operator.itemgetter('z_order'),
-        )
-        
-        for polygon in features_polygons:
-            style_object = styles.StyleObjectText(
-                3,
-                polygon["osm_tags"],
-                polygon["z_order"],
-                polygon["stroke_line"]["brush"],
-                polygon["stroke_line"]["brush_size"],
-                polygon["stroke_line"]["color"],
-                polygon["stroke_line"]["dynamics"],
-                polygon["font"],
-                polygon["font_size"],
-                polygon["color"]
-            )
-          
-            features.append(style_object)
-
-            logging.info(style_object.string_style())
-
-        return features
+        zoom_style = {}
     
+        # Reading the style file from the config
+        style_config = self.read_file_style()        
+        text = style_config["text"]
+        
+        # POINTS
+        # TO DO: Add point text styles     
+        
+        # POLYGONS
+        text_polygons = text["polygons"]
+        
+        polygons = []
+        for polygon in text_polygons:
+            
+            zoom_min = polygon["zoom_min"]
+            zoom_max = polygon["zoom_max"]
+            
+            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+                style_object = styles.StyleObjectText(
+                    3,
+                    polygon["osm_tags"],
+                    polygon["z_order"],
+                    polygon["stroke_line"]["brush"],
+                    polygon["stroke_line"]["brush_size"],
+                    polygon["stroke_line"]["color"],
+                    polygon["stroke_line"]["dynamics"],
+                    polygon["font"],
+                    polygon["font_size"],
+                    polygon["color"]
+                )
+              
+                polygons.append(style_object)
+    
+                logging.info(style_object.string_style())
+                
+        # Sorting polygons by z-order
+        polygons.sort(key=lambda x: x.z_order, reverse=True)
+
+        zoom_style["polygons"] = polygons
+        
     def get_bg_img(self, zoom_level):
         """
         Getting the background image for a zoom level.
         """
-        
-        style_config = self.read_file_style()    
-        
-        zoom_level = style_config["zoom_levels"][str(zoom_level)]
-        img = zoom_level["background"]
-        
-        img_path = self.style_path + "/img/" + img
 
-        return img_path
+        # Reading the style file from the config
+        style_config = self.read_file_style()        
+        bg_imgs = style_config["background"]        
+        
+        images = []
+        for bg_img in bg_imgs:
+            
+            zoom_min = bg_img["zoom_min"]
+            zoom_max = bg_img["zoom_max"]
+            
+            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+                
+                img = bg_img["image"]
+                img_path = self.style_path + "/img/" + img
+                images.append(img_path)
+
+        image = images[0]
+        
+        # TO DO:
+        # Implement checking for multiple or no results
+
+        return image
     
     ############################################################################
     def get_svg_features(self, bbox, resolution, style_feature):
