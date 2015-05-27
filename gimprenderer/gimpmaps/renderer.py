@@ -237,7 +237,7 @@ class Renderer(object):
             zoom_min = line["zoom_min"]
             zoom_max = line["zoom_max"]
             
-            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+            if (zoom_level >= zoom_min and zoom_level <= zoom_max):
                 style_object = styles.StyleObjectLine(
                     2,
                     line["osm_tags"],
@@ -266,7 +266,7 @@ class Renderer(object):
             zoom_min = polygon["zoom_min"]
             zoom_max = polygon["zoom_max"]
             
-            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+            if (zoom_level >= zoom_min and zoom_level <= zoom_max):
                 style_object = styles.StyleObjectPolygon(
                     3,
                     polygon["osm_tags"],
@@ -317,7 +317,7 @@ class Renderer(object):
             zoom_min = polygon["zoom_min"]
             zoom_max = polygon["zoom_max"]
             
-            if (zoom_level >= zoom_min or zoom_level <= zoom_max):
+            if (zoom_level >= zoom_min and zoom_level <= zoom_max):
                 style_object = styles.StyleObjectText(
                     3,
                     polygon["osm_tags"],
@@ -339,6 +339,8 @@ class Renderer(object):
         polygons.sort(key=lambda x: x.z_order, reverse=True)
 
         zoom_style["polygons"] = polygons
+        
+        return zoom_style
         
     def get_bg_img(self, zoom_level):
         """
@@ -480,7 +482,7 @@ class Renderer(object):
         sql_selection = style_feature.get_selection_tags()
         line_style = style_feature.get_line_style()
         
-        # Query svg tiles from database               
+        # Query text in tile from database               
         curs_osm = self.conn_osm.cursor()
         
         sql = """
@@ -519,6 +521,8 @@ class Renderer(object):
         # Getting text points and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
         for row in curs_osm.fetchall():
+            
+            logging.info(row[0])
             
             # Escape if no SVG geometry is provided               
             if (row[0] == None or row[0] ==''): 

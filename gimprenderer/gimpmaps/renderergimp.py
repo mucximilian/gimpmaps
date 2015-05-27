@@ -13,6 +13,7 @@ from svgsketch import hachurizer
 from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer
 from gimpmodule import GimpImageManager
+from _hotshot import resolution
 
 class RendererGimp(object):
     '''
@@ -36,44 +37,49 @@ class RendererGimp(object):
         Drawing the line features as GIMP images and saving to PNG and/or XCF
         """
         
-        self.conn_osm = self.connect_to_osm_db()
+        try:
         
-        # Creating layer groups for the feature type groups 
-        group_line = gimp.create_layer_group(parent, -1)        
-
-        for style_line in line_styles:
-                        
-            sql_selection = style_line.get_selection_tags()
-            line_style = style_line.get_line_style()
+            self.conn_osm = self.connect_to_osm_db()
             
-            # Style settings
-            # TO DO: emulate brush dynamics?????
-            gimp.set_context(line_style)
-
-            # Import SVG data into SVG drawing from database
-            svg_geoms = self.get_svg_features(
-                bbox,
-                resolution, 
-                style_line
-            )
-            
-            for svg_commands in svg_geoms:
-                         
-                svg_path = svgwrite.path.Path(svg_commands)
-                svg_path_str = svg_path.tostring()
+            # Creating layer groups for the feature type groups 
+            group_line = gimp.create_layer_group(parent, -1)        
+    
+            for style_line in line_styles:
+                            
+                sql_selection = style_line.get_selection_tags()
+                line_style = style_line.get_line_style()
                 
-                # Adding vectors for stroking of lines, outlines/mask
-                gimp.import_vectors(svg_path_str)
-        
-            # Creating image layer for geometry feature
-            layer = gimp.create_layer(resolution, 
-                                      sql_selection, group_line, 
-                                      0)  
+                # Style settings
+                # TO DO: emulate brush dynamics?????
+                gimp.set_context(line_style)
+    
+                # Import SVG data into SVG drawing from database
+                svg_geoms = self.get_svg_features(
+                    bbox,
+                    resolution, 
+                    style_line
+                )
+                
+                for svg_commands in svg_geoms:
+                             
+                    svg_path = svgwrite.path.Path(svg_commands)
+                    svg_path_str = svg_path.tostring()
+                    
+                    # Adding vectors for stroking of lines, outlines/mask
+                    gimp.import_vectors(svg_path_str)
             
-            # Drawing vectors into GIMP layer
-            gimp.draw_vectors(layer)
+                # Creating image layer for geometry feature
+                layer = gimp.create_layer(resolution, 
+                                          sql_selection, group_line, 
+                                          0)  
+                
+                # Drawing vectors into GIMP layer
+                gimp.draw_vectors(layer)
+                
+            self.conn_osm.close()
             
-        self.conn_osm.close()
+        except TypeError:
+            print "No styles for this zoom level or type error"
         
     def draw_features_polygon(
             self, gimp, parent, polygon_styles, bbox, resolution, mask
@@ -82,110 +88,122 @@ class RendererGimp(object):
         Drawing the geometry features as GIMP images and saving to PNG and/or XCF
         """
         
-        self.conn_osm = self.connect_to_osm_db()
+        try:
         
-        # Creating layer groups for the feature type groups       
-        group_polygon = gimp.create_layer_group(parent, -1)
-
-        for style_polygon in polygon_styles:
+            self.conn_osm = self.connect_to_osm_db()
             
-            sql_selection = style_polygon.get_selection_tags()
-            line_style = style_polygon.get_line_style()
-            
-            # Style settings
-            # TO DO: emulate brush dynamics?????
-            gimp.set_context(line_style)
-            
-            # TO DO: Import from style
-            spacing = 10
-            angle = 30
-            
-            # Import SVG data into SVG drawing from database
-            svg_geoms = self.get_svg_features(
-                bbox,
-                resolution, 
-                style_polygon
-            )
-            for svg_commands in svg_geoms:
+            # Creating layer groups for the feature type groups       
+            group_polygon = gimp.create_layer_group(parent, -1)
+    
+            for style_polygon in polygon_styles:
                 
-                svg_path = svgwrite.path.Path(svg_commands)
-                svg_path_str = svg_path.tostring()
-        
-                # Import vectors to GIMP image
-                if (mask):                    
-                    # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(svg_path_str)
-                else:
-                    # Creating hachure vectors
-                    # TO DO: Adding outlines
-                    svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
-
-                    hachure = svg_renderer.get_svg_hachure(svg_path)
-                    if (hachure is not None):                   
-                        gimp.import_vectors(hachure)
-                    else:
-                        continue
-                    
-            # Drawing polygon feature_styles                
-            if (mask):
-                # Adding background image to use the mask on
-                # TO DO: Get img path from style file
-                mask_image = "img/" + style_polygon.get_image_data()[0]
-                gimp.apply_vectors_as_mask(
-                    self, mask_image, group_polygon, resolution, sql_selection
+                sql_selection = style_polygon.get_selection_tags()
+                line_style = style_polygon.get_line_style()
+                
+                # Style settings
+                # TO DO: emulate brush dynamics?????
+                gimp.set_context(line_style)
+                
+                # TO DO: Import from style
+                spacing = 10
+                angle = 30
+                
+                # Import SVG data into SVG drawing from database
+                svg_geoms = self.get_svg_features(
+                    bbox,
+                    resolution, 
+                    style_polygon
                 )
-                            
-            else :
-                
-                # Creating image layer for geometry feature
-                layer = gimp.create_layer(resolution, sql_selection,
-                                          group_polygon, 0) 
-                
-                # Drawing vectors into GIMP layer
-                gimp.draw_vectors(layer)
+                for svg_commands in svg_geoms:
+                    
+                    svg_path = svgwrite.path.Path(svg_commands)
+                    svg_path_str = svg_path.tostring()
             
-        self.conn_osm.close()
-        
+                    # Import vectors to GIMP image
+                    if (mask):                    
+                        # Adding vectors for stroking of lines, outlines/mask
+                        gimp.import_vectors(svg_path_str)
+                    else:
+                        # Creating hachure vectors
+                        # TO DO: Adding outlines
+                        svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
+    
+                        hachure = svg_renderer.get_svg_hachure(svg_path)
+                        if (hachure is not None):                   
+                            gimp.import_vectors(hachure)
+                        else:
+                            continue
+                        
+                # Drawing polygon feature_styles                
+                if (mask):
+                    # Adding background image to use the mask on
+                    # TO DO: Get img path from style file
+                    mask_image = "img/" + style_polygon.get_image_data()[0]
+                    gimp.apply_vectors_as_mask(
+                        self, mask_image, group_polygon, resolution, sql_selection
+                    )
+                                
+                else :
+                    
+                    # Creating image layer for geometry feature
+                    layer = gimp.create_layer(resolution, sql_selection,
+                                              group_polygon, 0) 
+                    
+                    # Drawing vectors into GIMP layer
+                    gimp.draw_vectors(layer)
+                
+            self.conn_osm.close()
+            
+        except TypeError:
+            print "No styles for this zoom level or type error"
+            
     def draw_text(
             self, gimp, parent, text_styles, bbox, resolution, 
             draw_outline, draw_buffer
         ):
         
-        self.conn_osm = self.connect_to_osm_db()
+        try:
         
-        # Creating layer groups for the feature type groups       
-        group_polygon_text = gimp.create_layer_group(parent, -1)
-        
-        for style_text in text_styles:
+            self.conn_osm = self.connect_to_osm_db()
             
-            sql_selection = style_text.get_selection_tags()
-            line_style = style_text.get_line_style()
-            text_style = style_text.get_text_style()
+            # Creating layer groups for the feature type groups       
+            group_polygon_text = gimp.create_layer_group(parent, -1)
             
-            # Style settings
-            # TO DO: emulate brush dynamics?????
-            gimp.set_context(line_style)
-                        
-            # Import SVG data into SVG drawing from database
-            text_points = self.get_text(
-                bbox,
-                resolution, 
-                style_text
-            )
-            for text_point in text_points:
+            for style_text in text_styles:
                 
-                group_text_point = gimp.create_layer_group(
-                    group_polygon_text,
-                    -1
+                sql_selection = style_text.get_selection_tags()
+                line_style = style_text.get_line_style()
+                text_style = style_text.get_text_style()               
+                            
+                # Import labels and coordinates from database
+                text_points = self.get_text(
+                    bbox,
+                    resolution, 
+                    style_text
                 )
                 
-                text_layer = gimp.create_layer(resolution, 
-                                      sql_selection, group_text_point, 
-                                      -1)  
-                
-                gimp.set_foreground(text_style[2])
-                
-                gimp.draw_text(text_point, text_style)
+                for text_point in text_points:
+                    
+                    group_text = gimp.create_layer_group(
+                        group_polygon_text,
+                        -1
+                    )
+                    
+                    text_layer = gimp.create_layer(resolution, 
+                                          sql_selection, group_text, 
+                                          -1)                   
+                    
+                    # gimp.draw_text(text_point, text_style, text_layer)
+                    gimp.draw_text_plus_outline(
+                        text_layer, group_text,
+                        text_point, text_style,
+                        line_style,
+                        resolution
+                    )
+                    
+            
+        except TypeError:
+            print "No styles for this zoom level or type error"
                 
        
 class MapRendererGimp(MapRenderer, RendererGimp):
@@ -220,22 +238,25 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         gimp.insert_image_tiled(256, resolution, bg_image, parent, -1)        
         
         # Drawing features
-        feature_styles = self.get_feature_styles(zoom)
-        
-        ## Polygon features
-        self.draw_features_polygon(
-            gimp, parent, feature_styles["polygons"], bbox, resolution, False
-        )
-        
-        ## Line features
-        self.draw_features_line(
-            gimp, parent, feature_styles["lines"], bbox, resolution
-        )
-        
+#         feature_styles = self.get_feature_styles(zoom)
+#         
+#         ## Polygon features
+#         polygon_styles = feature_styles["polygons"]
+#         self.draw_features_polygon(
+#             gimp, parent, polygon_styles, bbox, resolution, False
+#         )
+#         
+#         ## Line features
+#         line_styles = feature_styles["lines"]
+#         self.draw_features_line(
+#             gimp, parent, line_styles, bbox, resolution
+#         )
+#         
         # Drawing the text
         text_styles = self.get_text_styles(zoom)
+        polygon_text_styles = text_styles["polygons"]
         self.draw_text(
-            gimp, parent, text_styles, bbox, resolution, True, False
+            gimp, parent, polygon_text_styles, bbox, resolution, True, False
         )  
                       
         # Save images as PNG and XCF

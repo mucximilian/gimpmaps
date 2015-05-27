@@ -101,7 +101,7 @@ class StyleObjectLine(StyleObject):
         )
         return out
     
-class StyleObjectPolygon(StyleObject):
+class StyleObjectPolygon(StyleObjectLine):
     """
     Specification of the StyleObject class for line features
     """
@@ -141,19 +141,7 @@ class StyleObjectPolygon(StyleObject):
             "Image: " + self.image + "\n"
         )
         return out
-    
-    def get_line_style(self):
-        """
-        Returns line style parameters
-        """
-        
-        return [
-            self.brush,
-            self.brush_size,
-            self.color,
-            self.dynamics
-        ]
-        
+
     def get_hachure_style(self):
         """
         Returns line style parameters
@@ -169,7 +157,7 @@ class StyleObjectPolygon(StyleObject):
     def get_image_data(self):
         return self.image
     
-class StyleObjectText(StyleObject):
+class StyleObjectText(StyleObjectLine):
     """
     Specification of the StyleObject class for line features
     """
