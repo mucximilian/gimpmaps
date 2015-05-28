@@ -182,25 +182,34 @@ class RendererGimp(object):
                     style_text
                 )
                 
+                i = 0
+                
                 for text_point in text_points:
                     
-                    group_text = gimp.create_layer_group(
-                        group_polygon_text,
-                        -1
-                    )
+                    # Check if point is on the image as outliers crash selection 
+                    if (text_point[1][0] > 0 and -text_point[1][1] > 0):
                     
-                    text_layer = gimp.create_layer(resolution, 
-                                          sql_selection, group_text, 
-                                          -1)                   
-                    
-                    # gimp.draw_text(text_point, text_style, text_layer)
-                    gimp.draw_text_plus_outline(
-                        text_layer, group_text,
-                        text_point, text_style,
-                        line_style,
-                        resolution
-                    )
-                    
+                        group_text = gimp.create_layer_group(
+                            group_polygon_text,
+                            -1
+                        )
+                        
+                        print i
+                        
+                        text_layer = gimp.create_layer(resolution, 
+                                              sql_selection + str(i), group_text, 
+                                              -1)                   
+                        
+                        gimp.draw_text_with_buffer(text_point, text_style, 
+                            text_layer, group_text, resolution)
+    #                     gimp.draw_text_plus_outline(
+    #                         text_layer, group_text,
+    #                         text_point, text_style,
+    #                         line_style,
+    #                         resolution
+    #                     )
+                        
+                        i+=1
             
         except TypeError:
             print "No styles for this zoom level or type error"

@@ -514,7 +514,7 @@ class Renderer(object):
             resolution[0], resolution[1],
             bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
             resolution[0], resolution[1],
-            100 # Tile bbox buffer. TO DO: Determine by text length?
+            0 # Tile bbox buffer. TO DO: Determine by text length?
             )
         )
         

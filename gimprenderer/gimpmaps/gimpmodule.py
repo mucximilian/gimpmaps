@@ -109,12 +109,50 @@ class GimpImageManager():
             text_style[0]
         )
         
+    def draw_text_with_buffer(self, text_point, text_style, parent, text_group, resolution):
+        self.set_foreground(text_style[2])
+        
+        print text_point
+        
+        text = pdb.gimp_text_fontname(
+            self.image,
+            parent, # Drawable for floating sel or None for text
+            text_point[1][0],
+            -text_point[1][1], # SVG x coordinates are flipped!
+            text_point[0],
+            0,
+            True,
+            text_style[1],
+            UNIT_PIXEL,
+            text_style[0]
+        )
+        
+        vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
+        pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+        
+        self.select_vectors()
+        
+        pdb.gimp_selection_grow(self.image, 3)
+        
+        self.set_foreground([50, 100, 150])
+        
+        pdb.gimp_floating_sel_anchor(text)
+        
+        text_layer_stroke = self.create_layer(
+            resolution,
+            text_point[0],
+            text_group,
+            1
+        )
+        
+        pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
+        
+        pdb.gimp_selection_clear(self.image)
+        
     def draw_text_plus_outline(self, text_layer, text_group, text_point, 
                                text_style, line_style, resolution):
         
-        pdb.gimp_context_set_foreground(
-            (text_style[2][0], text_style[2][1], text_style[2][2], 100)
-        )
+        self.set_foreground(text_style[2])
         
         text = pdb.gimp_text_fontname(
             self.image,
@@ -160,8 +198,10 @@ class GimpImageManager():
             pdb.gimp_image_remove_vectors(self.image, vector)
             
     def simplify_selection(self):
-        # Grow and shrink selection to even out small selections
-        # Not used for rendering, test only
+        """
+        Grow and shrink selection to even out small selections
+        Not used for rendering, test only
+        """
         pdb.gimp_selection_shrink(self.image, 2)
         pdb.gimp_selection_grow(self.image, 2)
         pdb.gimp_selection_grow(self.image, 2)
@@ -235,7 +275,7 @@ class GimpImageManager():
             pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
             
         # Selecting vectors in GIMP layer
-        self.select_vectors(self.image)
+        self.select_vectors()
         
         # Apply mask of collected vectors on background image
         mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
