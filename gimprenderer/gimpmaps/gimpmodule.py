@@ -93,72 +93,105 @@ class GimpImageManager():
     def set_foreground(self, color):
         pdb.gimp_context_set_foreground((color[0],color[1],color[2],100))
         
-    def draw_text(self, text_point, text_style, parent):
-        self.set_foreground(text_style[2])
+    def draw_label(self,
+        text_layer, group_text, text_point, 
+        text_style, line_style, resolution,
+        cmd):
         
-        pdb.gimp_text_fontname(
-            self.image,
-            parent, # Drawable for floating sel or None for text
-            text_point[1][0],
-            -text_point[1][1], # SVG x coordinates are flipped!
-            text_point[0],
-            0,
-            True,
-            text_style[1],
-            UNIT_PIXEL,
-            text_style[0]
-        )
+        if (cmd == "text"):
+            
+            self.draw_text(text_point, text_style, text_layer)
+            
+        elif(cmd == "text_buffer"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
+            
+        elif(cmd == "text_buffercolor"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
+            
+        elif(cmd == "text_buffermask"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
+            
+        elif(cmd == "text_outline"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
         
-    def draw_text_with_buffer(self, text_point, text_style, parent, text_group, resolution):
-        self.set_foreground(text_style[2])
+            self.draw_text_outline(text, resolution, text_group, line_style)
+            
+        elif(cmd == "text_buffer_buffercolor"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
+            
+            vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
+            pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+            
+            self.select_vectors()
+            
+            pdb.gimp_selection_grow(self.image, 2)
+            pdb.gimp_floating_sel_anchor(text)        
+            
+            text_layer_stroke = self.create_layer(
+                resolution,
+                text_point[0],
+                group_text,
+                1
+            )
+            
+            self.set_foreground([255, 255, 255])        
+            pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
+            
+            pdb.gimp_selection_clear(self.image)
+            
+        elif(cmd == "text_buffer_buffermask"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
         
-        print text_point
+            vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
+            pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+            
+            self.select_vectors()
+            
+            pdb.gimp_selection_grow(self.image, 2)
+            pdb.gimp_floating_sel_anchor(text)        
+            
+            text_layer_stroke = self.create_layer(
+                resolution,
+                text_point[0],
+                text_group,
+                1
+            )
+            
+            self.set_foreground([255, 255, 255])        
+            pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
+            
+            pdb.gimp_selection_clear(self.image)
+            
+        elif(cmd == "outline"):
+            
+            text = self.draw_text(text_point, text_style, text_layer)
         
-        text = pdb.gimp_text_fontname(
-            self.image,
-            parent, # Drawable for floating sel or None for text
-            text_point[1][0],
-            -text_point[1][1], # SVG x coordinates are flipped!
-            text_point[0],
-            0,
-            True,
-            text_style[1],
-            UNIT_PIXEL,
-            text_style[0]
-        )
+            self.draw_text_outline(text, resolution, text_group, line_style)
+            
+            pdb.gimp_image_remove_layer (text_layer)
         
-        vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
-        pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+        elif(cmd == "outline_buffercolor"):
+            
+            pass
         
-        self.select_vectors()
-        
-        pdb.gimp_selection_grow(self.image, 3)
-        
-        self.set_foreground([50, 100, 150])
-        
-        pdb.gimp_floating_sel_anchor(text)
-        
-        text_layer_stroke = self.create_layer(
-            resolution,
-            text_point[0],
-            text_group,
-            1
-        )
-        
-        pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
-        
-        pdb.gimp_selection_clear(self.image)
-        
-    def draw_text_plus_outline(self, text_layer, text_group, text_point, 
-                               text_style, line_style, resolution):
-        
+        elif(cmd == "outline_buffermask"):
+            
+            pass        
+                
+    def draw_text(self, text_point, text_style, text_layer):
         self.set_foreground(text_style[2])
         
         text = pdb.gimp_text_fontname(
             self.image,
             text_layer, # Drawable for floating sel or None for text
             text_point[1][0],
-            text_point[1][1],
+            -text_point[1][1], # SVG x coordinates are flipped!
             text_point[0],
             0,
             True,
@@ -166,6 +199,10 @@ class GimpImageManager():
             UNIT_PIXEL,
             text_style[0]
         )
+        
+        return text        
+        
+    def draw_text_outline(self, text, resolution, text_group, line_style):
         
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
         pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
@@ -179,9 +216,8 @@ class GimpImageManager():
             -1
         )
         
-        self.set_context(line_style)
-    
-        self.draw_vectors(text_layer_stroke)
+        self.set_context(line_style)    
+        self.draw_vectors(text_layer_stroke)        
     
     def get_text_extent(self, text_point, text_style):
         extent = pdb.gimp_text_get_extents_fontname(

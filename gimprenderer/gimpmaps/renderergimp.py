@@ -182,8 +182,6 @@ class RendererGimp(object):
                     style_text
                 )
                 
-                i = 0
-                
                 for text_point in text_points:
                     
                     # Check if point is on the image as outliers crash selection 
@@ -194,22 +192,16 @@ class RendererGimp(object):
                             -1
                         )
                         
-                        print i
-                        
                         text_layer = gimp.create_layer(resolution, 
                                               sql_selection + str(i), group_text, 
                                               -1)                   
                         
-                        gimp.draw_text_with_buffer(text_point, text_style, 
-                            text_layer, group_text, resolution)
-    #                     gimp.draw_text_plus_outline(
-    #                         text_layer, group_text,
-    #                         text_point, text_style,
-    #                         line_style,
-    #                         resolution
-    #                     )
-                        
-                        i+=1
+                        gimp.draw_label(
+                            text_layer, group_text,
+                            text_point, text_style,
+                            line_style,
+                            resolution
+                        )
             
         except TypeError:
             print "No styles for this zoom level or type error"
