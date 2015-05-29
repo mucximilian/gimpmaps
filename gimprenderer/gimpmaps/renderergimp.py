@@ -200,7 +200,8 @@ class RendererGimp(object):
                             text_layer, group_text,
                             text_point, text_style,
                             line_style,
-                            resolution
+                            resolution,
+                            "text"
                         )
             
         except TypeError:
