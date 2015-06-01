@@ -35,8 +35,6 @@ def run():
     bg_image = "gimpmaps/styles/chalk/img/texture_blackboard.png"
     gimp.insert_image_tiled(256, resolution, bg_image, parent, -1)
     
-    print gimp.background
-    
     # Resetting GIMP image context
     gimp.reset_context()  
     

@@ -233,8 +233,11 @@ class GimpImageManager():
     
                 pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)
                 
-        print self.background
-        bg_copy = pdb.gimp_layer_copy(self.background)
+        pdb.gimp_selection_grow(self.image, 3)
+        
+        bg_copy = pdb.gimp_layer_copy(self.background, 1)
+        
+        pdb.gimp_image_insert_layer(self.image, bg_copy, group_label, -1)
                 
         mask = pdb.gimp_layer_create_mask(bg_copy, 4)
         pdb.gimp_layer_add_mask(bg_copy, mask)
