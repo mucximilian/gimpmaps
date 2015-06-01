@@ -169,11 +169,7 @@ class RendererGimp(object):
             # Creating layer groups for the feature type groups       
             group_polygon_text = gimp.create_layer_group(parent, -1)
             
-            for style_text in text_styles:
-                
-                sql_selection = style_text.get_selection_tags()
-                line_style = style_text.get_line_style()
-                text_style = style_text.get_text_style()               
+            for style_text in text_styles:             
                             
                 # Import labels and coordinates from database
                 text_points = self.get_text(
@@ -185,21 +181,10 @@ class RendererGimp(object):
                 for text_point in text_points:
                     
                     # Check if point is on the image as outliers crash selection 
-                    if (text_point[1][0] > 0 and -text_point[1][1] > 0):
-                    
-                        group_text = gimp.create_layer_group(
-                            group_polygon_text,
-                            -1
-                        )
-                        
-                        text_layer = gimp.create_layer(resolution, 
-                                              sql_selection + str(i), group_text, 
-                                              -1)                   
+                    if (text_point[1][0] > 0 and text_point[1][1] > 0):           
                         
                         gimp.draw_label(
-                            text_layer, group_text,
-                            text_point, text_style,
-                            line_style,
+                            group_polygon_text, text_point, style_text,
                             resolution,
                             "text"
                         )

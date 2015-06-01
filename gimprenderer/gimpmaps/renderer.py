@@ -480,7 +480,6 @@ class Renderer(object):
         text_points = []
         
         sql_selection = style_feature.get_selection_tags()
-        line_style = style_feature.get_line_style()
         
         # Query text in tile from database               
         curs_osm = self.conn_osm.cursor()
@@ -528,7 +527,7 @@ class Renderer(object):
             if (row[0] == None or row[0] ==''): 
                 continue # Skipping empty rows              
             
-            text_points.append([row[0], row[1]])
+            text_points.append([row[0], [row[1][0], -row[1][1]]])
             
         out = "      " + sql_selection + " (" + str(len(text_points)) + ")"
         logging.info(out)
