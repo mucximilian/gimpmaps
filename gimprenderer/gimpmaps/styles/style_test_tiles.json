@@ -24,7 +24,8 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }, 
             {
                 "z_order": 3, 
@@ -49,7 +50,8 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }, 
             {
                 "z_order": 2, 
@@ -74,7 +76,8 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }, 
             {
                 "z_order": 1, 
@@ -99,7 +102,8 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }
         ]
     }, 

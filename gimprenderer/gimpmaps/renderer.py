@@ -328,7 +328,8 @@ class Renderer(object):
                     polygon["stroke_line"]["dynamics"],
                     polygon["font"],
                     polygon["font_size"],
-                    polygon["color"]
+                    polygon["color"],
+                    polygon["effect"]
                 )
               
                 polygons.append(style_object)

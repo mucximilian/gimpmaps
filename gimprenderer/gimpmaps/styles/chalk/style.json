@@ -3,7 +3,7 @@
         "polygons": [
             {
                 "z_order": 4, 
-                "zoom_min": 16, 
+                "zoom_min": 15, 
                 "font_size": 10, 
                 "osm_tags": [
                     "building='cathedral'"
@@ -24,11 +24,12 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }, 
             {
                 "z_order": 3, 
-                "zoom_min": 16, 
+                "zoom_min": 15, 
                 "font_size": 10, 
                 "osm_tags": [
                     "tourism='attraction'"
@@ -49,12 +50,39 @@
                     "brush": "Oils 02", 
                     "brush_size": 2
                 }, 
-                "font": "Arial"
-            },
+                "font": "Arial", 
+                "effect": "outline_buffermask"
+            }, 
+            {
+                "z_order": 2, 
+                "zoom_min": 14, 
+                "font_size": 10, 
+                "osm_tags": [
+                    "admin_level='9' OR admin_level='10'"
+                ], 
+                "zoom_max": 20, 
+                "color": [
+                    255, 
+                    255, 
+                    255
+                ], 
+                "stroke_line": {
+                    "color": [
+                        240, 
+                        240, 
+                        240
+                    ], 
+                    "dynamics": "Det3", 
+                    "brush": "Oils 02", 
+                    "brush_size": 2
+                }, 
+                "font": "Arial", 
+                "effect": "outline_buffermask"
+            }, 
             {
                 "z_order": 1, 
                 "zoom_min": 10, 
-                "font_size": 36, 
+                "font_size": 10, 
                 "osm_tags": [
                     "admin_level='6'"
                 ], 
@@ -66,15 +94,16 @@
                 ], 
                 "stroke_line": {
                     "color": [
-                        128, 
-                        0, 
-                        128
+                        240, 
+                        240, 
+                        240
                     ], 
                     "dynamics": "Det3", 
                     "brush": "Oils 02", 
-                    "brush_size": 6
+                    "brush_size": 2
                 }, 
-                "font": "Arial"
+                "font": "Arial", 
+                "effect": "outline_buffermask"
             }
         ]
     }, 

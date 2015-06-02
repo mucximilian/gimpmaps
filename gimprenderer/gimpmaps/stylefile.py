@@ -301,7 +301,8 @@ def create_stylefile_new(map_style_id):
                 "color": row[8],
                 "z_order": row[9],
                 "zoom_min":row[10],
-                "zoom_max":row[11]
+                "zoom_max":row[11],
+                "effect":row[12]
             }
             
             text_polygons.append(feature)
@@ -355,3 +356,8 @@ def read_stylefile(read_file):
         print line["stroke_line"]["brush"]
         print line["stroke_line"]["brush_size"]
         print line["osm_tags"]
+        
+
+create_stylefile_new(1)
+
+# read_stylefile("styles/test.json")

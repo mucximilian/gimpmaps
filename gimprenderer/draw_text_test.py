@@ -26,7 +26,8 @@ def run():
                     "Det3",
                     "Arial",
                     32,
-                    [200,200,200]
+                    [200,200,200],
+                    "text"
                 )
     
     # Creating a parent layer group for all the layer (groups) added later
@@ -43,8 +44,7 @@ def run():
     gimp.draw_labels(
         group_polygon_text,
         text_points, style_text,
-        resolution,
-        "outline_buffermask"
+        resolution
     )
         
     gimp.save_image("gimpmaps/results/draw_text_test", parent, True, True)

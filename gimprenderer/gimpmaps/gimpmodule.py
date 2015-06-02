@@ -106,23 +106,26 @@ class GimpImageManager():
         pdb.gimp_context_set_foreground((color[0],color[1],color[2],100))
         
     def draw_labels(self, group_polygon_text, text_points, style_text,
-                   resolution, effect):
+                   resolution):
         """
         This functions draws text labels (containing of a text and two 
         coordinates for the placement) in an image using the specified effect.
         
         The available effects are:
+        
         text
         text_buffercolor
         text_buffermask
         text_outline
         text_outline_buffermask
-        outline_text
         text_outline_buffercolor
+        outline_text
         outline
         outline_buffercolor
         outline_buffermask
         """
+        
+        effect = style_text.effect
         
         if (effect =="text_buffermask" or 
             effect == "text_outline_buffermask" or
