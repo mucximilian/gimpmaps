@@ -105,72 +105,125 @@ class GimpImageManager():
     def set_foreground(self, color):
         pdb.gimp_context_set_foreground((color[0],color[1],color[2],100))
         
-    def draw_label(self, group_polygon_text, text_point, style_text,
-                   resolution, cmd):
+    def draw_labels(self, group_polygon_text, text_points, style_text,
+                   resolution, effect):
+        """
+        This functions draws text labels (containing of a text and two 
+        coordinates for the placement) in an image using the specified effect.
         
-        group_label = self.create_layer_group(group_polygon_text, -1)
-             
-        line_style = style_text.get_line_style()
-        text_style = style_text.get_text_style() 
-               
-        # Create text layer with 100 px buffer around original image
-        resolution_new = [resolution[0] + 200, resolution[0] + 200]               
-        text_layer = self.create_layer(resolution_new, text_point[0], 
-                                       group_label, -1)        
-        pdb.gimp_layer_translate (text_layer, -100, -100)   
+        The available effects are:
+        text
+        text_buffercolor
+        text_buffermask
+        text_outline
+        text_outline_buffermask
+        outline_text
+        text_outline_buffercolor
+        outline
+        outline_buffercolor
+        outline_buffermask
+        """
         
-        if (cmd == "text"):
+        if (effect =="text_buffermask" or 
+            effect == "text_outline_buffermask" or
+            effect == "outline_buffermask"):
             
-            text = self.draw_text(text_point, text_style, text_layer)
-            
-            pdb.gimp_floating_sel_anchor(text)
-            
-        elif(cmd == "text_buffercolor"):
-            
-            text = self.draw_text(text_point, text_style, text_layer)
-            
-            self.draw_textbuffer_color(text, resolution, 
-                                       text_point, group_label)
-            
-        elif(cmd == "text_outline"):
-            
-            text = self.draw_text(text_point, text_style, text_layer)
+            self.draw_textbuffer_mask(
+                group_polygon_text, 
+                text_points, style_text,
+                resolution
+            ) 
         
-            self.draw_text_outline(text, resolution, group_label, 
-                                   line_style, text_point[0])
-            
-            pdb.gimp_floating_sel_anchor(text)
-            
-        elif(cmd == "text_outline_buffercolor"):
-            
-            text = self.draw_text(text_point, text_style, text_layer)
-            
-            self.draw_text_outline(text, resolution, group_label, 
-                                   line_style, text_point[0])
-            
-            self.draw_textbuffer_color(text, resolution, 
-                                       text_point, group_label)
-            
-        elif(cmd == "outline"):
-            
-            text = self.draw_text(text_point, text_style, text_layer)
+        for text_point in text_points:
+                    
+            # Check if point is on the image as outliers crash selection 
+            if (text_point[1][0] > 0 and text_point[1][1] > 0):  
         
-            self.draw_text_outline(text, resolution, group_label,
-                                   line_style, text_point[0])
-            
-            self.remove_layer(text_layer)
-        
-        elif(cmd == "outline_buffercolor"):
-            
-            text = self.draw_text(text_point, text_style, text_layer)
-        
-            self.draw_text_outline(text, resolution, group_label, 
-                                   line_style, text_point[0])
-            
-            self.draw_textbuffer_color(text, resolution, 
-                                       text_point, group_label)
-            
-            self.remove_layer(text_layer)
+                group_label = self.create_layer_group(group_polygon_text, -1)
+                     
+                line_style = style_text.get_line_style()
+                text_style = style_text.get_text_style() 
+                       
+                # Create text layer with 100 px buffer around original image
+                # TO DO: Adding buffer as configuration parameter
+                img_buffer = 200
+                resolution_new = [
+                    resolution[0] + img_buffer,
+                    resolution[0] + img_buffer
+                ]
+                               
+                text_layer = self.create_layer(resolution_new, text_point[0], 
+                                               group_label, -1)        
+                pdb.gimp_layer_translate (text_layer, -100, -100)   
+                
+                if (effect == "text" or 
+                    effect == "text_buffermask"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                    
+                    pdb.gimp_floating_sel_anchor(text)
+                    
+                elif(effect == "text_buffercolor"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                    
+                    self.draw_textbuffer_color(text, resolution, 
+                                               text_point, group_label)
+                    
+                elif(effect == "text_outline" or
+                    effect == "text_outline_buffermask"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                
+                    self.draw_text_outline(text, resolution_new, group_label, 
+                                           line_style, text_point[0])
+                    
+                    pdb.gimp_floating_sel_anchor(text)
+                    
+                elif(effect == "outline_text"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                
+                    self.draw_text_outline(text, resolution_new, group_label, 
+                                           line_style, text_point[0])
+                    
+                    pdb.gimp_image_raise_item(self.image, text_layer)
+                    
+                    pdb.gimp_floating_sel_anchor(text)
+                    
+                elif(effect == "text_outline_buffercolor"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                    
+                    self.draw_textbuffer_color(text, resolution, 
+                                               text_point, group_label)
+                    
+                    self.draw_text_outline(text, resolution, group_label, 
+                                           line_style, text_point[0])
+                    
+                    pdb.gimp_floating_sel_anchor(text)
+                    
+                elif(effect == "outline" or
+                     effect == "outline_buffermask"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                
+                    self.draw_text_outline(text, resolution, group_label,
+                                           line_style, text_point[0])
+                    
+                    self.remove_layer(text_layer)
+                
+                elif(effect == "outline_buffercolor"):
+                    
+                    text = self.draw_text(text_point, text_style, text_layer)
+                
+                    self.draw_text_outline(text, resolution, group_label, 
+                                           line_style, text_point[0])
+                    
+                    self.draw_textbuffer_color(text, resolution, 
+                                               text_point, group_label)
+                    
+                    self.remove_layer(text_layer)
                 
     def draw_text(self, text_point, text_style, text_layer):
         
@@ -198,8 +251,7 @@ class GimpImageManager():
         
         self.select_vectors()
         
-        pdb.gimp_selection_grow(self.image, 2)
-        pdb.gimp_floating_sel_anchor(text)        
+        pdb.gimp_selection_grow(self.image, 2)      
         
         text_layer_stroke = self.create_layer(
             resolution,
@@ -222,18 +274,21 @@ class GimpImageManager():
         
         for text_point in text_points:
             
-            text_layer = self.create_layer(resolution, text_point[0], 
-                                       group_label, -1)            
-            text = self.draw_text(text_point, text_style, text_layer)
-        
-            vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
-            pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+            # Check if point is on the image as outliers crash selection 
+            if (text_point[1][0] > 0 and text_point[1][1] > 0):
             
-            for vector in self.image.vectors:
-    
-                pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)
+                text_layer = self.create_layer(resolution, text_point[0], 
+                                           group_label, -1)            
+                text = self.draw_text(text_point, text_style, text_layer)
+            
+                vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
+                pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
+                    
+                self.remove_layer(text_layer)
+            
+        self.select_vectors()
                 
-        pdb.gimp_selection_grow(self.image, 3)
+        pdb.gimp_selection_grow(self.image, 5)
         
         bg_copy = pdb.gimp_layer_copy(self.background, 1)
         
@@ -244,7 +299,7 @@ class GimpImageManager():
         
         pdb.gimp_selection_clear(self.image)
         
-    def draw_text_outline(self, text, resolution, text_group, 
+    def draw_text_outline(self, text, resolution_new, text_group, 
                           line_style, label):
         
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
@@ -253,7 +308,7 @@ class GimpImageManager():
         # pdb.gimp_floating_sel_anchor(text)        
         
         text_layer_stroke = self.create_layer(
-            resolution,
+            resolution_new,
             "Outline " + label,
             text_group,
             -1
@@ -272,7 +327,9 @@ class GimpImageManager():
         return extent
         
     def draw_vectors(self, layer):
+        
         for vector in self.image.vectors:
+                     
             pdb.gimp_edit_stroke_vectors(layer, vector)                    
             pdb.gimp_image_remove_vectors(self.image, vector)
             
@@ -337,7 +394,9 @@ class GimpImageManager():
         )
         
     def select_vectors(self):
+        
         for vector in self.image.vectors:
+            
             pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)                        
             pdb.gimp_image_remove_vectors(self.image, vector)
             

@@ -20,12 +20,12 @@ def run():
                     3,
                     ["osm_tags"],
                     1,
-                    "Oils 02",
-                    6,
+                    "2. Hardness 075",
+                    4,
                     [100,100,100],
                     "Det3",
                     "Arial",
-                    24,
+                    32,
                     [200,200,200]
                 )
     
@@ -39,20 +39,13 @@ def run():
     gimp.reset_context()  
     
     group_polygon_text = gimp.create_layer_group(parent, -1)
-    
-    gimp.draw_textbuffer_mask(
-            group_polygon_text, 
-            text_points, style_text,
-            resolution)       
-    
-    for text_point in text_points:
         
-        gimp.draw_label(
-            group_polygon_text,
-            text_point, style_text,
-            resolution,
-            "text"
-        )
+    gimp.draw_labels(
+        group_polygon_text,
+        text_points, style_text,
+        resolution,
+        "outline_buffermask"
+    )
         
     gimp.save_image("gimpmaps/results/draw_text_test", parent, True, True)
         

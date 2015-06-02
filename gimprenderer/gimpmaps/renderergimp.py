@@ -176,18 +176,13 @@ class RendererGimp(object):
                     bbox,
                     resolution, 
                     style_text
-                )
-                
-                for text_point in text_points:
-                    
-                    # Check if point is on the image as outliers crash selection 
-                    if (text_point[1][0] > 0 and text_point[1][1] > 0):           
+                )         
                         
-                        gimp.draw_label(
-                            group_polygon_text, text_point, style_text,
-                            resolution,
-                            "text"
-                        )
+                gimp.draw_labelS(
+                    group_polygon_text, text_points, style_text,
+                    resolution,
+                    "text"
+                )
             
         except TypeError:
             print "No styles for this zoom level or type error"
