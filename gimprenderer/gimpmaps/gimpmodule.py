@@ -138,6 +138,7 @@ class GimpImageManager():
             resolution[0] + img_buffer
         ]
         
+        # Draw buffer mask first (as label background)
         if (effect =="text_buffermask" or 
             effect == "text_outline_buffermask" or
             effect == "outline_buffermask"):
@@ -147,8 +148,6 @@ class GimpImageManager():
                 text_points, style_text,
                 resolution
             )
-            
-            print "drawing buffermask"
         
         for text_point in text_points:
                     
@@ -248,6 +247,10 @@ class GimpImageManager():
             return False
                 
     def draw_text(self, text_point, text_style, text_layer):
+        """
+        Basic text rendering function. Draws the provided text into a layer and
+        returns the text.
+        """
         
         self.set_foreground(text_style[2])
         
@@ -268,6 +271,10 @@ class GimpImageManager():
     
     def draw_textbuffer_color(self, text, resolution, text_point, 
                               group_text, style_text):
+        """
+        This function calculates a buffer around the text using the text 
+        outline vectors and fills the buffer with color.
+        """
         
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
         pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
@@ -293,6 +300,10 @@ class GimpImageManager():
         
     def draw_textbuffer_mask(self, group_polygon_text, text_points,
                              style_text, resolution):
+        """
+        This function calculates a buffer around the text using the text 
+        outline vectors and uses it as a mask on the background image.
+        """
         
         group_label = self.create_layer_group(group_polygon_text, -1)
         
@@ -329,6 +340,10 @@ class GimpImageManager():
         
     def draw_text_outline(self, text, resolution_new, text_group, 
                           line_style, label):
+        """
+        This function calculates the text outline vectors and strokes them
+        using a provided line style.
+        """
         
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
         pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
@@ -346,6 +361,9 @@ class GimpImageManager():
         self.draw_vectors(text_layer_stroke)        
     
     def get_text_extent(self, text_point, text_style):
+        """
+        Calculating the bounds of a text label with provided style parameters.
+        """
         extent = pdb.gimp_text_get_extents_fontname(
             text_point[0],
             text_style[1],
