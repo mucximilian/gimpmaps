@@ -165,7 +165,7 @@ class StyleObjectText(StyleObjectLine):
         self, 
         geom_type, tags, z_order,
         brush, brush_size, color, dynamics,
-        font, font_size, font_color, effect):
+        font, font_size, font_color, effect, buffer_size, buffer_color):
             
         StyleObject.__init__(self, geom_type, tags, z_order)
         self.brush = brush
@@ -176,7 +176,9 @@ class StyleObjectText(StyleObjectLine):
         self.font_size = font_size
         self.font_color = font_color
         self.effect = effect
-        
+        self.buffer_size = buffer_size
+        self.buffer_color = buffer_color
+
     def string_style(self):
         """
         Prints information about the style object

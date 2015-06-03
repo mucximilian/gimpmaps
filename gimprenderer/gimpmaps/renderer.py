@@ -329,7 +329,9 @@ class Renderer(object):
                     polygon["font"],
                     polygon["font_size"],
                     polygon["color"],
-                    polygon["effect"]
+                    polygon["effect"]["name"],
+                    polygon["effect"]["buffer_size"],
+                    polygon["effect"]["buffer_color"]
                 )
               
                 polygons.append(style_object)

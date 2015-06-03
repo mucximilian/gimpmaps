@@ -127,6 +127,17 @@ class GimpImageManager():
         
         effect = style_text.effect
         
+        print type(effect)
+        print type(style_text.font)
+        
+        # Create text layer with 100 px buffer around original image
+        # TO DO: Adding buffer as configuration parameter?
+        img_buffer = 200
+        resolution_new = [
+            resolution[0] + img_buffer,
+            resolution[0] + img_buffer
+        ]
+        
         if (effect =="text_buffermask" or 
             effect == "text_outline_buffermask" or
             effect == "outline_buffermask"):
@@ -135,25 +146,19 @@ class GimpImageManager():
                 group_polygon_text, 
                 text_points, style_text,
                 resolution
-            ) 
+            )
+            
+            print "drawing buffermask"
         
         for text_point in text_points:
                     
             # Check if point is on the image as outliers crash selection 
-            if (text_point[1][0] > 0 and text_point[1][1] > 0):  
-        
+            if (self.text_point_is_in_image(text_point, resolution)):     
+    
                 group_label = self.create_layer_group(group_polygon_text, -1)
                      
                 line_style = style_text.get_line_style()
-                text_style = style_text.get_text_style() 
-                       
-                # Create text layer with 100 px buffer around original image
-                # TO DO: Adding buffer as configuration parameter
-                img_buffer = 200
-                resolution_new = [
-                    resolution[0] + img_buffer,
-                    resolution[0] + img_buffer
-                ]
+                text_style = style_text.get_text_style()
                                
                 text_layer = self.create_layer(resolution_new, text_point[0], 
                                                group_label, -1)        
@@ -170,8 +175,8 @@ class GimpImageManager():
                     
                     text = self.draw_text(text_point, text_style, text_layer)
                     
-                    self.draw_textbuffer_color(text, resolution, 
-                                               text_point, group_label)
+                    self.draw_textbuffer_color(text, resolution, text_point, 
+                                               group_label, style_text)
                     
                 elif(effect == "text_outline" or
                     effect == "text_outline_buffermask"):
@@ -198,8 +203,8 @@ class GimpImageManager():
                     
                     text = self.draw_text(text_point, text_style, text_layer)
                     
-                    self.draw_textbuffer_color(text, resolution, 
-                                               text_point, group_label)
+                    self.draw_textbuffer_color(text, resolution, text_point,
+                                               group_label, style_text)
                     
                     self.draw_text_outline(text, resolution, group_label, 
                                            line_style, text_point[0])
@@ -223,10 +228,24 @@ class GimpImageManager():
                     self.draw_text_outline(text, resolution, group_label, 
                                            line_style, text_point[0])
                     
-                    self.draw_textbuffer_color(text, resolution, 
-                                               text_point, group_label)
+                    self.draw_textbuffer_color(text, resolution, text_point, 
+                                               group_label, style_text)
                     
                     self.remove_layer(text_layer)
+                    
+    def text_point_is_in_image(self, point, resolution):
+        """
+        Function to check whether a point is on the image canvas or not.
+        Points lying completely outside the image canvas crash the selction
+        resulting e.g. in a image entirely filled with the buffer color.
+        """
+        
+        if (point[1][0] >= 0 and point[1][0] <= resolution[0] and
+            point[1][1] >= 0 and point[1][1] <= resolution[1]):
+            
+            return True
+        else:
+            return False
                 
     def draw_text(self, text_point, text_style, text_layer):
         
@@ -247,14 +266,18 @@ class GimpImageManager():
         
         return text
     
-    def draw_textbuffer_color(self, text, resolution, text_point, group_text):
+    def draw_textbuffer_color(self, text, resolution, text_point, 
+                              group_text, style_text):
         
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
         pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
         
         self.select_vectors()
         
-        pdb.gimp_selection_grow(self.image, 2)      
+        buffer_size = style_text.buffer_size
+        buffer_color = style_text.buffer_color
+        
+        pdb.gimp_selection_grow(self.image, buffer_size)      
         
         text_layer_stroke = self.create_layer(
             resolution,
@@ -263,7 +286,7 @@ class GimpImageManager():
             1
         )
         
-        self.set_foreground([255, 255, 255])        
+        self.set_foreground(buffer_color)        
         pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
             
         pdb.gimp_selection_clear(self.image)
@@ -273,7 +296,9 @@ class GimpImageManager():
         
         group_label = self.create_layer_group(group_polygon_text, -1)
         
-        text_style = style_text.get_text_style()               
+        text_style = style_text.get_text_style()
+        
+        buffer_size = style_text.buffer_size            
         
         for text_point in text_points:
             
@@ -291,7 +316,7 @@ class GimpImageManager():
             
         self.select_vectors()
                 
-        pdb.gimp_selection_grow(self.image, 5)
+        pdb.gimp_selection_grow(self.image, buffer_size)
         
         bg_copy = pdb.gimp_layer_copy(self.background, 1)
         

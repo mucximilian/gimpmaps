@@ -1,5 +1,13 @@
-﻿CREATE OR REPLACE FUNCTION get_text_polygon_tags_and_style(IN map_style integer)
-  RETURNS TABLE(id integer, tags text[], brush character varying, brush_size integer, color integer[], dynamics character varying, font character varying, font_size integer, color_font integer[], z_order integer, zoom_min integer, zoom_max integer, effect character varying) AS
+﻿DROP FUNCTION get_text_polygon_tags_and_style(integer);
+
+CREATE OR REPLACE FUNCTION get_text_polygon_tags_and_style(IN map_style integer)
+  RETURNS TABLE(id integer, tags text[], brush character varying, brush_size integer,
+  color integer[], dynamics character varying, font character varying, 
+  font_size integer, color_font integer[], z_order integer, zoom_min integer, 
+  zoom_max integer,
+  effect character varying,
+  buffer_size integer,
+  buffer_color integer[]) AS
 $BODY$
 SELECT
 	mtp.id,
@@ -14,7 +22,9 @@ SELECT
 	of.z_order,
 	mtp.zoom_min,
 	mtp.zoom_max,
-	te.name AS effect
+	te.name AS effect,
+	te.buffer_size,
+	tec.color
 FROM
 	map_text_polygon mtp
 LEFT JOIN
@@ -50,6 +60,10 @@ ON (
 LEFT JOIN text_effect te
 ON (
 	mtp.effect = te.id
+)
+LEFT JOIN style_color tec
+ON (
+	te.buffer_color = tec.id
 )
 LEFT JOIN osm_feature of
 ON (

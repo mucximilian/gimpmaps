@@ -27,7 +27,9 @@ def run():
                     "Arial",
                     32,
                     [200,200,200],
-                    "text"
+                    "outline_buffermask",
+                    3,
+                    [150,150,150]
                 )
     
     # Creating a parent layer group for all the layer (groups) added later

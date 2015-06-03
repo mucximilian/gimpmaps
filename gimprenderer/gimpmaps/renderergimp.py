@@ -178,10 +178,9 @@ class RendererGimp(object):
                     style_text
                 )         
                         
-                gimp.draw_labelS(
+                gimp.draw_labels(
                     group_polygon_text, text_points, style_text,
-                    resolution,
-                    "text"
+                    resolution
                 )
             
         except TypeError:

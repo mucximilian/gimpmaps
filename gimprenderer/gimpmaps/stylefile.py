@@ -293,16 +293,22 @@ def create_stylefile_new(map_style_id):
                 "dynamics": row[5]
             }
             
+            effect = {
+                "name":row[12],
+                "buffer_size":row[13],
+                "buffer_color":row[14]
+            }
+            
             feature = {
                 "osm_tags": row[1],
-                "stroke_line":style_stroke,
+                "stroke_line": style_stroke,
                 "font": row[6],
                 "font_size": row[7],
                 "color": row[8],
+                "effect": effect,
                 "z_order": row[9],
                 "zoom_min":row[10],
-                "zoom_max":row[11],
-                "effect":row[12]
+                "zoom_max":row[11]                
             }
             
             text_polygons.append(feature)
