@@ -11,7 +11,6 @@ from shapely.geometry import MultiPolygon
 
 import shapely
 import math
-from shapely.ops import linemerge, cascaded_union, unary_union
 
 class Hachurizer(object):
     '''
