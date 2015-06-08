@@ -59,21 +59,28 @@ class SketchRenderer(object):
         # TO DO:
         # Implement Catmull-Rom spline technique here
         
-    def catmullRom2bezier(self, points):
+    def catmull_rom_to_bezier(self, points):
         """
-        
+        Returns a SVG Bezier curve of a line with the given points 
         
         Source: http://schepers.cc/getting-to-the-point
+        
+        Catmull-Rom to Cubic Bezier conversion matrix 
+        0       1       0       0
+        -1/6    1      1/6      0
+        0      1/6      1     -1/6
+        0       0       1       0
+            
         """
         
         d = "M "
-        d += str(points[0][0]) + "," + str(points[0][0])
+        d += str(points[0][0]) + "," + str(points[0][1])
         
         point_count = len(points)
         
-        print point_count
-        
         for i in range(0, point_count-1):
+            
+            # Creating an array of relevant knot points
             p = []
             
             if ( 0 == i ):
@@ -91,33 +98,43 @@ class SketchRenderer(object):
                 p.append([points[i][0], points[i][1]])
                 p.append([points[i+1][0], points[i+1][1]])
                 p.append([points[i+2][0], points[i+2][1]])
-            
-            # Catmull-Rom to Cubic Bezier conversion matrix 
-            #    0       1       0       0
-            #  -1/6      1      1/6      0
-            #    0      1/6      1     -1/6
-            #    0       0       1       0
-            
+    
+            # Calculating the bezier points from the knot points
             bp = [];
-            bp.append([p[1][0],  p[1][1]])
+            
+            # This assignment is for readability only
+            x0 = p[0][0]
+            y0 = p[0][1]
+            x1 = p[1][0]
+            y1=  p[1][1]
+            x2 = p[2][0]
+            y2 = p[2][1]
+            x3 = p[3][0]
+            y3=  p[3][1]
+            
+            # Introducing a factor t as "tension control"
+            t = 1            
+            f = 1/t * 6
+            
+            bp.append([x1, y1])
             bp.append([
-                    ((-p[0][0] + 6*p[1][0] + p[2][0]) / 6),
-                    ((-p[0][1] + 6*p[1][1] + p[2][1]) / 6)
+                    ((-x0 + f*x1 + x2) / f),
+                    ((-y0 + f*y1 + y2) / f)
             ])
             bp.append([
-                    ((p[1][0] + 6*p[2][0] - p[3][0]) / 6),
-                    ((p[1][1] + 6*p[2][1] - p[3][1]) / 6)
+                    ((x1 + f*x2 - x3) / f),
+                    ((y1 + f*y2 - y3) / f)
             ])
-            bp.append( [p[2][0], p[2][1] ] )
+            bp.append([x2, y2])
             
             d += " C " + str(bp[1][0]) + ","
             d += str(bp[1][1]) + " " + str(bp[2][0]) + ","
             d += str(bp[2][1]) + " " + str(bp[3][0]) + ","
-            d += str(bp[3][1]) + " "
+            d += str(bp[3][1])
         
         return d
     
-    def create_bezier_path(self, line):
+    def to_bezier_curve(self, line):
             
         path_m = "M " + str(line[0][0]) + "," + str(line[0][1])
         
@@ -211,40 +228,56 @@ class SketchRenderer(object):
         
         return [x,y]
     
-    def print_line_as_wkt(self, line):
+    def line_as_wkt(self, line):
+        """
+        Returns an array of coordinate pair arrays in WKT notation.
+        """
         
         line_wkt = "LINESTRING ("        
         for p in line:
             line_wkt += str(p[0]) + " " + str(p[1]) + ", "            
         line_wkt = line_wkt[:-2] + ")"
         
-        print line_wkt
+        return line_wkt
         
-    def print_line_as_svg(self, line):
+    def line_as_svg(self, line):
+        """
+        Returns an array of coordinate pair arrays in SVG line notation.
+        """
         
         line_svg = "M "        
         for p in line:
-            line_svg += str(p[0]) + " " + str(p[1]) + " L"            
+            line_svg += str(p[0]) + " " + str(p[1]) + " L "            
         line_svg = line_svg[:-2]
         
-        print line_svg
+        return line_svg    
+        
+    def as_svg_path(self, d):
+        
+        path = '<path d="'       
+        path += d        
+        path += '" style="fill:none;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none" />'
+        
+        return path
     
 class HandyRenderer(SketchRenderer):
     '''
     This class is a customized and simplified clone of the HandyRenderer.java 
     class of the Handy Processing library by Jo Wood.
+    
+    http://www.gicentre.net/software/#/handy/
     '''
 
     def __init__(self, seed):
         '''
         Constructor
         '''
-        random.seed(seed)
+        super(HandyRenderer, self).__init__(seed)
         
         self.bowing = 1
         self.roughness = 1
     
-    def handy_line(self, line, maxOffset):
+    def line(self, line, maxOffset):
         """
         Clone of the function:
         
@@ -265,7 +298,7 @@ class HandyRenderer(SketchRenderer):
 
         half_offset = offset/2
         
-        divergePoint = 0.2 + random.random()*0.2
+        divergePoint = 0.2 + random.random() * 0.2
 
         # This is the midpoint displacement value to give slightly bowed lines.
         midDispX = self.bowing * maxOffset * (y2-y1)/200
@@ -274,48 +307,17 @@ class HandyRenderer(SketchRenderer):
         midDispX = self.get_offset(-midDispX, midDispX)
         midDispY = self.get_offset(-midDispY, midDispY)
 
-        p1 = [
-              x1 + self.get_offset(-offset, offset),
-              y1 + self.get_offset(-offset, offset)
-            ]
-        p2 = [
-              midDispX+x1+(x2-x1)*divergePoint + self.get_offset(-offset, offset),
-              midDispY+y1+(y2-y1)*divergePoint + self.get_offset(-offset, offset)
-            ]
-        p3 = [
-            midDispX+x1+2*(x2-x1)*divergePoint + self.get_offset(-offset, offset),
-            midDispY+y1+2*(y2-y1)*divergePoint + self.get_offset(-offset, offset)
-            ] 
-        p4 = [
-              +x2 + self.get_offset(-offset, offset),
-              +y2 + self.get_offset(-offset, offset)
-            ]
+        # Calculating line 1           
+        line1 = self.get_displaced_linepoints(x1, y1, x2, y2, 
+                                              midDispX, midDispY, 
+                                              divergePoint, offset)
         
-        p12 = [
-              x1 + self.get_offset(-half_offset, half_offset),
-              y1 + self.get_offset(-half_offset, half_offset)
-            ]
-        p22 = [
-              midDispX+x1+(x2-x1)*divergePoint + self.get_offset(-half_offset, half_offset),
-              midDispY+y1+(y2-y1)*divergePoint + self.get_offset(-half_offset, half_offset)
-            ]
-        p32 = [
-            midDispX+x1+2*(x2-x1)*divergePoint + self.get_offset(-half_offset, half_offset),
-            midDispY+y1+2*(y2-y1)*divergePoint + self.get_offset(-half_offset, half_offset)
-            ] 
-        p42 = [
-              +x2 + self.get_offset(-half_offset, half_offset),
-              +y2 + self.get_offset(-half_offset, half_offset)
-            ]
-        
-        # Note:
-        # self.get_offset(...) cannot be substituted to a variable as the
-        # random function inside it needs to be called each time
-            
-        l1 = [p1, p2, p3, p4]
-        l2 = [p12, p22, p32, p42]
-        
-        return [l1, l2]
+        # Calculating line 2
+        line2 = self.get_displaced_linepoints(x1, y1, x2, y2, 
+                                              midDispX, midDispY, 
+                                              divergePoint, half_offset)
+                    
+        return [line1, line2]
         
     def get_offset(self, minVal, maxVal):
         """
@@ -324,4 +326,37 @@ class HandyRenderer(SketchRenderer):
         float getOffset(float minVal, float maxVal)
         """
              
-        return self.roughness*(random.random()*(maxVal-minVal)+minVal)        
+        offset = self.roughness * (random.random() * (maxVal - minVal) + minVal)
+             
+        return offset
+    
+    def get_displaced_linepoints(self, x_a, y_a, x_b, y_b, 
+                     midDispX, midDispY, divergePoint, offset):
+        """
+        This is part of the line function in the original Java code and was put
+        separately for readability reasons.
+        """
+        
+        x0 = x_a + self.get_offset(-offset, offset)
+        y0 = y_a + self.get_offset(-offset, offset)
+        p0 = [x0, y0]
+        
+        x1 = midDispX + x_a + (x_b-x_a) * divergePoint + self.get_offset(-offset, offset)
+        y1 = midDispY + y_a + (y_b-y_a) * divergePoint + self.get_offset(-offset, offset)
+        p1 = [x1, y1]
+        
+        x2 = midDispX + x_a + 2 * (x_b-x_a) * divergePoint + self.get_offset(-offset, offset)
+        y2 = midDispY + y_a + 2 * (y_b-y_a) * divergePoint + self.get_offset(-offset, offset)
+        p2 = [x2, y2] 
+        
+        x3 = + x_b + self.get_offset(-offset, offset)
+        y3 = + y_b + self.get_offset(-offset, offset)
+        p3 = [x3, y3]
+        
+        # Note:
+        # self.get_offset(...) cannot be substituted to a variable as the
+        # random function inside it needs to be called each time
+        
+        line = [p0, p1, p2, p3]
+        
+        return line
