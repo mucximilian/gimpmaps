@@ -30,16 +30,18 @@ class Drawing(object):
     ############################################################################
     # Drawing handling functions
         
-    def create(self, type):
+    def create(self, format_type):
         
         file_out = self.get_file_out()
         
         bounds = self.get_bounds()
         
+        print bounds
+        
         img_buffer = 10.0
         
         # Image dimensions are the bounding box of all geometries plus a buffer.
-        if type == "fit":
+        if format_type == "fit":
             
             width = math.fabs(bounds[2] - bounds[0])
             height = math.fabs(bounds[3] - bounds[1])            
@@ -55,7 +57,7 @@ class Drawing(object):
         # Image dimensions are twice the size of the maximum absolute distance
         # from the origin (symmetrical to x and y axis). The viewbox is always
         # in the ++ Quadrant. A buffer is added.
-        elif type == "full":
+        elif format_type == "full":
             
             x_max_abs = max(math.fabs(bounds[2]), math.fabs(bounds[0]))
             y_max_abs = max(math.fabs(bounds[3]), math.fabs(bounds[1]))
@@ -83,11 +85,13 @@ class Drawing(object):
             viewBox=viewbox
         )
         
+        for path in self.paths_bezier:
+            
+            self.draw_path_bezier(path)
+        
         for group in self.path_bezier_groups:
             
-            style = [1, "red", "none"]
-            
-            self.draw_element_group(group, "path_bezier", style)
+            self.draw_group(group, "path_bezier")
         
     def get_file_out(self):
         
@@ -128,13 +132,13 @@ class Drawing(object):
         
         self.path_groups.append(path_group)
         
-    def add_path_bezier(self, path):
+    def add_path_bezier(self, path, style):
         
-        self.paths_bezier.append(path)
+        self.paths_bezier.append([path, style])
         
-    def add_path_bezier_group(self, path_group):
+    def add_path_bezier_group(self, path_group, style):
         
-        self.path_bezier_groups.append(path_group)
+        self.path_bezier_groups.append([path_group, style])
     
     ############################################################################
     # Feature drawing functions
@@ -143,34 +147,52 @@ class Drawing(object):
         
         parent.add(self.drawing.circle(center = (center[0], center[1], r)))
     
-    def draw_path(self, path, parent):
+    def draw_path(self, svg, parent = None, style = None):
         
-        parent.add(self.drawing.path(d=path))
+        if parent is None:
+            parent = self.drawing
+            
+        if style is None:
+            parent.add(self.drawing.path(d=svg))  
+        else:      
+            parent.add(self.drawing.path(
+                d=svg,
+                stroke_width = style.stroke_width,
+                stroke = style.stroke_color,
+                fill = style.fill
+            ))
+            
+    def draw_path_bezier(self, path):
+                
+        svg = self.curve_to_svg_bezier(path[0])
         
-    def draw_element_group(self, paths, element, style):
+        self.draw_path(svg, style = path[1])
+            
+    def draw_group(self, group, group_type):
+        
+        paths = group[0]
+        style = group[1]
         
         grp = self.drawing.g(
-            stroke_width = style[0],
-            stroke = style[1],
-            fill = style[2]
+            stroke_width = style.stroke_width,
+            stroke = style.stroke_color,
+            fill = style.fill
         )        
         
-        if element == "path" :
-            
-            for path in paths:
+        for path in paths:
+        
+            if group_type == "path" :     
                 
                 svg = self.linepoints_to_svg_path(path)
                 self.draw_path(svg, grp)
-        elif element == "path_bezier" :
-            
-            for path in paths:
+                
+            elif group_type == "path_bezier" :
                 
                 svg = self.curve_to_svg_bezier(path)
                 self.draw_path(svg, grp)
                 
-        elif element == "circle":
-            
-            for path in paths:
+            elif group_type == "circle":
+                
                 self.draw_circle(path, grp)
             
         self.drawing.add(grp)
@@ -190,6 +212,7 @@ class Drawing(object):
         
         # Circle points
         def get_points_circles(circles):
+            
             points = []
             
             if len(circles) > 0:
@@ -199,7 +222,9 @@ class Drawing(object):
             return points
         
         def get_points_circle_groups():
+            
             points = []
+            
             for group in self.circle_groups:
                 points += get_points_circles(group)
                 
@@ -207,6 +232,7 @@ class Drawing(object):
         
         # Path points
         def get_points_paths(paths):
+            
             points = []
             
             if len(paths) > 0:
@@ -217,29 +243,42 @@ class Drawing(object):
             return points
                         
         def get_points_path_groups():
+            
             points = []
+            
             for group in self.path_groups:
                 points += get_points_paths(group)
                 
             return points
         
         # Bezier path points
-        def get_points_paths_bezier(paths):
+        def get_points_paths_bezier():
+            
             points = []
             
-            if len(paths) > 0:
-                for path in paths:
-                    for i in range(0, len(path), 3):
-
-                        points.append(path[i])
-                        
+            for path in self.paths_bezier:                               
+                for i in range(0, len(path[0]), 3):
+                    
+                    points.append(path[0][i])
+                
             return points
                         
         def get_points_path_bezier_groups():
+            
             points = []
+            
             for group in self.path_bezier_groups:
-                points += get_points_paths_bezier(group)
                 
+                paths = group[0]                
+                if len(paths) > 0:
+                    
+                    for path in paths:                        
+                        for i in range(0, len(path), 3):
+                            
+                            points.append(path[i])
+                
+            print points
+            
             return points
         
         ########################################################################
@@ -255,7 +294,7 @@ class Drawing(object):
             
             points += get_points_path_groups()
             
-            points += get_points_paths_bezier(self.paths_bezier)
+            points += get_points_paths_bezier()
             
             points += get_points_path_bezier_groups()
             
@@ -268,6 +307,8 @@ class Drawing(object):
             ys = []
             
             points = get_all_points()
+            
+            print points
             
             for point in points:
                 xs.append(point[0])
@@ -331,3 +372,25 @@ class Drawing(object):
         """
         
         return str(point[0]) + " " + str(point[1])
+
+class Style(object):
+    
+    def __init__(self, stroke_width, stroke_color, fill):
+        
+        self.stroke_width = stroke_width
+        self.stroke_color = stroke_color
+        self.fill = fill
+
+class StyleLine(Style):
+    
+    def __init__(self, stroke_width, stroke_color, fill):
+        
+        super(StyleLine, self).__init__(stroke_width, stroke_color, fill)
+        
+class StyleCircle(Style):
+    
+    def __init__(self, stroke_width, stroke_color, fill, radius):
+        
+        super(StyleCircle, self).__init__(stroke_width, stroke_color, fill)
+
+        self.radius = radius

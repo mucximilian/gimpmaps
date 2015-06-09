@@ -34,7 +34,24 @@ bez_group.append(
     ]
 )
 
-drawing.add_path_bezier_group(bez_group)
+style = svgmodule.StyleLine(1, "red", "none")
+drawing.add_path_bezier_group(bez_group, style)
+
+curve = [
+    [100, 200],
+    [108, 191],
+    [183, 100.0],
+    [200, 100],
+    [216, 100.0],
+    [291, 191],
+    [300, 200]
+]
+
+style = svgmodule.StyleLine(1, "blue", "none")
+drawing.add_path_bezier(curve, style)
+
+print drawing.paths_bezier
+print drawing.path_bezier_groups
 
 drawing.create("fit")
 
