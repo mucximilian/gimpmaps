@@ -12,7 +12,6 @@ import os
 import inspect
 import svgwrite
 import json
-import operator
 
 from abc import ABCMeta, abstractmethod
 

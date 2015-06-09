@@ -18,12 +18,40 @@ class SketchRenderer(object):
         '''
         random.seed(seed)
         
-    def get_control_points_simple(self, points, t):
+    def simple_bezier(self, linepoints, t = 1.0):
         """
-        Calculates the control points of a point P1 between the points P0 and 
-        P2 using the technique explained by Rob Spencer:
+        Returns a Bezier curve in SVG from a sequence of points and control 
+        points in an array.
+        """
         
-        http://scaledinnovation.com/analytics/splines/aboutSplines.html
+        curve = []
+        curve.append([linepoints[0][0], linepoints[0][1]])
+        curve.append([linepoints[0][0], linepoints[0][1]])
+            
+        for i in range(1, len(linepoints)-1):  
+            
+            points = [linepoints[i-1], linepoints[i], linepoints[i+1]]
+            
+            controlpoints = self.get_control_points(points, t)
+            
+            curve.append([controlpoints[0][0], controlpoints[0][1]])
+            curve.append([linepoints[i][0], linepoints[i][1]])
+            curve.append([controlpoints[1][0], controlpoints[1][1]])
+            
+        last = len(linepoints)-1
+        
+        curve.append([linepoints[last][0], linepoints[last][1]])
+        curve.append([linepoints[last][0], linepoints[last][1]])
+        
+        return curve
+        
+    def get_control_points(self, points, t = 1.0):
+        """
+        Given three consecutive points on a line (P0, P1, P2), this function 
+        calculates the Bezier control points of P1 using the technique 
+        explained by Rob Spencer.
+        
+        Source: http://scaledinnovation.com/analytics/splines/aboutSplines.html
         """
     
         x0 = points[0][0]
@@ -36,32 +64,19 @@ class SketchRenderer(object):
         d01 = math.sqrt(math.pow(x1 - x0, 2) + math.pow(y1 - y0, 2))
         d12 = math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
         
-        fa=t*d01/(d01+d12) # scaling factor for triangle Ta
-        fb=t*d12/(d01+d12) # ditto for Tb, simplifies to fb=t-fa
+        fa = t * d01 / (d01 + d12) # scaling factor for triangle Ta
+        fb = t * d12 / (d01 + d12) # ditto for Tb, simplifies to fb=t-fa
         
-        p1x=x1-fa*(x2-x0) # x2-x0 is the width of triangle T
-        p1y=y1-fa*(y2-y0) # y2-y0 is the height of T
-        p2x=x1+fb*(x2-x0)
-        p2y=y1+fb*(y2-y0)  
+        p1x = x1 - fa * (x2 - x0) # x2-x0 is the width of triangle T
+        p1y = y1 - fa * (y2 - y0) # y2-y0 is the height of T
+        p2x = x1 + fb * (x2 - x0)
+        p2y = y1 + fb * (y2 - y0)  
         
         return [[p1x,p1y],[p2x,p2y]];
-    
-    def get_control_points_spline(self, points, t):
-        """
-        Calculates the control points of a point P1 between the points P0 and 
-        P2 using the centripetal Catmull-Rom spline:
         
-        http://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline
+    def catmull_rom_bezier(self, linepoints, t = 1.0):
         """
-        
-        pass
-    
-        # TO DO:
-        # Implement Catmull-Rom spline technique here
-        
-    def catmull_rom_to_bezier(self, points):
-        """
-        Returns a SVG Bezier curve of a line with the given points 
+        Returns a SVG Bezier curve of a line with the given points.
         
         Source: http://schepers.cc/getting-to-the-point
         
@@ -72,11 +87,10 @@ class SketchRenderer(object):
         0       0       1       0
             
         """
+        curve = []
+        curve.append([linepoints[0][0], linepoints[0][1]])
         
-        d = "M "
-        d += str(points[0][0]) + "," + str(points[0][1])
-        
-        point_count = len(points)
+        point_count = len(linepoints)
         
         for i in range(0, point_count-1):
             
@@ -84,20 +98,20 @@ class SketchRenderer(object):
             p = []
             
             if ( 0 == i ):
-                p.append([points[i][0], points[i][1]])
-                p.append([points[i][0], points[i][1]])
-                p.append([points[i+1][0], points[i+1][1]])
-                p.append([points[i+2][0], points[i+2][1]])
-            elif (len(points) - 2 == i ):
-                p.append([points[i-1][0], points[i-1][1]])
-                p.append([points[i][0], points[i][1]])
-                p.append([points[i+1][0], points[i+1][1]])
-                p.append([points[i+1][0], points[i+1][1]])
+                p.append([linepoints[i][0], linepoints[i][1]])
+                p.append([linepoints[i][0], linepoints[i][1]])
+                p.append([linepoints[i+1][0], linepoints[i+1][1]])
+                p.append([linepoints[i+2][0], linepoints[i+2][1]])
+            elif (len(linepoints) - 2 == i ):
+                p.append([linepoints[i-1][0], linepoints[i-1][1]])
+                p.append([linepoints[i][0], linepoints[i][1]])
+                p.append([linepoints[i+1][0], linepoints[i+1][1]])
+                p.append([linepoints[i+1][0], linepoints[i+1][1]])
             else:
-                p.append([points[i-1][0], points[i-1][1]])
-                p.append([points[i][0], points[i][1]])
-                p.append([points[i+1][0], points[i+1][1]])
-                p.append([points[i+2][0], points[i+2][1]])
+                p.append([linepoints[i-1][0], linepoints[i-1][1]])
+                p.append([linepoints[i][0], linepoints[i][1]])
+                p.append([linepoints[i+1][0], linepoints[i+1][1]])
+                p.append([linepoints[i+2][0], linepoints[i+2][1]])
     
             # Calculating the bezier points from the knot points
             bp = [];
@@ -112,8 +126,7 @@ class SketchRenderer(object):
             x3 = p[3][0]
             y3=  p[3][1]
             
-            # Introducing a factor t as "tension control"
-            t = 1            
+            # Using the factor t as "tension control"           
             f = 1/t * 6
             
             bp.append([x1, y1])
@@ -127,36 +140,11 @@ class SketchRenderer(object):
             ])
             bp.append([x2, y2])
             
-            d += " C " + str(bp[1][0]) + ","
-            d += str(bp[1][1]) + " " + str(bp[2][0]) + ","
-            d += str(bp[2][1]) + " " + str(bp[3][0]) + ","
-            d += str(bp[3][1])
+            curve.append([bp[1][0], bp[1][1]])
+            curve.append([bp[2][0], bp[2][1]])
+            curve.append([bp[3][0], bp[3][1]])
         
-        return d
-    
-    def to_bezier_curve(self, line):
-            
-        path_m = "M " + str(line[0][0]) + "," + str(line[0][1])
-        
-        path_c = " C " + str(line[0][0]) + "," + str(line[0][1])
-            
-        for i in range(1, len(line)-1):  
-            
-            points = [line[i-1], line[i], line[i+1]]
-            
-            cps = self.get_control_points_simple(points, 1)
-            
-            path_c += " " + str(cps[0][0]) + "," + str(cps[0][1])
-            path_c += " " + str(line[i][0]) + "," + str(line[i][1])
-            path_c += " " + str(cps[1][0]) + "," + str(cps[1][1])
-            
-        last = len(line)-1
-        path_c += " " + str(line[last][0]) + "," + str(line[last][1])
-        path_c += " " + str(line[last][0]) + "," + str(line[last][1])
-        
-        path = path_m + path_c
-        
-        return path
+        return curve
            
     def add_sketch_points(self, line, r):
         
@@ -253,6 +241,9 @@ class SketchRenderer(object):
         return line_svg    
         
     def as_svg_path(self, d):
+        """
+        Returns a SVG path sequence as an SVG element with basi styling.
+        """
         
         path = '<path d="'       
         path += d        
