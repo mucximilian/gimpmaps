@@ -227,29 +227,6 @@ class SketchRenderer(object):
         line_wkt = line_wkt[:-2] + ")"
         
         return line_wkt
-        
-    def line_as_svg(self, line):
-        """
-        Returns an array of coordinate pair arrays in SVG line notation.
-        """
-        
-        line_svg = "M "        
-        for p in line:
-            line_svg += str(p[0]) + " " + str(p[1]) + " L "            
-        line_svg = line_svg[:-2]
-        
-        return line_svg    
-        
-    def as_svg_path(self, d):
-        """
-        Returns a SVG path sequence as an SVG element with basi styling.
-        """
-        
-        path = '<path d="'       
-        path += d        
-        path += '" style="fill:none;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none" />'
-        
-        return path
     
 class HandyRenderer(SketchRenderer):
     '''
