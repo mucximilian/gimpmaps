@@ -4,6 +4,7 @@ gimprenderer/.pydevproject
 gimprenderer/gimpmaps/log/
 gimprenderer/gimpmaps/results/
 gimprenderer/test/
+gimprenderer/svgsketch/results/
 sql/old/
 *.pyc
 *.xcf

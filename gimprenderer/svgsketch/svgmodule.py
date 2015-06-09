@@ -2,6 +2,11 @@
 Created on Jun 9, 2015
 
 @author: mucx
+
+TO DO:
+    - Adding classes for features instead of 2-dimensional arrays for features
+    and styles
+    - Adding layer/feature ordering
 '''
 
 import svgwrite
@@ -31,6 +36,12 @@ class Drawing(object):
     # Drawing handling functions
         
     def create(self, format_type):
+        """
+        This is the main drawing function of the class. All features that have
+        been added before are stored in an SVG image.
+        
+        :param format_type: Determines image dimensions
+        """
         
         file_out = self.get_file_out()
         
@@ -40,7 +51,7 @@ class Drawing(object):
         
         img_buffer = 10.0
         
-        # Image dimensions are the bounding box of all geometries plus a buffer.
+        # Image dimensions are the bounding box of all geometries plus a buffer
         if format_type == "fit":
             
             width = math.fabs(bounds[2] - bounds[0])
@@ -86,9 +97,7 @@ class Drawing(object):
         )
         
         # TO DO: Adding missing functions
-        for group in self.circle_groups:            
-            self.draw_group(group, "circle")
-        
+        # Ordering? 
         for path in self.paths:            
             self.draw_path_line(path)
         
@@ -100,6 +109,9 @@ class Drawing(object):
                     
         for group in self.path_bezier_groups:            
             self.draw_group(group, "path_bezier")
+            
+        for group in self.circle_groups:            
+            self.draw_group(group, "circle")
         
     def get_file_out(self):
         
@@ -107,7 +119,10 @@ class Drawing(object):
         
     def save(self):
         
+        print "Saving image as '" + self.drawing.filename + "'"
+        print "..."
         self.drawing.save()
+        print "Done"
         
     def get_formatted_time(self):
 
