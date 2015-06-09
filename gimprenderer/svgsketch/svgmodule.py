@@ -45,6 +45,7 @@ class Drawing(object):
         
         file_out = self.get_file_out()
         
+        # Calculate bounding box of all feature points for image extent
         bounds = self.get_bounds()
         
         print bounds
@@ -84,6 +85,7 @@ class Drawing(object):
             width_viewbox = x_max_abs + img_buffer
             height_viewbox = y_max_abs + img_buffer
             
+        # Creating SVG viewbox
         viewbox = str(x_viewbox) + " " + str(y_viewbox) + " "
         viewbox += str(width_viewbox) + " " + str(height_viewbox)        
         print viewbox
@@ -114,10 +116,17 @@ class Drawing(object):
             self.draw_group(group, "circle")
         
     def get_file_out(self):
+        """
+        Returns the filename as which the SVG image is saved. Adds the current
+        time to the name specified at instanciation.
+        """
         
         return self.filename + "_" + self.get_formatted_time() + ".svg"
         
     def save(self):
+        """
+        Saves the SVG image using the filename set in self.create
+        """
         
         print "Saving image as '" + self.drawing.filename + "'"
         print "..."
@@ -125,6 +134,9 @@ class Drawing(object):
         print "Done"
         
     def get_formatted_time(self):
+        """
+        Return the time as a string that looks like YYYYmmdd_HHMM
+        """
 
         t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
@@ -255,6 +267,14 @@ class Drawing(object):
         return [x_min, y_min, x_max, y_max]
         
     def get_feature_bbox(self):
+        """
+        This function returns the bounding box of all points of any feature that
+        is contained in the image. Necessary to determine the image size.
+        """
+        
+        ########################################################################
+        # At first, some functions to get the points of all different features
+        # and feature groups 
         
         # Circle points
         def get_points_circles(circles):
@@ -336,6 +356,10 @@ class Drawing(object):
         
         ########################################################################
         def get_all_points():
+            """
+            Sequentially adding all points of all feature types to one array
+            to determine the bounding box.
+            """
             
             points = []
             
@@ -355,6 +379,11 @@ class Drawing(object):
         
         ########################################################################    
         def get_xys():
+            """
+            Returns a 2 item array consisting of arrays with all X and all Y
+            coordinates of all points in the image. This is handy to determine
+            the minimum and maximum values for the bounding box
+            """
             
             xs = []
             ys = []
@@ -380,7 +409,7 @@ class Drawing(object):
         
         bbox = [[x_min, y_min], [x_max, y_max]]
         
-        # Round coordinates? (+ 10 px) ? (avoid points on egdes)
+        # TO DO: Round coordinates?
         
         return bbox
     
@@ -442,6 +471,9 @@ class Drawing(object):
         path += '" style="fill:none;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none" />'
         
         return path
+
+################################################################################
+# Feature style classes
 
 class Style(object):
     
