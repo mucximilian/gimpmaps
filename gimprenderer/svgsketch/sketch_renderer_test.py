@@ -21,15 +21,36 @@ sketch_renderer = sketching.SketchRenderer(1234)
 # print sketch_renderer.displace_point_circle([1,1], 1)
 # print sketch_renderer.calculate_point_at_line_pos([[1,1],[4,2]], 0.75)
 
-line = [[1100,1200],[1200,1100],[1300,1200]]
+
+
+
+
+
+
+# ine = [[1100,1200],[1200,1100],[1300,1200]]
 # line = [[500,200],[600,300],[700,200]]
 
-curve1 = sketch_renderer.simple_bezier(line, 0.5)
-print curve1
-print sketch_renderer.curve_to_svg_bezier(curve1)
-
-curve2 = sketch_renderer.catmull_rom_bezier(line, 0.5)
-print curve2
-print sketch_renderer.curve_to_svg_bezier(curve2)
+# curve1 = sketch_renderer.simple_bezier(line, 0.5)
+# print curve1
+# print sketch_renderer.curve_to_svg_bezier(curve1)
+# 
+# curve2 = sketch_renderer.catmull_rom_bezier(line, 0.5)
+# print curve2
+# print sketch_renderer.curve_to_svg_bezier(curve2)
 
     
+    
+    
+    
+# POLYGON TEST
+
+polygon = [
+    [[2,3],[1,1],[2,4],[5,5],[6,4],[8,3],[9,5],[10,4],[11,2],[10,0],[7,1],[4,2],[2,3]],
+    [[9,2],[9,3],[10,3],[10,2],[9,2]]
+]
+
+segments = sketch_renderer.polygon(polygon, 120)
+
+for segment in segments:
+    print segment
+

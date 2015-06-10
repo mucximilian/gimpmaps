@@ -72,7 +72,7 @@ ts = [0.5, 1.0, 2.0] # The bezier tension
 
 line = [[100.0,100.0],[1600.0,650.0]]
 
-line_counts = [10, 100, 500]
+line_counts = [10, 100, 250]
 
 for roughness in roughnesses:
     print "" + str(roughness)

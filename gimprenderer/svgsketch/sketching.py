@@ -228,10 +228,80 @@ class SketchRenderer(object):
         
         return line_wkt
     
+    def polygon(self, polygon, angle_disjoin = 135.0):
+        """
+        Disjoins polygon linestrings into segments at vertices where the angle 
+        between the lines from the vertex to the vertex behind and the vertex 
+        to the vertex ahead exceeds a given threshold. Returns the calculated
+        line segments as an array.
+        
+        :param polygon: Input geometry, array of lines (arrays of coordinates)
+        :param angle_disjoin: Threshold angle for disjoin in degree.
+        """
+        
+        outline_segments = []
+        
+        for line in polygon:
+            
+            print line
+            print "###"
+            
+            segment = []
+            segment.append(line[0])
+            
+            for i in range(1, len(line) -1):
+                
+                points = []
+                
+                points.append(line[i - 1])
+                points.append(line[i])
+                points.append(line[i + 1])
+                
+                angle = self.get_three_point_angle(points)
+                
+                # Continue segment
+                if (angle >= angle_disjoin):
+                    segment.append(line[i])
+                    
+                # Finish segment and create new one
+                else:
+                    segment.append(line[i])                    
+                    outline_segments.append(segment)
+                    
+                    segment = []
+                    segment.append(line[i])
+                
+            segment.append(line[0])                    
+            outline_segments.append(segment)
+            
+        return outline_segments
+                
+    def get_three_point_angle(self, points):
+        """
+        Calculates the angle between the lines from a vertex to the vertex 
+        behind and the vertex to the vertex ahead.
+        
+        :param points: Coordinate array, containing three points 
+        (vertex behind, vertex, vertex ahead)
+        """
+        
+        p0 = points[0] # point_behind
+        p1 = points[1] # point_center
+        p2 = points[2] # point_ahead
+        
+        a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
+        b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+        c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
+        
+        angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
+    
+        return angle
+    
 class HandyRenderer(SketchRenderer):
     '''
-    This class is a customized and simplified clone of the HandyRenderer.java 
-    class of the Handy Processing library by Jo Wood.
+    This class is a customized and simplified copy of the HandyRenderer.java 
+    class which contains the geometry processing logic of the Handy Processing 
+    library developed by Jo Wood.
     
     http://www.gicentre.net/software/#/handy/
     '''
