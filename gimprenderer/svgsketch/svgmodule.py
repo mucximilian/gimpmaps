@@ -12,6 +12,7 @@ TO DO:
 import svgwrite
 import datetime
 import math
+import sys
 
 class Drawing(object):
     '''
@@ -19,7 +20,7 @@ class Drawing(object):
     '''
 
 
-    def __init__(self, filename):
+    def __init__(self, filename, resolution = None):
         '''
         Constructor
         '''
@@ -31,29 +32,69 @@ class Drawing(object):
         self.path_groups = []
         self.paths_bezier = []
         self.path_bezier_groups = []
+        self.resolution = resolution
         
     ############################################################################
     # Drawing handling functions
         
-    def create(self, format_type):
+    def create(self, format_type, filename_format = "date"):
         """
         This is the main drawing function of the class. All features that have
         been added before are stored in an SVG image.
         
-        :param format_type: Determines image dimensions
+        :param format_type: Determines image dimensions. Set to 'fixed', 'full'
+         or 'fit'
         """
         
-        file_out = self.get_file_out()
+        file_out = self.get_file_out(filename_format)
         
         # Calculate bounding box of all feature points for image extent
-        bounds = self.get_bounds()
         
-        print bounds
+        # print bounds
         
         img_buffer = 10.0
         
         # Image dimensions are the bounding box of all geometries plus a buffer
-        if format_type == "fit":
+        if format_type == "fixed":
+            
+            try:
+                bounds = [0,0] + self.resolution
+                
+                width = bounds[2]
+                height = bounds[3]
+                
+                x_viewbox = 0
+                y_viewbox = 0
+                
+                width_viewbox = width
+                height_viewbox = height
+                
+            except TypeError:
+                sys.exit("No valid image resolution for fixed size provided")
+                
+        if format_type == "fixed_centered":
+            
+            try:
+                bounds = self.get_bounds()
+                
+                width = self.resolution[0]
+                height = self.resolution[1]
+                
+                width_bounds = math.fabs(bounds[2] - bounds[0])
+                height_bounds = math.fabs(bounds[3] - bounds[1]) 
+                
+                x_viewbox = bounds[0] - (math.fabs(width - width_bounds) / 2)
+                y_viewbox = bounds[1] - (math.fabs(height - height_bounds) / 2)
+                
+                width_viewbox = self.resolution[0]
+                height_viewbox = self.resolution[1]
+                
+            except TypeError:
+                sys.exit("No valid image resolution for fixed size provided")
+            
+        elif format_type == "fit":
+            
+            bounds = self.get_bounds()
             
             width = math.fabs(bounds[2] - bounds[0])
             height = math.fabs(bounds[3] - bounds[1])            
@@ -70,6 +111,8 @@ class Drawing(object):
         # from the origin (symmetrical to x and y axis). The viewbox is always
         # in the ++ Quadrant. A buffer is added.
         elif format_type == "full":
+            
+            bounds = self.get_bounds()
             
             x_max_abs = max(math.fabs(bounds[2]), math.fabs(bounds[0]))
             y_max_abs = max(math.fabs(bounds[3]), math.fabs(bounds[1]))
@@ -88,7 +131,8 @@ class Drawing(object):
         # Creating SVG viewbox
         viewbox = str(x_viewbox) + " " + str(y_viewbox) + " "
         viewbox += str(width_viewbox) + " " + str(height_viewbox)        
-        print viewbox
+        
+        # print viewbox
         
         # Creating the image with a 10px buffer on each side
         self.drawing = svgwrite.Drawing(                                        
@@ -115,23 +159,25 @@ class Drawing(object):
         for group in self.circle_groups:            
             self.draw_group(group, "circle")
         
-    def get_file_out(self):
+    def get_file_out(self, filename_format):
         """
         Returns the filename as which the SVG image is saved. Adds the current
         time to the name specified at instanciation.
         """
-        
-        return self.filename + "_" + self.get_formatted_time() + ".svg"
+        if (filename_format == "date"):
+            return self.filename + "_" + self.get_formatted_time() + ".svg"
+        elif (filename_format == "no_date"):
+            return self.filename + ".svg"
         
     def save(self):
         """
         Saves the SVG image using the filename set in self.create
         """
         
-        print "Saving image as '" + self.drawing.filename + "'"
-        print "..."
+        # print "Saving image as '" + self.drawing.filename + "'"
+        # print "..."
         self.drawing.save()
-        print "Done"
+        # print "Done"
         
     def get_formatted_time(self):
         """

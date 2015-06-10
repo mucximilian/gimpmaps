@@ -127,7 +127,7 @@ class SketchRenderer(object):
             y3=  p[3][1]
             
             # Using the factor t as "tension control"           
-            f = 1/t * 6
+            f = (1 / t) * 6
             
             bp.append([x1, y1])
             bp.append([
@@ -236,16 +236,16 @@ class HandyRenderer(SketchRenderer):
     http://www.gicentre.net/software/#/handy/
     '''
 
-    def __init__(self, seed):
+    def __init__(self, seed, roughness = 1.0, bowing = 1.0):
         '''
         Constructor
         '''
         super(HandyRenderer, self).__init__(seed)
         
-        self.bowing = 1
-        self.roughness = 1
+        self.bowing = bowing
+        self.roughness = roughness
     
-    def line(self, line, maxOffset):
+    def line(self, line, max_offset):
         """
         Clone of the function:
         
@@ -259,18 +259,18 @@ class HandyRenderer(SketchRenderer):
 
         # Ensure random perturbation is no more than 10% of line length.
         lenSq = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)
-        offset = maxOffset
+        offset = max_offset
 
-        if (maxOffset*maxOffset*100 > lenSq):
-            offset = math.sqrt(lenSq)/10
+        if (max_offset * max_offset * 100 > lenSq):
+            offset = math.sqrt(lenSq)/10.0
 
         half_offset = offset/2
         
         divergePoint = 0.2 + random.random() * 0.2
 
         # This is the midpoint displacement value to give slightly bowed lines.
-        midDispX = self.bowing * maxOffset * (y2-y1)/200
-        midDispY = self.bowing * maxOffset * (x1-x2)/200
+        midDispX = self.bowing * max_offset * (y2-y1) / 200.0
+        midDispY = self.bowing * max_offset * (x1-x2) / 200.0
 
         midDispX = self.get_offset(-midDispX, midDispX)
         midDispY = self.get_offset(-midDispY, midDispY)
