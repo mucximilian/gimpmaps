@@ -2,9 +2,13 @@
 Created on Jun 11, 2015
 
 @author: mucx
-'''
 
-# TO DO: Adding Class Point?
+# TO DO:
+- Adding classes:
+    - Point?
+    - Polygon
+    
+'''
 
 from __future__ import division
 

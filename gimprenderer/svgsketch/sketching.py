@@ -188,19 +188,20 @@ class SketchRenderer(object):
                 p0_y + .3 * diff_y
             )
             cp2 = (
-                -neg + p0_x + 2 * (random.random() * diff_y/8),
+                -neg + p0_x + 2 * (random.random() * diff_y / 8),
                 p0_y + .6 * diff_y
             )
             p = (p1_x, p1_y)
             
             curve.append(cp1, cp2, p)
             
-    def add_points_to_line(self, line, point_count, dist_type = "uniform"):
+    def add_points_to_line(self, line, point_count, method = "uniform"):
         """
-        Adds a specified number of points randomly to a line between two points.
+        Adds a specified number of points to a line between two points using
+        the selected method.
         
-        :param line: Line class determining a line by two points (coordinate 
-        tuple array)
+        :param line: geometry.LineSimple between two points (coordinate tuple
+        array)
         """
         
         a = min(line.coords) # Get point with smaller x value as point a
@@ -208,20 +209,46 @@ class SketchRenderer(object):
         
         delta_x = b[0] - a[0]
         
-        random.seed(line.length() * self.seed)
-        
         eq_params = line.get_line_equation_params()
         
-        points_on_line = []
+        points_on_line = [] 
         
-        for _ in range(0, point_count):
+        if method == "equal":
             
-            x_new = a[0] + (random.random() * delta_x)       
-            y_new = eq_params[0] * x_new + eq_params[1]
+            partition = delta_x / (point_count + 1)
             
-            points_on_line.append((x_new, y_new))
+            for i in range(0, point_count + 1):
             
-        # TO DO: Insert points equally distributed           
+                x_new = a[0] + i * partition
+                y_new = eq_params[0] * x_new + eq_params[1]
+                
+                points_on_line.append((x_new, y_new))
+           
+        elif method == "uniform" or method == "equal_uniform":            
+        
+            random.seed(line.length() * self.seed)
+        
+            if method == "uniform":
+        
+                for _ in range(0, point_count +1):
+                    
+                    x_new = a[0] + (random.random() * delta_x)       
+                    y_new = eq_params[0] * x_new + eq_params[1]
+                    
+                    points_on_line.append((x_new, y_new))
+                    
+            elif method == "equal_uniform":
+                
+                partition = delta_x / (point_count + 1)
+                
+                for i in range(0, point_count + 1):
+            
+                    x_new = a[0] + (i * partition) + (random.random() * partition)
+                    y_new = eq_params[0] * x_new + eq_params[1]
+                    
+                    points_on_line.append((x_new, y_new))
+            
+            # TO DO: Insert points equally normal distributed
             
         # Inserting new points in the original line
         line_new = [a]
