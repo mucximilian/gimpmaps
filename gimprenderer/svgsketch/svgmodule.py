@@ -4,9 +4,11 @@ Created on Jun 9, 2015
 @author: mucx
 
 TO DO:
-    - Adding classes for features instead of 2-dimensional arrays for features
-    and styles
-    - Adding layer/feature ordering
+
+- Adding classes
+    - geometry feature + style
+    - group + style
+- Adding layer/feature ordering
 '''
 
 import svgwrite
@@ -18,7 +20,6 @@ class Drawing(object):
     '''
     classdocs
     '''
-
 
     def __init__(self, filename, resolution = None):
         '''
@@ -60,8 +61,8 @@ class Drawing(object):
             try:
                 bounds = [0,0] + self.resolution
                 
-                width = bounds[2]
-                height = bounds[3]
+                width = bounds[1][0]
+                height = bounds[1][1]
                 
                 x_viewbox = 0
                 y_viewbox = 0
@@ -80,11 +81,11 @@ class Drawing(object):
                 width = self.resolution[0]
                 height = self.resolution[1]
                 
-                width_bounds = math.fabs(bounds[2] - bounds[0])
-                height_bounds = math.fabs(bounds[3] - bounds[1]) 
+                width_bounds = math.fabs(bounds[1][0] - bounds[0][0])
+                height_bounds = math.fabs(bounds[1][1] - bounds[0][1]) 
                 
-                x_viewbox = bounds[0] - (math.fabs(width - width_bounds) / 2)
-                y_viewbox = bounds[1] - (math.fabs(height - height_bounds) / 2)
+                x_viewbox = bounds[0][0] - (math.fabs(width - width_bounds) / 2)
+                y_viewbox = bounds[0][1] - (math.fabs(height - height_bounds) / 2)
                 
                 width_viewbox = self.resolution[0]
                 height_viewbox = self.resolution[1]
@@ -96,13 +97,13 @@ class Drawing(object):
             
             bounds = self.get_bounds()
             
-            width = math.fabs(bounds[2] - bounds[0])
-            height = math.fabs(bounds[3] - bounds[1])            
+            width = math.fabs(bounds[1][0] - bounds[0][0])
+            height = math.fabs(bounds[1][1] - bounds[0][1])            
             width += 2*img_buffer
             height += 2*img_buffer
             
-            x_viewbox = bounds[0] - img_buffer
-            y_viewbox = bounds[1] - img_buffer
+            x_viewbox = bounds[0][0] - img_buffer
+            y_viewbox = bounds[0][1] - img_buffer
             
             width_viewbox = width
             height_viewbox = height
@@ -114,8 +115,8 @@ class Drawing(object):
             
             bounds = self.get_bounds()
             
-            x_max_abs = max(math.fabs(bounds[2]), math.fabs(bounds[0]))
-            y_max_abs = max(math.fabs(bounds[3]), math.fabs(bounds[1]))
+            x_max_abs = max(math.fabs(bounds[1][0]), math.fabs(bounds[0][0]))
+            y_max_abs = max(math.fabs(bounds[1][1]), math.fabs(bounds[0][1]))
             
             width = 2 * x_max_abs
             height = 2 * y_max_abs
@@ -264,12 +265,12 @@ class Drawing(object):
             
     def draw_path_line(self, path):
         
-        svg = self.linepoints_to_svg_path(path[0])        
+        svg = self.linepoints_to_svg_path(path[0].coords)        
         self.draw_path(svg, style = path[1])
             
     def draw_path_bezier(self, path):
                 
-        svg = self.curve_to_svg_bezier(path[0])        
+        svg = self.curve_to_svg_bezier(path[0].coords)        
         self.draw_path(svg, style = path[1])
             
     def draw_group(self, group, group_type):
@@ -287,12 +288,12 @@ class Drawing(object):
         
             if group_type == "path" :     
                 
-                svg = self.linepoints_to_svg_path(feature)
+                svg = self.linepoints_to_svg_path(feature.coords)
                 self.draw_path(svg, grp)
                 
             elif group_type == "path_bezier" :
                 
-                svg = self.curve_to_svg_bezier(feature)
+                svg = self.curve_to_svg_bezier(feature.coords)
                 self.draw_path(svg, grp)
                 
             elif group_type == "circle":
@@ -302,17 +303,6 @@ class Drawing(object):
         self.drawing.add(grp)
         
     def get_bounds(self):
-        
-        bbox = self.get_feature_bbox()
-        
-        x_min = bbox[0][0]
-        y_min = bbox[0][1]
-        x_max = bbox[1][0]
-        y_max = bbox[1][1]
-        
-        return [x_min, y_min, x_max, y_max]
-        
-    def get_feature_bbox(self):
         """
         This function returns the bounding box of all points of any feature that
         is contained in the image. Necessary to determine the image size.
@@ -351,7 +341,7 @@ class Drawing(object):
             
             if len(paths) > 0:
                 for path in paths:
-                    for point in path:
+                    for point in path[0].coords:
                         points.append(point)
                         
             return points
@@ -366,7 +356,7 @@ class Drawing(object):
                 if len(paths) > 0:
                     
                     for path in paths:                        
-                        for point in path:
+                        for point in path.coords:
                             
                             points.append(point)
             
@@ -378,9 +368,9 @@ class Drawing(object):
             points = []
             
             for path in self.paths_bezier:                               
-                for i in range(0, len(path[0]), 3):
+                for i in range(0, len(path[0].coords), 3):
                     
-                    points.append(path[0][i])
+                    points.append(path[0].coords[i])
                 
             return points
                         
@@ -394,9 +384,9 @@ class Drawing(object):
                 if len(paths) > 0:
                     
                     for path in paths:                        
-                        for i in range(0, len(path), 3):
+                        for i in range(0, len(path.coords), 3):
                             
-                            points.append(path[i])
+                            points.append(path.coords[i])
             
             return points
         
@@ -409,16 +399,13 @@ class Drawing(object):
             
             points = []
             
-            points += get_points_circles(self.circles)
-            
+            points += get_points_circles(self.circles)            
             points += get_points_circle_groups()
             
-            points += get_points_paths(self.paths)
-            
+            points += get_points_paths(self.paths)            
             points += get_points_path_groups()
             
-            points += get_points_paths_bezier()
-            
+            points += get_points_paths_bezier()            
             points += get_points_path_bezier_groups()
             
             return points
@@ -461,6 +448,8 @@ class Drawing(object):
     
     ############################################################################
     # Point arrays to SVG path string conversion methods
+    
+    # TO DO: Move these functions to subclasses
     
     def curve_to_svg_bezier(self, curve):
         """

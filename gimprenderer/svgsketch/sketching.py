@@ -4,9 +4,10 @@ Created on Jun 5, 2015
 @author: mucx
 '''
 
+from __future__ import division
+
 import math
 import random
-import shapely
 
 class SketchRenderer(object):
     '''
@@ -18,136 +19,11 @@ class SketchRenderer(object):
         Constructor
         '''
         self.seed = seed
-        
-    def simple_bezier(self, linepoints, t = 1.0):
-        """
-        Returns a Bezier curve in SVG from a sequence of points and control 
-        points in an array.
-        """
-        
-        curve = []
-        curve.append([linepoints[0][0], linepoints[0][1]])
-        curve.append([linepoints[0][0], linepoints[0][1]])
-            
-        for i in range(1, len(linepoints)-1):  
-            
-            points = [linepoints[i-1], linepoints[i], linepoints[i+1]]
-            
-            controlpoints = self.get_control_points(points, t)
-            
-            curve.append([controlpoints[0][0], controlpoints[0][1]])
-            curve.append([linepoints[i][0], linepoints[i][1]])
-            curve.append([controlpoints[1][0], controlpoints[1][1]])
-            
-        last = len(linepoints)-1
-        
-        curve.append([linepoints[last][0], linepoints[last][1]])
-        curve.append([linepoints[last][0], linepoints[last][1]])
-        
-        return curve
-        
-    def get_control_points(self, points, t = 1.0):
-        """
-        Given three consecutive points on a line (P0, P1, P2), this function 
-        calculates the Bezier control points of P1 using the technique 
-        explained by Rob Spencer.
-        
-        Source: http://scaledinnovation.com/analytics/splines/aboutSplines.html
-        """
-    
-        x0 = points[0][0]
-        y0 = points[0][1]
-        x1 = points[1][0]
-        y1 = points[1][1]
-        x2 = points[2][0]
-        y2 = points[2][1]
-        
-        d01 = math.sqrt(math.pow(x1 - x0, 2) + math.pow(y1 - y0, 2))
-        d12 = math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
-        
-        fa = t * d01 / (d01 + d12) # scaling factor for triangle Ta
-        fb = t * d12 / (d01 + d12) # ditto for Tb, simplifies to fb=t-fa
-        
-        p1x = x1 - fa * (x2 - x0) # x2-x0 is the width of triangle T
-        p1y = y1 - fa * (y2 - y0) # y2-y0 is the height of T
-        p2x = x1 + fb * (x2 - x0)
-        p2y = y1 + fb * (y2 - y0)  
-        
-        return [[p1x,p1y],[p2x,p2y]];
-        
-    def catmull_rom_bezier(self, linepoints, t = 1.0):
-        """
-        Returns a SVG Bezier curve of a line with the given points.
-        
-        Source: http://schepers.cc/getting-to-the-point
-        
-        Catmull-Rom to Cubic Bezier conversion matrix 
-        0       1       0       0
-        -1/6    1      1/6      0
-        0      1/6      1     -1/6
-        0       0       1       0
-            
-        """
-        curve = []
-        curve.append([linepoints[0][0], linepoints[0][1]])
-        
-        point_count = len(linepoints)
-        
-        for i in range(0, point_count-1):
-            
-            # Creating an array of relevant knot points
-            p = []
-            
-            if ( 0 == i ):
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+2][0], linepoints[i+2][1]])
-            elif (len(linepoints) - 2 == i ):
-                p.append([linepoints[i-1][0], linepoints[i-1][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-            else:
-                p.append([linepoints[i-1][0], linepoints[i-1][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+2][0], linepoints[i+2][1]])
-    
-            # Calculating the bezier points from the knot points
-            bp = [];
-            
-            # This assignment is for readability only
-            x0 = p[0][0]
-            y0 = p[0][1]
-            x1 = p[1][0]
-            y1=  p[1][1]
-            x2 = p[2][0]
-            y2 = p[2][1]
-            x3 = p[3][0]
-            y3=  p[3][1]
-            
-            # Using the factor t as "tension control"           
-            f = (1 / t) * 6
-            
-            bp.append([x1, y1])
-            bp.append([
-                    ((-x0 + f*x1 + x2) / f),
-                    ((-y0 + f*y1 + y2) / f)
-            ])
-            bp.append([
-                    ((x1 + f*x2 - x3) / f),
-                    ((y1 + f*y2 - y3) / f)
-            ])
-            bp.append([x2, y2])
-            
-            curve.append([bp[1][0], bp[1][1]])
-            curve.append([bp[2][0], bp[2][1]])
-            curve.append([bp[3][0], bp[3][1]])
-        
-        return curve
            
-    def add_sketch_points(self, line, r):
+    def displace_points_handy(self, line, r):
+        """
+        Does what the Handy renderer is supposed to do (according to paper)
+        """
         
         point_a = self.displace_point_circle(line[0], r)
         point_b = self.displace_point_circle(line[1], r)
@@ -184,6 +60,8 @@ class SketchRenderer(object):
         
         m = self.calculate_point_at_line_pos(line, 0.5)
         
+        print m
+        
         # TO DO:
         # Calculate point that is within r on a orthogonal line through m 
         
@@ -198,7 +76,9 @@ class SketchRenderer(object):
         coordinates are randomly perturbed (with a uniform random deviate)
         """
         
-        n = self.calculate_point_at_line_pos(line, 0.75)
+        n = line.calculate_point_at_line_pos(0.75)
+        
+        print n
         
         # TO DO:
         # Calculate point that is within r and orthogonal to a 10 % section of
@@ -208,28 +88,6 @@ class SketchRenderer(object):
         y = 0
         
         return [x,y]
-    
-    def calculate_point_at_line_pos(self, line, t):
-        """
-        Calculating the mid point of a line consisting of two points
-        """
-        
-        x = (1-t)*line[0][0] + t*line[1][0];
-        y = (1-t)*line[0][1] + t*line[1][1];
-        
-        return [x,y]
-    
-    def line_as_wkt(self, line):
-        """
-        Returns an array of coordinate pair arrays in WKT notation.
-        """
-        
-        line_wkt = "LINESTRING ("        
-        for p in line:
-            line_wkt += str(p[0]) + " " + str(p[1]) + ", "            
-        line_wkt = line_wkt[:-2] + ")"
-        
-        return line_wkt
     
     def polygon(self, polygon, angle_disjoin = 135.0):
         """
@@ -241,6 +99,27 @@ class SketchRenderer(object):
         :param polygon: Input geometry, array of lines (arrays of coordinates)
         :param angle_disjoin: Threshold angle for disjoin in degree.
         """
+        
+        def get_three_point_angle(points):
+            """
+            Calculates the angle between the lines from a vertex to the vertex 
+            behind and the vertex to the vertex ahead.
+            
+            :param points: Coordinate array, containing three points 
+            (vertex behind, vertex, vertex ahead)
+            """
+            
+            p0 = points[0] # point_behind
+            p1 = points[1] # point_center
+            p2 = points[2] # point_ahead
+            
+            a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
+            b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+            c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
+            
+            angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
+        
+            return angle
         
         outline_segments = []
         
@@ -278,52 +157,51 @@ class SketchRenderer(object):
             outline_segments.append(segment)
             
         return outline_segments
-                
-    def get_three_point_angle(self, points):
-        """
-        Calculates the angle between the lines from a vertex to the vertex 
-        behind and the vertex to the vertex ahead.
-        
-        :param points: Coordinate array, containing three points 
-        (vertex behind, vertex, vertex ahead)
-        """
-        
-        p0 = points[0] # point_behind
-        p1 = points[1] # point_center
-        p2 = points[2] # point_ahead
-        
-        a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
-        b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
-        c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
-        
-        angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
-    
-        return angle
     
     def line_jitter_bezier(self, line):
+        """
+        Creates a jittered line as described here:
         
-        random.seed()
+        http://stackoverflow.com/a/6373008/3854098 
+        http://jsfiddle.net/GfGVE/9/
+        """
         
-        i = 0;
-        while (i < 500):
-
-            diffx = tox - fromx;
-            diffy = toy - fromy;
-             
-            neg = random.random()*diffy/5; # so the x value can go positive or negative from the typical
-                
-                
-            cp1 = [
-                -neg + fromx + 2*(random.random() * diffy/8),
-                fromy + .3*diffy
-            ]
-            cp2 = [
-                -neg + fromx + 2*(random.random() * diffy/8),
-                fromy + .6*diffy
-            ]
-            tox, toy
+        random.seed(line.length( * self.seed))
+        
+        curve = []
+        curve.append[line.coords[0]]
+        
+        for i in range(0, len(line.coords) -1):
             
-    def add_random_points_to_line(self, line, point_count, dist_type="uniform"):
+            p0_x = line.coords[i][0]
+            p0_y = line.coords[i][1]
+            p1_x = line.coords[i+1][0]
+            p1_y = line.coords[i+1][1]
+
+            diff_y = p1_y - p0_y;
+            
+            # so the y value can go positive or negative from the typical   
+            neg = random.random() * diff_y / 5; 
+                
+            cp1 = (
+                -neg + p0_x + 2 * (random.random() * diff_y / 8),
+                p0_y + .3 * diff_y
+            )
+            cp2 = (
+                -neg + p0_x + 2 * (random.random() * diff_y/8),
+                p0_y + .6 * diff_y
+            )
+            p = (p1_x, p1_y)
+            
+            curve.append(cp1, cp2, p)
+            
+    def add_points_to_line(self, line, point_count, dist_type = "uniform"):
+        """
+        Adds a specified number of points randomly to a line between two points.
+        
+        :param line: Line class determining a line by two points (coordinate 
+        tuple array)
+        """
         
         a = min(line.coords) # Get point with smaller x value as point a
         b = max(line.coords)
@@ -332,42 +210,25 @@ class SketchRenderer(object):
         
         random.seed(line.length() * self.seed)
         
-        eq_params = self.get_line_equation_params(line)
+        eq_params = line.get_line_equation_params()
         
         points_on_line = []
         
-        for i in range(0, point_count):
+        for _ in range(0, point_count):
             
             x_new = a[0] + (random.random() * delta_x)       
             y_new = eq_params[0] * x_new + eq_params[1]
             
-            points_on_line.append([x_new, y_new])
+            points_on_line.append((x_new, y_new))
             
+        # TO DO: Insert points equally distributed           
+            
+        # Inserting new points in the original line
         line_new = [a]
         line_new += sorted(points_on_line)
-        line_new + [b]
+        line_new += [b]
         
         return line_new
-            
-    def get_line_equation_params(self, line):
-        """
-        Returns the line equation y = mx + b for a line which is determined by
-        two points.
-        
-        :param line: Array that determines a line by two points (coordinate
-        pair array)
-        """
-        
-        x1 = line.coords[0][0]
-        y1 = line.coords[0][1]
-        x2 = line.coords[1][0]
-        y2 = line.coords[1][1]
-        
-        m = float(y1 - y2)/(x1 - x2)
-        
-        b = y1 - m * x1
-        
-        return [m,b]   
     
 class HandyRenderer(SketchRenderer):
     '''
@@ -394,10 +255,10 @@ class HandyRenderer(SketchRenderer):
         void line(float x1, float y1, float x2, float y2, float maxOffset)
         """
         
-        x1 = line[0][0]
-        y1 = line[0][1]
-        x2 = line[1][0]
-        y2 = line[1][1]
+        x1 = line.coords[0][0]
+        y1 = line.coords[0][1]
+        x2 = line.coords[1][0]
+        y2 = line.coords[1][1]
 
         # Ensure random perturbation is no more than 10% of line length.
         lenSq = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)
@@ -407,6 +268,8 @@ class HandyRenderer(SketchRenderer):
             offset = math.sqrt(lenSq)/10.0
 
         half_offset = offset/2
+        
+        random.seed(line.length * self.seed)
         
         divergePoint = 0.2 + random.random() * 0.2
 
@@ -434,6 +297,8 @@ class HandyRenderer(SketchRenderer):
         Clone of the function:
         
         float getOffset(float minVal, float maxVal)
+        
+        Should be called only from the 'line' function for secure random seed.
         """
              
         offset = self.roughness * (random.random() * (maxVal - minVal) + minVal)
@@ -470,24 +335,3 @@ class HandyRenderer(SketchRenderer):
         line = [p0, p1, p2, p3]
         
         return line
-    
-class Line(object):
-    """
-    A class defining the connection between two points
-    """
-    
-    def __init__(self, coordinates):
-        """
-        :param coordinates: A list of coordinate tuples
-        """
-        
-        self.coords = coordinates
-        
-    def length(self):
-        
-        d_x = math.fabs(self.coords[0][0] - self.coords[1][0])
-        d_y = math.fabs(self.coords[0][1] - self.coords[1][1])
-        
-        l = math.sqrt(d_x**2 + d_y**2)
-        
-        return l
