@@ -6,6 +6,7 @@ Created on Jun 5, 2015
 
 import math
 import random
+import shapely
 
 class SketchRenderer(object):
     '''
@@ -16,7 +17,7 @@ class SketchRenderer(object):
         '''
         Constructor
         '''
-        random.seed(seed)
+        self.seed = seed
         
     def simple_bezier(self, linepoints, t = 1.0):
         """
@@ -163,6 +164,8 @@ class SketchRenderer(object):
         coordinates are randomly perturbed (with a uniform random deviate)
         """
         
+        random.seed(r * self.seed)
+        
         angle = random.random() * (2 * math.pi)
         distance = random.random() * r
         
@@ -297,6 +300,75 @@ class SketchRenderer(object):
     
         return angle
     
+    def line_jitter_bezier(self, line):
+        
+        random.seed()
+        
+        i = 0;
+        while (i < 500):
+
+            diffx = tox - fromx;
+            diffy = toy - fromy;
+             
+            neg = random.random()*diffy/5; # so the x value can go positive or negative from the typical
+                
+                
+            cp1 = [
+                -neg + fromx + 2*(random.random() * diffy/8),
+                fromy + .3*diffy
+            ]
+            cp2 = [
+                -neg + fromx + 2*(random.random() * diffy/8),
+                fromy + .6*diffy
+            ]
+            tox, toy
+            
+    def add_random_points_to_line(self, line, point_count, dist_type="uniform"):
+        
+        a = min(line.coords) # Get point with smaller x value as point a
+        b = max(line.coords)
+        
+        delta_x = b[0] - a[0]
+        
+        random.seed(line.length() * self.seed)
+        
+        eq_params = self.get_line_equation_params(line)
+        
+        points_on_line = []
+        
+        for i in range(0, point_count):
+            
+            x_new = a[0] + (random.random() * delta_x)       
+            y_new = eq_params[0] * x_new + eq_params[1]
+            
+            points_on_line.append([x_new, y_new])
+            
+        line_new = [a]
+        line_new += sorted(points_on_line)
+        line_new + [b]
+        
+        return line_new
+            
+    def get_line_equation_params(self, line):
+        """
+        Returns the line equation y = mx + b for a line which is determined by
+        two points.
+        
+        :param line: Array that determines a line by two points (coordinate
+        pair array)
+        """
+        
+        x1 = line.coords[0][0]
+        y1 = line.coords[0][1]
+        x2 = line.coords[1][0]
+        y2 = line.coords[1][1]
+        
+        m = float(y1 - y2)/(x1 - x2)
+        
+        b = y1 - m * x1
+        
+        return [m,b]   
+    
 class HandyRenderer(SketchRenderer):
     '''
     This class is a customized and simplified copy of the HandyRenderer.java 
@@ -398,3 +470,24 @@ class HandyRenderer(SketchRenderer):
         line = [p0, p1, p2, p3]
         
         return line
+    
+class Line(object):
+    """
+    A class defining the connection between two points
+    """
+    
+    def __init__(self, coordinates):
+        """
+        :param coordinates: A list of coordinate tuples
+        """
+        
+        self.coords = coordinates
+        
+    def length(self):
+        
+        d_x = math.fabs(self.coords[0][0] - self.coords[1][0])
+        d_y = math.fabs(self.coords[0][1] - self.coords[1][1])
+        
+        l = math.sqrt(d_x**2 + d_y**2)
+        
+        return l

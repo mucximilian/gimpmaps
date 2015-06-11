@@ -44,13 +44,26 @@ sketch_renderer = sketching.SketchRenderer(1234)
     
 # POLYGON TEST
 
-polygon = [
-    [[2,3],[1,1],[2,4],[5,5],[6,4],[8,3],[9,5],[10,4],[11,2],[10,0],[7,1],[4,2],[2,3]],
-    [[9,2],[9,3],[10,3],[10,2],[9,2]]
-]
+# polygon = [
+#     [[2,3],[1,1],[2,4],[5,5],[6,4],[8,3],[9,5],[10,4],[11,2],[10,0],[7,1],[4,2],[2,3]],
+#     [[9,2],[9,3],[10,3],[10,2],[9,2]]
+# ]
+# 
+# segments = sketch_renderer.polygon(polygon, 120)
+# 
+# for segment in segments:
+#     print segment
 
-segments = sketch_renderer.polygon(polygon, 120)
 
-for segment in segments:
-    print segment
 
+
+
+# Add random points to line test
+line1 = sketching.Line([(1,1), (5,3)])
+
+print line1.length()
+
+line2 = sketching.Line([(2,3), (6,4)])
+
+print sketch_renderer.add_random_points_to_line(line1, 3)
+print sketch_renderer.add_random_points_to_line(line2, 3)
