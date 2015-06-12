@@ -212,16 +212,18 @@ class SketchRenderer(object):
     def get_random_control_point(self, line, d):
         """
         Computes the point that is on the straight line between P0 and P1 and
-        the distance d away from.
+        the distance d away from P0 and P1.
         
         :param line: A tuple that contains both points. 
         """
         
         point1 = self.get_point_shifted(line, d)
-        print point1
-        point2 = self.add_point_to_line((point1, line[1]))
-        print point2
-        cp = self.displace_point(point2, d)
+        
+        point2 = self.get_point_shifted((line[1], line[0]), d)
+        
+        point_rand = self.add_random_point_to_line((point1, point2))
+        
+        cp = self.displace_point(point_rand, d)
         
         return cp
     
