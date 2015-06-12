@@ -15,6 +15,7 @@ import svgwrite
 import datetime
 import math
 import sys
+from blueman.main.Config import path
 
 class Drawing(object):
     '''
@@ -43,16 +44,13 @@ class Drawing(object):
         This is the main drawing function of the class. All features that have
         been added before are stored in an SVG image.
         
-        :param format_type: Determines image dimensions. Set to 'fixed', 'full'
-         or 'fit'
+        :param format_type: Content placement. Set to 'fixed', 'full' or 'fit'
+        :param filename_format: Storing 'date' or 'no_date' with the filename.
         """
         
         file_out = self.get_file_out(filename_format)
         
-        # Calculate bounding box of all feature points for image extent
-        
-        # print bounds
-        
+        # Additional space that is added to the image bounds
         img_buffer = 10.0
         
         # Image dimensions are the bounding box of all geometries plus a buffer
@@ -76,6 +74,7 @@ class Drawing(object):
         if format_type == "fixed_centered":
             
             try:
+                # Calculating bounding box of all feature points as image extent
                 bounds = self.get_bounds()
                 
                 width = self.resolution[0]
@@ -95,6 +94,7 @@ class Drawing(object):
             
         elif format_type == "fit":
             
+            # Calculating bounding box of all feature points as image extent
             bounds = self.get_bounds()
             
             width = math.fabs(bounds[1][0] - bounds[0][0])
@@ -159,6 +159,9 @@ class Drawing(object):
             
         for group in self.circle_groups:            
             self.draw_group(group, "circle")
+            
+        for circle in self.circles:            
+            self.draw_circle(circle[0], style = circle[1])
         
     def get_file_out(self, filename_format):
         """
@@ -192,7 +195,7 @@ class Drawing(object):
     ############################################################################
     # Feature adding functions
     
-    def add_circles(self, circle, style):
+    def add_circle(self, circle, style):
         
         self.circles.append([circle, style])
         
@@ -225,10 +228,12 @@ class Drawing(object):
     ############################################################################
     # Feature drawing functions
     
-    def draw_circle(self, center, r, parent = None, style = None):
+    def draw_circle(self, center, r = None, parent = None, style = None):
         
         if parent is None:
             parent = self.drawing
+        if r is None:
+            r = style.radius
             
         if style is None:
             parent.add(self.drawing.circle(
@@ -244,7 +249,10 @@ class Drawing(object):
                     center[0],
                     center[1],
                 ),
-                r = r
+                r = r,
+                stroke_width = style.stroke_width,
+                stroke = style.stroke_color,
+                fill = style.fill
                 # TO DO: Adding style for single circle
             ))
     
@@ -265,17 +273,17 @@ class Drawing(object):
             
     def draw_path_line(self, path):
         
-        svg = self.linepoints_to_svg_path(path[0].coords)        
+        svg = self.linepoints_to_svg_path(path[0])    
         self.draw_path(svg, style = path[1])
             
     def draw_path_bezier(self, path):
                 
-        svg = self.curve_to_svg_bezier(path[0].coords)        
+        svg = self.curve_to_svg_bezier(path[0])        
         self.draw_path(svg, style = path[1])
             
     def draw_group(self, group, group_type):
         
-        features = group[0]
+        group_features = group[0]
         style = group[1]
         
         grp = self.drawing.g(
@@ -284,21 +292,21 @@ class Drawing(object):
             fill = style.fill
         )        
         
-        for feature in features:
+        for feature in group_features:
         
             if group_type == "path" :     
                 
-                svg = self.linepoints_to_svg_path(feature.coords)
+                svg = self.linepoints_to_svg_path(feature)
                 self.draw_path(svg, grp)
                 
             elif group_type == "path_bezier" :
                 
-                svg = self.curve_to_svg_bezier(feature.coords)
+                svg = self.curve_to_svg_bezier(feature)
                 self.draw_path(svg, grp)
                 
             elif group_type == "circle":
                 
-                self.draw_circle(feature, style.radius, grp)
+                self.draw_circle(feature, r = style.radius, parent = grp)
             
         self.drawing.add(grp)
         
@@ -313,13 +321,14 @@ class Drawing(object):
         # and feature groups 
         
         # Circle points
-        def get_points_circles(circles):
+        def get_points_circles():
             
             points = []
             
-            if len(circles) > 0:
-                for circle in circles:
-                    points.append(circle)
+            if len(self.circles) > 0:
+                for circle in self.circles:
+                    
+                    points.append(circle[0])
                     
             return points
         
@@ -335,13 +344,13 @@ class Drawing(object):
             return points
         
         # Path points
-        def get_points_paths(paths):
+        def get_points_paths():
             
             points = []
             
-            if len(paths) > 0:
-                for path in paths:
-                    for point in path[0].coords:
+            if len(self.paths) > 0:
+                for path in self.paths:
+                    for point in path[0]:
                         points.append(point)
                         
             return points
@@ -356,7 +365,7 @@ class Drawing(object):
                 if len(paths) > 0:
                     
                     for path in paths:                        
-                        for point in path.coords:
+                        for point in path:
                             
                             points.append(point)
             
@@ -368,9 +377,9 @@ class Drawing(object):
             points = []
             
             for path in self.paths_bezier:                               
-                for i in range(0, len(path[0].coords), 3):
+                for i in range(0, len(path[0]), 3):
                     
-                    points.append(path[0].coords[i])
+                    points.append(path[0][i])
                 
             return points
                         
@@ -384,9 +393,9 @@ class Drawing(object):
                 if len(paths) > 0:
                     
                     for path in paths:                        
-                        for i in range(0, len(path.coords), 3):
+                        for i in range(0, len(path), 3):
                             
-                            points.append(path.coords[i])
+                            points.append(path[i])
             
             return points
         
@@ -399,10 +408,10 @@ class Drawing(object):
             
             points = []
             
-            points += get_points_circles(self.circles)            
+            points += get_points_circles()            
             points += get_points_circle_groups()
             
-            points += get_points_paths(self.paths)            
+            points += get_points_paths()            
             points += get_points_path_groups()
             
             points += get_points_paths_bezier()            
@@ -424,6 +433,8 @@ class Drawing(object):
             points = get_all_points()
             
             for point in points:
+                
+                print point
                 xs.append(point[0])
                 ys.append(point[1])
                 

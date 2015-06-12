@@ -82,6 +82,29 @@ class LineSimple(Line):
         
         return l
     
+    def vector(self):
+        
+        x = self.coords[1][0] - self.coords[0][0]
+        y = self.coords[1][1] - self.coords[0][1]
+        
+        return (x, y)
+    
+    def get_delta(self):
+        """
+        Returns the x or y distance between the two line points based on the
+        equation parameter (which determines the ascent of the line)
+        """
+        
+        delta = None
+        
+        eq_params = self.get_line_equation_params()
+        if eq_params is not None:
+            delta = self.coords[0] - a[0] # delta x
+        else:
+            delta = b[1] - a[1] # delta y
+            
+        return delta
+    
     def get_line_equation_params(self):
         """
         Identifies the line equation y = mx + b for a line which is determined 
@@ -96,11 +119,16 @@ class LineSimple(Line):
         x2 = self.coords[1][0]
         y2 = self.coords[1][1]
         
-        m = (y1 - y2)/(x1 - x2)
+        delta_x = x1 - x2
+        delta_y = y1 - y2
         
-        b = y1 - m * x1
-        
-        return [m,b]
+        if (delta_x == 0):
+            return None # Vertical line
+        else:
+            m = (delta_y)/(delta_x)            
+            b = y1 - m * x1
+            
+            return [m,b]
     
     def calculate_point_at_line_pos(self, t):
         """
@@ -121,17 +149,25 @@ class LineString(Line):
         """
         
         self.coords = coordinates
+        self.curve = None
         
     def length(self):
-        return 0
+        
+        length_total = 0
+        
+        for i in range(1, len(self.coords)):
+            line = LineSimple([self.coords[i], self.coords[i - 1]])
+            length_total += line.length()
+            
+        return length_total
     
-    def simple_bezier(self, linepoints, t = 1.0):
+    def simple_bezier(self, t = 1.0):
         """
         Returns a Bezier curve in SVG from a sequence of points and control 
         points in an array.
         """
         
-        def get_control_points(self, points, t = 1.0):
+        def get_controlpoints(point_triple, t = 1.0):
             """
             Given three consecutive points on a line (P0, P1, P2), this function 
             calculates the Bezier control points of P1 using the technique 
@@ -140,12 +176,12 @@ class LineString(Line):
             Source: http://scaledinnovation.com/analytics/splines/aboutSplines.html
             """
         
-            x0 = points[0][0]
-            y0 = points[0][1]
-            x1 = points[1][0]
-            y1 = points[1][1]
-            x2 = points[2][0]
-            y2 = points[2][1]
+            x0 = point_triple[0][0]
+            y0 = point_triple[0][1]
+            x1 = point_triple[1][0]
+            y1 = point_triple[1][1]
+            x2 = point_triple[2][0]
+            y2 = point_triple[2][1]
             
             d01 = math.sqrt(math.pow(x1 - x0, 2) + math.pow(y1 - y0, 2))
             d12 = math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
@@ -160,28 +196,31 @@ class LineString(Line):
             
             return [[p1x,p1y],[p2x,p2y]];
         
-        curve = []
-        curve.append([linepoints[0][0], linepoints[0][1]])
-        curve.append([linepoints[0][0], linepoints[0][1]])
-            
-        for i in range(1, len(linepoints)-1):  
-            
-            points = [linepoints[i-1], linepoints[i], linepoints[i+1]]
-            
-            controlpoints = get_control_points(points, t)
-            
-            curve.append([controlpoints[0][0], controlpoints[0][1]])
-            curve.append([linepoints[i][0], linepoints[i][1]])
-            curve.append([controlpoints[1][0], controlpoints[1][1]])
-            
-        last = len(linepoints)-1
+        ########################################################################
         
-        curve.append([linepoints[last][0], linepoints[last][1]])
-        curve.append([linepoints[last][0], linepoints[last][1]])
+        controlpoints = []
+        controlpoints.append([self.coords[0][0], self.coords[0][1]])
+            
+        for i in range(1, len(self.coords)-1):  
+            
+            point_triple = [self.coords[i-1], self.coords[i], self.coords[i+1]]
+            
+            cps_point = get_controlpoints(point_triple, t)
+            
+            controlpoints.append([cps_point[0][0], cps_point[0][1]])
+            controlpoints.append([cps_point[1][0], cps_point[1][1]])
+            
+        last = len(self.coords)-1
+        
+        controlpoints.append([self.coords[last][0], self.coords[last][1]])
+        
+        curve = self._get_curve(controlpoints)
+        
+        self.curve = curve
         
         return curve
     
-    def catmull_rom_bezier(self, linepoints, t = 1.0):
+    def catmull_rom_bezier(self, t = 1.0):
         """
         Returns a SVG Bezier curve of a line with the given points.
         
@@ -194,10 +233,9 @@ class LineString(Line):
         0       0       1       0
             
         """
-        curve = []
-        curve.append([linepoints[0][0], linepoints[0][1]])
+        controlpoints = []
         
-        point_count = len(linepoints)
+        point_count = len(self.coords)
         
         for i in range(0, point_count-1):
             
@@ -205,20 +243,20 @@ class LineString(Line):
             p = []
             
             if ( 0 == i ):
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+2][0], linepoints[i+2][1]])
-            elif (len(linepoints) - 2 == i ):
-                p.append([linepoints[i-1][0], linepoints[i-1][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
+                p.append([self.coords[i][0], self.coords[i][1]])
+                p.append([self.coords[i][0], self.coords[i][1]])
+                p.append([self.coords[i+1][0], self.coords[i+1][1]])
+                p.append([self.coords[i+2][0], self.coords[i+2][1]])
+            elif (len(self.coords) - 2 == i ):
+                p.append([self.coords[i-1][0], self.coords[i-1][1]])
+                p.append([self.coords[i][0], self.coords[i][1]])
+                p.append([self.coords[i+1][0], self.coords[i+1][1]])
+                p.append([self.coords[i+1][0], self.coords[i+1][1]])
             else:
-                p.append([linepoints[i-1][0], linepoints[i-1][1]])
-                p.append([linepoints[i][0], linepoints[i][1]])
-                p.append([linepoints[i+1][0], linepoints[i+1][1]])
-                p.append([linepoints[i+2][0], linepoints[i+2][1]])
+                p.append([self.coords[i-1][0], self.coords[i-1][1]])
+                p.append([self.coords[i][0], self.coords[i][1]])
+                p.append([self.coords[i+1][0], self.coords[i+1][1]])
+                p.append([self.coords[i+2][0], self.coords[i+2][1]])
     
             # Calculating the bezier points from the knot points
             bp = [];
@@ -247,8 +285,40 @@ class LineString(Line):
             ])
             bp.append([x2, y2])
             
-            curve.append([bp[1][0], bp[1][1]])
-            curve.append([bp[2][0], bp[2][1]])
-            curve.append([bp[3][0], bp[3][1]])
+            controlpoints.append([bp[1][0], bp[1][1]])
+            controlpoints.append([bp[2][0], bp[2][1]])
+            
+        print controlpoints
+            
+        curve = self.get_curve(controlpoints)
+        
+        self.curve = curve
+        
+        return curve
+    
+    def get_curve(self, cps):
+        """
+        Creates a coordinate array of points and control points that can be
+        converted into SVG form.
+        
+        :param cps: An array of control points coordinates.
+        """
+        
+        # Checking every linepoint after the start point for two control points 
+        if (len(self.coords) - 1) != (len(cps) / 2):
+            sys.exit("Curve cannot be created - control point error.")
+        else:      
+            
+            # Adding first point  
+            curve = [self.coords[0]]
+            
+            # Adding remaining points
+            for i in range(0, len(self.coords) -1):
+                
+                cp_pos = i * 2
+                
+                curve.append(cps[cp_pos])
+                curve.append(cps[cp_pos + 1])
+                curve.append(self.coords[i + 1])
         
         return curve
