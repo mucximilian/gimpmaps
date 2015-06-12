@@ -1,2 +1,57 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg baseProfile="full" height="100%" version="1.1" viewBox="0.0 0.0 510.0 510.0" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><path d="M 10 10 C 10 10 22.9749367964 17.6783211695 41.656142617 41.656142617 67.9571519135 69.8803609841 71.0493689595 71.5339974873 98.9104577668 98.9104577668 132.771081782 124.852975067 114.778046787 117.973901897 150.702142029 150.702142029 195.690759182 209.500214372 221.236549036 229.030295864 250.757892085 250.757892085 287.759826587 287.166546069 283.680183576 284.131264672 306.150484974 306.150484974 325.945968177 312.002214501 330.425536397 340.302241633 376.365988437 376.365988437 391.809088343 399.762062953 386.770793929 389.617240673 407.737403354 407.737403354 414.246447123 419.209907321 422.476057966 417.551973962 440.655911275 440.655911275 473.815932832 478.471746369 500 500 500 500" fill="none" stroke="black" stroke-width="2" /></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="100%"
+   version="1.1"
+   viewBox="0.0 0.0 510.0 510.0"
+   width="100%"
+   id="svg2"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="jitter_line.svg">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1154"
+     inkscape:window-height="758"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="0.4627451"
+     inkscape:cx="259.32203"
+     inkscape:cy="255"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4" />
+  <path
+     d="M 10 10 C 10 10 22.9749367964 17.6783211695 41.656142617 41.656142617 67.9571519135 69.8803609841 71.0493689595 71.5339974873 98.9104577668 98.9104577668 132.771081782 124.852975067 114.778046787 117.973901897 150.702142029 150.702142029 195.690759182 209.500214372 221.236549036 229.030295864 250.757892085 250.757892085 287.759826587 287.166546069 283.680183576 284.131264672 306.150484974 306.150484974 325.945968177 312.002214501 330.425536397 340.302241633 376.365988437 376.365988437 391.809088343 399.762062953 386.770793929 389.617240673 407.737403354 407.737403354 414.246447123 419.209907321 422.476057966 417.551973962 440.655911275 440.655911275 473.815932832 478.471746369 500 500 500 500"
+     fill="none"
+     stroke="black"
+     stroke-width="2"
+     id="path6" />
+</svg>
