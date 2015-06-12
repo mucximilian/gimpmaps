@@ -9,5 +9,4 @@ sql/old/
 *.pyc
 *.xcf
 *.png
-*.svg
 *.log
