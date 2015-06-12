@@ -235,9 +235,10 @@ class SketchRenderer(object):
         
         x = line[1][0] - line[0][0]
         y = line[1][1] - line[0][1]        
-        vector = (x,y)        
+        vector = (x,y)
+        l = math.sqrt(x**2 + y**2)    
         
-        shift = tuple(d / math.sqrt(x**2 + y**2) * x for x in vector)
+        shift = tuple((d / l) * x for x in vector)
                 
         point_shifted = tuple(sum(t) for t in zip(line[0], shift))
         
@@ -325,21 +326,31 @@ class SketchRenderer(object):
                     d = line.length() * random.random()
             
                     point = self.get_point_shifted((a, b), d)                
-                    points_on_line.append(point)
-        
+                    points_on_line.append(point)        
             
             # - randomly within equal partitions        
             elif method == "equal_uniform":
                 
-                for i in range(0, n + 1):
-                    
-                    d_part = (line.length() / (n + 1)) * i
-                    point_part = self.get_point_shifted((a, b), d_part)
-
-                    d_rand = (line.length() / (n + 1)) * random.random()
-
-                    point = self.get_point_shifted((point_part, b), d_rand)
-                    points_on_line.append(point)
+                # Determine the break points for the segments
+                breaks = []
+                for i in range(1, n):
+                    d_part = line.length() / n * i
+                    point = self.get_point_shifted((a, b), d_part)
+                    breaks.append(point)
+                
+                # Now rondom points between the segments are computed
+                points_on_line.append(
+                    self.add_random_point_to_line((a, breaks[0]))
+                )                
+                for i in range(0, n - 2):                   
+                    points_on_line.append(
+                        self.add_random_point_to_line(
+                            (breaks[i], breaks[i + 1])
+                        )
+                    )                    
+                points_on_line.append(
+                    self.add_random_point_to_line((breaks[-1], b))
+                )
             
         # Inserting new points in the original line
         line_new = [a]
@@ -348,7 +359,7 @@ class SketchRenderer(object):
         
         return line_new
     
-    def add_random_point_to_line(self, line, pos_x, d, eq_params):
+    def add_random_point_to_line(self, line):
         """
         Computes the point that is on the straight line between P0 and P1 and
         the distance d away from.
@@ -356,14 +367,16 @@ class SketchRenderer(object):
         :param line: A tuple that contains both points. 
         """ 
         
-        x_new = 0
-        y_new = pos_x + (random.random() * d)        
-        if eq_params is not None: 
-            
-            x_new = pos_x + (random.random() * d)                          
-            y_new = eq_params[0] * x_new + eq_params[1]
-            
-        return (x_new, y_new)
+        d_x = math.fabs(line[0][0] - line[1][0])
+        d_y = math.fabs(line[0][1] - line[1][1])
+        
+        d = math.sqrt(d_x**2 + d_y**2)
+        d_rand = random.random() * d
+        
+        point = self.get_point_shifted(line, d_rand)
+        
+        return point
+        
     
 class HandyRenderer(SketchRenderer):
     '''

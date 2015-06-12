@@ -433,8 +433,7 @@ class Drawing(object):
             points = get_all_points()
             
             for point in points:
-                
-                print point
+
                 xs.append(point[0])
                 ys.append(point[1])
                 
