@@ -502,7 +502,7 @@ class Drawing(object):
         :param point: Point coordinates
         """
         
-        return str(point[0]) + " " + str(point[1])
+        return str(point[0]) + "," + str(point[1])
     
     def as_svg_path(self, d):
         """

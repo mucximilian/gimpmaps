@@ -6,6 +6,8 @@ Created on Jun 5, 2015
 
 from __future__ import division
 
+from geometry import LineSimple, LineString
+
 import math
 import random
 
@@ -22,7 +24,9 @@ class SketchRenderer(object):
            
     def displace_points_handy(self, line, r):
         """
-        Does what the Handy renderer is supposed to do (according to paper)
+        Does what the Handy renderer is supposed to do (according to paper).
+        
+        :param line: Tuple of two coordinate pairs determining the line points.
         """
         
         point_a = self.displace_point(line[0], r)
@@ -40,6 +44,8 @@ class SketchRenderer(object):
         coordinates are randomly perturbed (with a uniform random deviate).
         
         Note: The random seed should be set outside of the function.
+        
+        :param point: Tuple of x and y coordinates.
         """
         
         # random.seed(r * self.seed)
@@ -104,7 +110,7 @@ class SketchRenderer(object):
         
         return [x,y]
     
-    def polygon(self, polygon, angle_disjoin = 135.0):
+    def polygon_disjoin(self, polygon, angle_disjoin = 135.0):
         """
         Disjoins polygon linestrings into segments at vertices where the angle 
         between the lines from the vertex to the vertex behind and the vertex 
@@ -173,12 +179,79 @@ class SketchRenderer(object):
             
         return outline_segments
     
-    def line_jitter_bezier(self, line, d_rel = 10.0, d_abs = None):
+    def get_random_control_point(self, line, d):
         """
-        Calculates random control points for a jittered line.
+        Computes a random point that is on the straight line between P0 and P1 
+        and the distance d away from P0 and P1. The distance is capped at half 
+        of the line length.
         
-        :param line: The LineString to apply the jittering to.
+        :param line: Tuple of two coordinate pairs determining the line points.
         """
+        
+        line = LineSimple(line)
+                
+        line_length_half = line.length()/2
+        
+        cp = None
+        
+        if d >= line_length_half:   
+            
+            print "case 1" 
+        
+            point = self.get_point_shifted(line.coords, line_length_half)
+            cp = self.displace_point(point, line_length_half)
+            print point
+            
+        else:
+            
+            print "case 2"
+            
+            point1 = self.get_point_shifted(line.coords, d)            
+            point2 = self.get_point_shifted((line.coords[1], line.coords[0]), d)
+            
+            point = self.get_random_point_on_line((point1, point2))
+            cp = self.displace_point(point, d)
+            print point
+                    
+        return cp
+    
+    def get_point_shifted(self, line, d):
+        """
+        Computes the point that is on the straight line between P0 and P1 and
+        the distance d away from.
+        
+        :param line: Tuple of two coordinate pairs determining the line points.
+        """ 
+        
+        line = LineSimple(line)
+        
+        line_vector = line.vector()        
+        line_length = line.length()
+        
+        shift = tuple((d / line_length) * x for x in line_vector)
+                
+        point_shifted = tuple(sum(t) for t in zip(line.coords[0], shift))
+        
+        return point_shifted
+    
+    def jitter_line(self, line, d_rel = 10.0, d_abs = None, method = "simple"):
+        """
+        Calculates random control points for a jittered line. The minumum 
+        distance d of a random point to the corresponding end point can either
+        be relative to the line lenght or a absolute value. Absolute values
+        are capped at half of the line length between two points in the 
+        'get_random_control_point' function.
+         
+       :param line: Tuple of two coordinate pairs determining the line points.
+        """
+        
+        # TO DO:
+        # - Avoid overlapping controlpoints --> smoother line
+        # - Control points on opposite sides of the line --> smoother line
+        # - Perturb start and end point 
+        
+        
+        line = LineString(line)
         
         d = None        
         if d_abs is not None:
@@ -188,73 +261,56 @@ class SketchRenderer(object):
         
         random.seed(line.length() * self.seed)
         
-        controlpoints = []
-        controlpoints.append(line.coords[0])
+        line_jittered = []
         
-        self.get_random_control_point((line.coords[0], line.coords[1]), d)
-        
-        for i in range(1, len(line.coords) -1):
+        if method == "simple":
             
-            point_behind = line.coords[i - 1]
-            point = line.coords[i]
-            point_ahead = line.coords[i + 1]
-                            
-            cp1 = self.get_random_control_point((point, point_behind), d)            
-            cp2 = self.get_random_control_point((point, point_ahead), d)
+            line_jittered.append(line.coords[0])
             
-            controlpoints.append(cp1)
-            controlpoints.append(cp2)
-            
-        controlpoints.append(line.coords[-1])
-            
-        return controlpoints
-    
-    def get_random_control_point(self, line, d):
-        """
-        Computes the point that is on the straight line between P0 and P1 and
-        the distance d away from P0 and P1.
-        
-        :param line: A tuple that contains both points. 
-        """
-        
-        point1 = self.get_point_shifted(line, d)
-        
-        point2 = self.get_point_shifted((line[1], line[0]), d)
-        
-        point_rand = self.add_random_point_to_line((point1, point2))
-        
-        cp = self.displace_point(point_rand, d)
-        
-        return cp
-    
-    def get_point_shifted(self, line, d):
-        """
-        Computes the point that is on the straight line between P0 and P1 and
-        the distance d away from.
-        
-        :param line: A tuple that contains both points. 
-        """ 
-        
-        x = line[1][0] - line[0][0]
-        y = line[1][1] - line[0][1]        
-        vector = (x,y)
-        l = math.sqrt(x**2 + y**2)    
-        
-        shift = tuple((d / l) * x for x in vector)
+            for i in range(1, len(line.coords) -1):
                 
-        point_shifted = tuple(sum(t) for t in zip(line[0], shift))
+                point = self.displace_point(line.coords[i], d, "circle")
+                line_jittered.append(point)
+            
+            line_jittered.append(line.coords[0])
+                
+            
+        elif method == "bezier":
         
-        return point_shifted        
+            controlpoints = []
+            controlpoints.append(line.coords[0])
+            
+            self.get_random_control_point((line.coords[0], line.coords[1]), d)
+            
+            for i in range(1, len(line.coords) -1):
+                
+                point_behind = line.coords[i - 1]
+                point = line.coords[i]
+                point_ahead = line.coords[i + 1]
+                                
+                cp1 = self.get_random_control_point((point, point_behind), d)            
+                cp2 = self.get_random_control_point((point, point_ahead), d)
+                
+                controlpoints.append(cp1)
+                controlpoints.append(cp2)
+                
+            controlpoints.append(line.coords[-1])
+            
+            line_jittered = line.get_curve(controlpoints)
+            
+        return line_jittered  
     
-    def line_jitter_bezier_test(self, line):
+    def jitter_line_bezier_test(self, line):
         """
         Creates a jittered line as described here:
         
         http://stackoverflow.com/a/6373008/3854098 
         http://jsfiddle.net/GfGVE/9/
         
-        :param line: The LineString to apply the jittering to.
+        :param line: Tuple of two coordinate pairs determining the line points.
         """
+        
+        line = LineSimple(line)
         
         random.seed(line.length() * self.seed)
         
@@ -294,11 +350,12 @@ class SketchRenderer(object):
     def add_points_to_line(self, line, n = 1, method = "equal"):
         """
         Adds a specified number of points to a line between two points using
-        the selected method.
+        the selected method. Returns a new line.
         
-        :param line: geometry.LineSimple between two points (coordinate tuple
-        array)
+        :param line: Tuple of two coordinate pairs determining the line points.
         """
+        
+        line = LineSimple(line)
         
         a = min(line.coords) # Get point with smaller x value as point a
         b = max(line.coords)
@@ -316,7 +373,9 @@ class SketchRenderer(object):
                 points_on_line.append(point)
         
         # Distribute points randomly  
-        elif method == "uniform" or method == "equal_uniform":            
+        elif (method == "uniform" or
+            method == "equal_uniform" or
+            method == "equal_normlike"):            
         
             random.seed(line.length() * self.seed)
         
@@ -342,17 +401,21 @@ class SketchRenderer(object):
                 
                 # Now rondom points between the segments are computed
                 points_on_line.append(
-                    self.add_random_point_to_line((a, breaks[0]))
+                    self.get_random_point_on_line((a, breaks[0]))
                 )                
                 for i in range(0, n - 2):                   
                     points_on_line.append(
-                        self.add_random_point_to_line(
+                        self.get_random_point_on_line(
                             (breaks[i], breaks[i + 1])
                         )
                     )                    
                 points_on_line.append(
-                    self.add_random_point_to_line((breaks[-1], b))
+                    self.get_random_point_on_line((breaks[-1], b))
                 )
+            
+            # Distribute points normal distribution like on segment 
+            elif method == "equal_normlike":
+                print "'equal_normlike' not yet implemented"
             
         # Inserting new points in the original line
         line_new = [a]
@@ -361,21 +424,20 @@ class SketchRenderer(object):
         
         return line_new
     
-    def add_random_point_to_line(self, line):
+    def get_random_point_on_line(self, line):
         """
         Computes the point that is on the straight line between P0 and P1 and
         the distance d away from.
         
-        :param line: A tuple that contains both points. 
+        :param line: Tuple of two coordinate pairs determining the line points.
         """ 
         
-        d_x = math.fabs(line[0][0] - line[1][0])
-        d_y = math.fabs(line[0][1] - line[1][1])
+        line = LineSimple(line)
         
-        d = math.sqrt(d_x**2 + d_y**2)
+        d = line.length()
         d_rand = random.random() * d
         
-        point = self.get_point_shifted(line, d_rand)
+        point = self.get_point_shifted(line.coords, d_rand)
         
         return point
         
@@ -405,6 +467,8 @@ class HandyRenderer(SketchRenderer):
         void line(float x1, float y1, float x2, float y2, float maxOffset)
         """
         
+        line = LineSimple(line)
+        
         x1 = line.coords[0][0]
         y1 = line.coords[0][1]
         x2 = line.coords[1][0]
@@ -419,7 +483,7 @@ class HandyRenderer(SketchRenderer):
 
         half_offset = offset/2
         
-        random.seed(line.length * self.seed)
+        random.seed(line.length() * self.seed)
         
         divergePoint = 0.2 + random.random() * 0.2
 

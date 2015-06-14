@@ -299,7 +299,7 @@ class LineString(Line):
     def get_curve(self, cps):
         """
         Creates a coordinate array of points and control points that can be
-        converted into SVG form.
+        used as a SVG path.
         
         :param cps: An array of control points coordinates.
         """
