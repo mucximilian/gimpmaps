@@ -195,23 +195,17 @@ class SketchRenderer(object):
         cp = None
         
         if d >= line_length_half:   
-            
-            print "case 1" 
         
             point = self.get_point_shifted(line.coords, line_length_half)
             cp = self.displace_point(point, line_length_half)
-            print point
             
         else:
-            
-            print "case 2"
-            
+
             point1 = self.get_point_shifted(line.coords, d)            
             point2 = self.get_point_shifted((line.coords[1], line.coords[0]), d)
             
             point = self.get_random_point_on_line((point1, point2))
             cp = self.displace_point(point, d)
-            print point
                     
         return cp
     
