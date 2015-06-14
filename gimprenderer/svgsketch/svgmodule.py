@@ -134,9 +134,6 @@ class Drawing(object):
         
         # print viewbox
         
-        print width
-        print height
-        
         # Creating the image with a 10px buffer on each side
         self.drawing = svgwrite.Drawing(                                        
             file_out,
