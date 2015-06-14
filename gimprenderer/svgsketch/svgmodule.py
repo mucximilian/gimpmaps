@@ -15,7 +15,6 @@ import svgwrite
 import datetime
 import math
 import sys
-from blueman.main.Config import path
 
 class Drawing(object):
     '''
