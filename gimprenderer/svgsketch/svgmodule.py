@@ -140,8 +140,7 @@ class Drawing(object):
         # Creating the image with a 10px buffer on each side
         self.drawing = svgwrite.Drawing(                                        
             file_out,
-            width=width,
-            height=height,
+            size=(width,height),
             viewBox=viewbox
         )
         
