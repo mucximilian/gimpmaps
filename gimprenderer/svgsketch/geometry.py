@@ -8,6 +8,8 @@ Created on Jun 11, 2015
     - Point?
     - Polygon
     
+- Multipolygon support
+    
 '''
 
 from __future__ import division

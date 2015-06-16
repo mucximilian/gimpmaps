@@ -172,9 +172,6 @@ class SketchRenderer(object):
         
         for line in polygon:
             
-            print line
-            print "###"
-            
             segment = []
             segment.append(line[0])
             
@@ -186,7 +183,7 @@ class SketchRenderer(object):
                 points.append(line[i])
                 points.append(line[i + 1])
                 
-                angle = self.get_three_point_angle(points)
+                angle = get_three_point_angle(points)
                 
                 # Continue segment
                 if (angle >= angle_disjoin):
@@ -222,6 +219,8 @@ class SketchRenderer(object):
         line = LineSimple(line)
                 
         line_length_half = line.length()/2
+        
+        random.seed(self.seed * line.length())
         
         cp = None
         
@@ -286,25 +285,20 @@ class SketchRenderer(object):
             
             line_seg = LineSimple([a,b])
             
-            print "---"
-            print line_seg.length()
-            print int(math.floor(line_seg.length() / (2 * d)))
-            
-            # Adding ceil(length/10d)-1 points to the line segment
-            seg_breaks = int(math.floor(line_seg.length() / (2 * d))) - 1
-            
-            print seg_breaks
+            # Adding ceil(length/[10d|d^2])-1 points to the line segment
+            seg_breaks = int(math.floor(line_seg.length() / (d * d))) - 1
                      
             if seg_breaks > 0:
-                points = self.get_random_points_on_line(
+                points = self.add_points_to_line(
                     line_seg.coords, seg_breaks, "equal_uniform"
                 )
-                line_points += points
+                # Check the direction of the segment and flip if necessary
+                if points[0] == a:
+                    line_points += points[1:-1]
+                else:
+                    line_points += reversed(points[1:-1])
+                    
             line_points.append(line.coords[i + 1]) # Adding segment end point
-        
-        print "line_points"
-        print line_points
-        print len(line_points)
         
         line_jittered = self.jitter_line_string(line_points, d, method)
         
@@ -469,6 +463,10 @@ class SketchRenderer(object):
         return ' '.join(points);
     
     def add_points_to_line(self, line, n = 1, method = "equal"):
+        """
+        
+        Note: The direction of the new line is always from min X to max X
+        """
         
         line_new = []
         
@@ -492,9 +490,11 @@ class SketchRenderer(object):
         line = LineSimple(line)
         length = line.length()
         
-#         a = min(line.coords) # Get point with smaller x value as point a
-#         b = max(line.coords) # Why???
-
+        # Determine start and end point by ordering after X and Y coordinates
+        # Used to combine with the points computed later which are also sorted
+        # a = min(line.coords)
+        # b = max(line.coords)
+        
         a = line.coords[0]
         b = line.coords[1]
             
@@ -554,7 +554,7 @@ class SketchRenderer(object):
                 print "'equal_normlike' not yet implemented"
             
         # Inserting new points in the original line
-        points_on_line = sorted(points_on_line)
+        # points_on_line = sorted(points_on_line)
         
         return points_on_line
     
