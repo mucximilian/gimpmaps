@@ -29,13 +29,13 @@ class Geometry(object):
 
 class Line(Geometry):
     """
-    An abstract class defining the connection between two points
+    An abstract class defining the connection between points
     """
     _metaclass__  = abc.ABCMeta
  
     def __init__(self, coordinates):
         """
-        :param coordinates: A list of coordinate tuples
+        :param coordinates: A list of lne point coordinate tuples.
         """
         
         # Check that line consists only of two points
@@ -61,6 +61,10 @@ class Line(Geometry):
         raise NotImplementedError
     
 class LineSimple(Line):
+    """
+    A class defining the straight connection between two points. The point
+    that is closer to the origin as the first point.
+    """
     
     def __init__(self, coordinates):
         """
@@ -99,9 +103,9 @@ class LineSimple(Line):
         
         eq_params = self.get_line_equation_params()
         if eq_params is not None:
-            delta = self.coords[0] - a[0] # delta x
+            delta = self.coords[0][0] - self.coords[1][0] # delta x
         else:
-            delta = b[1] - a[1] # delta y
+            delta = self.coords[0][1] - self.coords[1][1] # delta y
             
         return delta
     
