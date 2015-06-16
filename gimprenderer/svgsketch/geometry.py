@@ -310,7 +310,9 @@ class LineString(Line):
         
         # Checking every linepoint after the start point for two control points 
         if (len(self.coords) - 1) != (len(cps) / 2):
-            sys.exit("Curve cannot be created - control point error.")
+            print "coords: " + str(len(self.coords))
+            print "cps: " + str(len(cps))
+            sys.exit("Curve cannot be created - control point error:")
         else:      
             
             # Adding first point  

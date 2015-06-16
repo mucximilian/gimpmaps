@@ -9,6 +9,7 @@ TO DO:
     - geometry feature + style
     - group + style
 - Adding layer/feature ordering
+- Adding standard styles with random color
 '''
 
 import svgwrite
