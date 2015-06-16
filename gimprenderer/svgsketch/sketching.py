@@ -53,7 +53,8 @@ class SketchRenderer(object):
         coords_new = None
         
         if (method == "circle"):
-            angle = random.random() * (2 * math.pi)
+            
+            angle = random.random() * 360
             distance = random.random() * r
             
             x = point[0] + (math.cos(math.radians(angle)) * distance)
@@ -109,6 +110,31 @@ class SketchRenderer(object):
         y = 0
         
         return [x,y]
+    
+    def displace_line(self, line, r):
+        """
+        Displaces the two end points of a line. If the specified radius is
+        larger than the line length, the points are displaced by half of the
+        original line length.
+        """
+        
+        line = LineSimple(line)
+        
+        a = line.coords[0]
+        b = line.coords[1]
+        
+        length = line.length()
+        
+        if (length <= r):
+            r =  length/2               
+                
+        random.seed(length + self.seed)
+        point1 = self.displace_point(a, r, method = "circle")
+        point2 = self.displace_point(b, r, method = "circle")
+        
+        line_new = LineSimple([point1, point2])
+        
+        return line_new
     
     def polygon_disjoin(self, polygon, angle_disjoin = 135.0):
         """
@@ -212,7 +238,7 @@ class SketchRenderer(object):
     def get_point_shifted(self, line, d):
         """
         Computes the point that is on the straight line between P0 and P1 and
-        the distance d away from.
+        the distance d away from P0.
         
         :param line: Tuple of two coordinate pairs determining the line points.
         """ 
@@ -220,13 +246,121 @@ class SketchRenderer(object):
         line = LineSimple(line)
         
         line_vector = line.vector()        
-        line_length = line.length()
+        length = line.length()
         
-        shift = tuple((d / line_length) * x for x in line_vector)
+        shift = tuple((d / length) * x for x in line_vector)
                 
         point_shifted = tuple(sum(t) for t in zip(line.coords[0], shift))
         
         return point_shifted
+    
+    def jitter_line_new(self, line, d_rel = 10.0, d_abs = None, method = "simple"):
+        
+        def jitter_line_simple(line, d_abs, d_rel, method):
+            
+            line = LineSimple(line)
+            length = line.length()
+            
+            d = None        
+            if d_abs is not None:
+                # Avoiding greater displacement than the length of the line
+                if d_abs >= length:
+                    d= d_abs/2
+                else:
+                    d = d_abs
+            else:
+                d = length / d_rel
+            
+            # Adding additional points to the line if line is longer than 2d
+            parts = int(math.floor(length / (2 *d))) -1
+            if parts > 0 and len(line.coords) == 2:
+
+                print parts
+                print d
+                print length
+                print line.coords
+     
+                line.coords = self.add_points_to_line(
+                    line.coords, parts, "equal_uniform"
+                )            
+                self.jitter_line_string(line.coords, d, method)
+                
+            else:                
+                
+                linepoints = []
+            
+                if method == "displace":
+                    
+                    a = line.coords[0]
+                    b = line.coords[1]
+                    
+                    a = self.displace_point(a, d, "circle")
+                    linepoints.append(a)
+                    
+                    b = self.displace_point(b, d, "circle")
+                    linepoints.append(b)                
+                    
+                elif method == "bezier":
+                    
+                    a = line.coords[0]
+                    b = line.coords[1]
+                    
+                    linepoints.append(a)
+                                    
+                    cp1 = self.get_random_control_point((a, b), d)            
+                    cp2 = self.get_random_control_point((b, a), d)
+                        
+                    linepoints.append(cp1)
+                    linepoints.append(cp2)                    
+                    
+                    linepoints.append(b)
+                
+                elif method == "displace_bezier":
+                    
+                    a = line.coords[0]
+                    b = line.coords[1]
+                    
+                    a = self.displace_point(line.coords[0], d, "circle")
+                    b = self.displace_point(line.coords[1], d, "circle")
+                    
+                    linepoints.append(a)
+                                    
+                    cp1 = self.get_random_control_point((a, b), d)            
+                    cp2 = self.get_random_control_point((b, a), d)
+                        
+                    linepoints.append(cp1)
+                    linepoints.append(cp2)                    
+                    
+                    linepoints.append(b)
+                    
+                return linepoints
+        
+        def jitter_line_string(line, d_abs, d_rel, method):
+            
+            linepoints = []
+            
+            for i in range(0, len(line), 2):
+                
+                a = line[i]
+                b = line[i + 1]
+                
+                linepoints += jitter_line_simple([a, b], d_abs, d_rel, method)
+                
+            return linepoints
+        
+        ########################################################################
+        
+        linepoints = []
+        
+        # Input line is a simple line
+        if len(line) == 2:            
+            linepoints = jitter_line_simple(line, d_abs, d_rel, method)                
+         
+        # Input line is a line string   
+        else:
+            linepoints = jitter_line_string(line, d_abs, d_rel, method)
+            
+        return linepoints
     
     def jitter_line(self, line, d_rel = 10.0, d_abs = None, method = "simple"):
         """
@@ -237,44 +371,60 @@ class SketchRenderer(object):
         'get_random_control_point' function.
          
        :param line: Tuple of two coordinate pairs determining the line points.
+       :param d_rel: The relative offset of the jitter, used by default.
+       :param d_abs: The relative offset of the jitter.
+       :param method: 'simple': points are displaced, 'bezier: points are 
+       displaced and line is smoothed using random control points.
         """
         
         # TO DO:
         # - Avoid overlapping controlpoints --> smoother line
         # - Control points on opposite sides of the line --> smoother line
-        # - Perturb start and end point 
-        
         
         line = LineString(line)
+        length = line.length()
         
+        # Setting d_rel if d_abs is not defined:
         d = None        
         if d_abs is not None:
-            d = d_abs
+            # Avoiding a greater displacement than  the length of the line
+            if d_abs >= length:
+                d= d_abs/2
+            else:
+                d = d_abs
         else:
-            d = line.length() / d_rel
-        
-        random.seed(line.length() * self.seed)
+            d = length / d_rel
+            
+        # Adding additional points to the line if line is longer than 2d
+        if length > 2 * d and len(line.coords) == 2:
+            parts = int(math.floor(length / (2 *d)))
+ 
+            line.coords = self.add_points_to_line(
+                line.coords, parts, "equal_uniform"
+            )
+              
+        random.seed(length * self.seed)
         
         line_jittered = []
         
         if method == "simple":
             
-            line_jittered.append(line.coords[0])
+            point = self.displace_point(line.coords[0], d, "circle")
+            line_jittered.append(point)
             
             for i in range(1, len(line.coords) -1):
                 
                 point = self.displace_point(line.coords[i], d, "circle")
                 line_jittered.append(point)
             
-            line_jittered.append(line.coords[0])
-                
+            point = self.displace_point(line.coords[-1], d, "circle")
+            line_jittered.append(point)                
             
         elif method == "bezier":
         
             controlpoints = []
-            controlpoints.append(line.coords[0])
-            
-            self.get_random_control_point((line.coords[0], line.coords[1]), d)
+            point = self.displace_point(line.coords[0], d, "circle")
+            controlpoints.append(point)
             
             for i in range(1, len(line.coords) -1):
                 
@@ -282,19 +432,22 @@ class SketchRenderer(object):
                 point = line.coords[i]
                 point_ahead = line.coords[i + 1]
                                 
+                # TO DO: Do d checking here!!
+                            
                 cp1 = self.get_random_control_point((point, point_behind), d)            
                 cp2 = self.get_random_control_point((point, point_ahead), d)
                 
                 controlpoints.append(cp1)
                 controlpoints.append(cp2)
                 
-            controlpoints.append(line.coords[-1])
+            point = self.displace_point(line.coords[-1], d, "circle")
+            controlpoints.append(point)
             
             line_jittered = line.get_curve(controlpoints)
             
         return line_jittered  
     
-    def jitter_line_bezier_test(self, line):
+    def jitter_line_bezier_test_one(self, line):
         """
         Creates a jittered line as described here:
         
@@ -322,8 +475,6 @@ class SketchRenderer(object):
             
             # so the y value can go positive or negative from the typical   
             neg = random.random() - 0.5; 
-            
-            print neg
                 
             cp1 = (
                 -neg + p0_x + ((random.random() - 0.5) * diff_y / 8),
@@ -340,6 +491,51 @@ class SketchRenderer(object):
             curve.append(p)
             
         return curve
+    
+    def jitter_handrawn_raphael(self, line, segments, wobble):
+        """
+        Creates a jittered line as described here:
+        
+        https://github.com/jhund/raphael.handdrawn.js/blob/master/raphael.handdrawn.js
+        
+        :param line: Tuple of two coordinate pairs determining the line points.
+        """
+        
+        def randomizeNormal(range_in = 1.0, mean = 0.0):
+            range1 = range_in / 9;
+            rand = math.cos(2 * math.pi * random.random()) * math.sqrt(-2 * math.log(random.random()))
+            
+            return round((rand * range1) + mean)
+        
+        def randomizeUniform (range_in = 100, mean = 0.0):
+            rand = random.random() * range_in;
+            return round((rand - (range_in / 2)) + mean);
+        
+        x = line[0][0]
+        y = line[0][1]
+        x2 = line[1][0]
+        y2 = line[1][1]
+        
+        points = ['M ' + str(x) + ' ' + str(y)]
+    
+        for i in range(1, segments +1):
+            
+            segmentStartX = x + (x2-x) * (i-1) / segments
+            segmentStartY = y + (y2-y) * (i-1) / segments
+            segmentEndX = x + (x2-x) * i/segments
+            segmentEndY = y + (y2-y) * i/segments
+        
+            midX1 = int(round(segmentStartX + (segmentStartX - segmentEndX) * -0.3 + randomizeUniform(wobble)))
+            midX2 = int(round(segmentStartX + (segmentStartX - segmentEndX) * -0.7 + randomizeUniform(wobble)))
+            midY1 = int(round(segmentStartY + (segmentStartY - segmentEndY) * -0.3 + randomizeUniform(wobble)))
+            midY2 = int(round(segmentStartY + (segmentStartY - segmentEndY) * -0.7 + randomizeUniform(wobble)))
+        
+            points.append(
+              'C ' + str(midX1) + ' ' + str(midY1) + ' ' + str(midX2) + ' ' + str(midY2) + ' ' + str(segmentEndX) + ' ' + str(segmentEndY)
+            );
+            
+        return ' '.join(points);
+                
             
     def add_points_to_line(self, line, n = 1, method = "equal"):
         """
@@ -350,6 +546,7 @@ class SketchRenderer(object):
         """
         
         line = LineSimple(line)
+        length = line.length()
         
         a = min(line.coords) # Get point with smaller x value as point a
         b = max(line.coords)
@@ -361,7 +558,7 @@ class SketchRenderer(object):
             
             for i in range(0, n + 1):
             
-                d = (line.length() / (n + 1)) * i
+                d = (length / (n + 1)) * i
             
                 point = self.get_point_shifted((a, b), d)                
                 points_on_line.append(point)
@@ -371,41 +568,36 @@ class SketchRenderer(object):
             method == "equal_uniform" or
             method == "equal_normlike"):            
         
-            random.seed(line.length() * self.seed)
+            random.seed(length * self.seed)
         
             # - just random
             if method == "uniform":
         
-                for _ in range(0, n + 1):
+                for _ in range(0, n):
                     
-                    d = line.length() * random.random()
+                    d = length * random.random()
             
                     point = self.get_point_shifted((a, b), d)                
                     points_on_line.append(point)        
             
-            # - randomly within equal partitions        
+            # - randomly within equal segments        
             elif method == "equal_uniform":
                 
-                # Determine the break points for the segments
-                breaks = []
-                for i in range(1, n):
-                    d_part = line.length() / n * i
+                # Computing the start and end points of the equal segments
+                segment_points = [a]
+                for i in range(0, n - 1):
+                    d_part = (length / (n + 1)) * (i + 1)
                     point = self.get_point_shifted((a, b), d_part)
-                    breaks.append(point)
+                    segment_points.append(point)
+                segment_points.append(b)
                 
-                # Now rondom points between the segments are computed
-                points_on_line.append(
-                    self.get_random_point_on_line((a, breaks[0]))
-                )                
-                for i in range(0, n - 2):                   
+                # Now random points between the segments are added               
+                for i in range(0, len(segment_points) - 1):                   
                     points_on_line.append(
                         self.get_random_point_on_line(
-                            (breaks[i], breaks[i + 1])
+                            (segment_points[i], segment_points[i + 1])
                         )
-                    )                    
-                points_on_line.append(
-                    self.get_random_point_on_line((breaks[-1], b))
-                )
+                    )
             
             # Distribute points normal distribution like on segment 
             elif method == "equal_normlike":
