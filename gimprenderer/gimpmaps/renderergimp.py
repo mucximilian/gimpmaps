@@ -13,7 +13,6 @@ from svgsketch import hachurizer
 from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer
 from gimpmodule import GimpImageManager
-from _hotshot import resolution
 
 class RendererGimp(object):
     '''
@@ -114,14 +113,16 @@ class RendererGimp(object):
                     resolution, 
                     style_polygon
                 )
+                
+                # Draw fill
                 for svg_commands in svg_geoms:
                     
                     svg_path = svgwrite.path.Path(svg_commands)
-                    svg_path_str = svg_path.tostring()
             
                     # Import vectors to GIMP image
                     if (mask):                    
                         # Adding vectors for stroking of lines, outlines/mask
+                        svg_path_str = svg_path.tostring()
                         gimp.import_vectors(svg_path_str)
                     else:
                         # Creating hachure vectors
@@ -151,6 +152,14 @@ class RendererGimp(object):
                     
                     # Drawing vectors into GIMP layer
                     gimp.draw_vectors(layer)
+                    
+                # Draw outline
+                for svg_commands in svg_geoms:
+                    
+                    svg_path = svgwrite.path.Path(svg_commands)
+                    
+                    # TO DO:
+                    # Implement!!!
                 
             self.conn_osm.close()
             
