@@ -43,9 +43,16 @@ class Hachurizer(object):
             print "No hachures created for polygon with given parameters"
             return None
         else:
-            lines = MultiLineString(hachure_lines)
-            hachure = lines.svg()  
-            return hachure
+            # lines = MultiLineString(hachure_lines)
+            # hachure = lines.svg()  
+            # return hachure
+            hachure_lines_simple = []
+            
+            for line in hachure_lines:
+                hachure_lines_simple.append(list(line.coords))
+                
+            return hachure_lines_simple 
+            
     
     def multipolygon_from_svgpath(self, path):
         """
@@ -74,7 +81,7 @@ class Hachurizer(object):
             
             # Appending the created polygon to the multipolygon list            
 
-            # check if polygon is withon exterior
+            # check if polygon is within exterior outline
             # TRUE add as polygon_coords to polygons
             # FALSE add as polygon to multipolygon
             polygon = Polygon(polygon_coords)
@@ -147,7 +154,7 @@ class Hachurizer(object):
     
     def create_svg_multilinepath(self, multiline):
         """
-        Returning a Shapely multilinestring as a SVG multiline path string.
+        Converts a Shapely multilinestring into a SVG multiline path string.
         Deprecated, Shapely .svg() function used now.
         """
         

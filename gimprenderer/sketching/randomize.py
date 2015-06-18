@@ -8,7 +8,7 @@ from __future__ import division
 import math
 import random
 
-from geometry import LineSimple
+from geometry import LineSimple, LineString
 
 seed = 1
 seed_loop = 1
@@ -44,8 +44,8 @@ def line_handy(line, r):
     
     line = LineSimple(line)
     
-    point_a = displace_point(line[0], r)
-    point_b = displace_point(line[1], r)
+    point_a = displace_point(line.coords[0], r)
+    point_b = displace_point(line.coords[1], r)
     
     l = line.length()
     
@@ -57,21 +57,19 @@ def line_handy(line, r):
     d_n = random_uniform_int() * r
     point_n = line.point_orthogonal(pos, d_n)
     
-    line_sketch = [point_a, point_m, point_n, point_b]
+    line_handy = [point_a, point_m, point_n, point_b]
     
-    return line_sketch
+    return line_handy
 
 def displace_point(point, r, method = "circle"):
     """
     Displaces a point, r defines the radius within which the point 
     coordinates are randomly perturbed (with a uniform random deviate).
     
-    Note: The random seed should be set outside of the function.
-    
     :param point: Tuple of x and y coordinates.
     """
     
-    # random.seed(r * seed * seed_loop)
+    random.seed(r * seed * seed_loop)
     
     coords_new = None
     
@@ -201,6 +199,64 @@ def random_point_on_line(line, method = "beta"):
     point = line.point_shifted(p)
     
     return point
+
+def jitter_linestring(line, d = 10.0, method = "simple"):
+    """
+    Creates a jittered version of a Line (LineSimple or LineString) using 
+    an absolute distortion value (in image units). The line points are 
+    distorted either using circular point displacement ("displace"), 
+    random Bezier control points ("bezier") or both techniques 
+    ("displace_bezier").
+    
+    The function 'jitter_line' calls this function after additional random 
+    points have been computed and added to the input geometry.
+    
+    :param line: List of coordinate pairs determining the line
+    :param d: Jitter distortion of the line in absolute image units
+    :param method: Method used for jittering ("displace", "bezier" or
+    "displace_bezier")
+    """
+    
+    line_jittered = []
+    
+    line = LineString(line)
+    
+    if method == "simple":
+        
+        for i in range(0, len(line.coords)):
+            
+            point = displace_point(line.coords[i], d, "circle")
+            
+            line_jittered.append(point)             
+        
+    elif method == "bezier":
+    
+        controlpoints = []
+        
+        for i in range(0, len(line.coords) - 1):
+            
+            a = line.coords[i]
+            b = line.coords[i + 1]
+                        
+            controlpoints += random_controlpoints((a, b), d)
+        
+        line_jittered = line.get_curve(controlpoints)
+        
+    elif method == "displace_bezier":
+        # TO DO: Add displacing
+    
+        controlpoints = []
+        
+        for i in range(0, len(line.coords) - 1):
+            
+            a = line.coords[i]
+            b = line.coords[i + 1]
+                        
+            controlpoints += random_controlpoints((a, b), d)
+        
+        line_jittered = line.get_curve(controlpoints)
+        
+    return line_jittered
 
 def jitter_line_bezier(line):
     """

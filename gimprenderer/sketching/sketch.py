@@ -9,7 +9,7 @@ import math
 import random
 
 import randomize
-from geometry import LineSimple, LineString
+from geometry import LineSimple, LineString, Polygon
 
 seed = 1
 
@@ -52,6 +52,26 @@ def displace_line(line, r):
     line_new = [point1, point2]
     
     return line_new
+
+def handy_hachures(hachures):
+    
+    hachures_handy = []
+    hachures_displaced = []
+    
+    for hachure in hachures:
+        
+        hachure_displaced = displace_line(hachure, 3.0)
+        hachures_displaced.append(hachure_displaced)
+        
+        hachure_handy = randomize.line_handy(hachure_displaced, 3.0)
+        
+        hachures_handy.append(hachure_handy)
+        
+        randomize.seed_loop += 1
+        
+    randomize.reset_seed_loop()
+        
+    return hachures_handy
 
 def jitter_line(line, d = 10.0, method = "displace"):
     """
@@ -105,104 +125,61 @@ def jitter_line(line, d = 10.0, method = "displace"):
         
         randomize.seed_loop += 1
     
-    line_jittered = jitter_linestring(line_points, d, method)
+    line_jittered = randomize.jitter_linestring(line_points, d, method)
     
     return line_jittered
 
-def jitter_linestring(line, d = 10.0, method = "simple"):
-    """
-    Creates a jittered version of a Line (LineSimple or LineString) using 
-    an absolute distortion value (in image units). The line points are 
-    distorted either using circular point displacement ("displace"), 
-    random Bezier control points ("bezier") or both techniques 
-    ("displace_bezier").
+def jitter_polygon(polygon, d = 10.0, method = "displace"):
     
-    The function 'jitter_line' calls this function after additional random 
-    points have been computed and added to the input geometry.
+    polygon = Polygon(polygon)
     
-    :param line: List of coordinate pairs determining the line
-    :param d: Jitter distortion of the line in absolute image units
-    :param method: Method used for jittering ("displace", "bezier" or
-    "displace_bezier")
-    """
+    segments = polygon.disjoin(120)
     
-    line_jittered = []
+    segments_jittered = []
     
-    line = LineString(line)
+    randomize.seed = 1
+     
+    for segment in segments:
+        
+        segment_jittered = jitter_line(segment, 10, "bezier")
+        segments_jittered.append(segment_jittered)
+        
+        randomize.seed_loop += 1
+        
+    randomize.reset_seed_loop()
     
-    if method == "simple":
-        
-        for i in range(0, len(line.coords)):
-                
-            seed_loop = i * seed
-            random.seed(seed_loop)
-            
-            point = randomize.displace_point(line.coords[i], d, "circle")
-            
-            line_jittered.append(point)             
-        
-    elif method == "bezier":
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
-            
-            a = line.coords[i]
-            b = line.coords[i + 1]
-                        
-            controlpoints += randomize.random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    elif method == "displace_bezier":
-        # TO DO: Add displacing
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
-            
-            a = line.coords[i]
-            b = line.coords[i + 1]
-                        
-            controlpoints += randomize.random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    return line_jittered  
+    return segments_jittered
 
-############################################################################
+################################################################################
 # Interface functions
 
-def line(linestring):
+def path_to_linestring(path):
     
-    # parse SVG
-    
-    # jtter line
-    
-    # return SVG
-    
-    pass
+    coords = path.split(" ");   
+    coords.remove('M')
+    coords.remove('L')
 
-def polygon_outline(linestring):
+    linestring = []
     
-    # parse SVG
+    for i in range(0, len(coords), 2):
+        linestring.append(
+            (float(coords[i]), float(coords[i + 1]))
+        )
     
-    # disjoin polygon
+    return linestring
     
-    # jtter lines
+def path_to_polygon(path):
     
-    # return SVG
+    polygons_str = path.split("Z");
+    polygons_str.pop() # Removing last item from list (empty due to split)
     
-    pass
-
-def polygon_hachure(linestring):
+    polygons = []
     
-    # parse SVG
-    
-    # create hachure lines
-    
-    # randomize hachure lines
-    
-    # return SVG
-    
-    pass
+    for polygon_str in polygons_str:
+        
+        polygon_str = polygon_str.strip()
+        
+        polygon = path_to_linestring(polygon_str)
+        polygons.append(polygon)
+        
+    return polygons

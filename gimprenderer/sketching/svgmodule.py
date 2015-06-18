@@ -506,7 +506,7 @@ class Drawing(object):
     
     def as_svg_path(self, d):
         """
-        Returns a SVG path sequence as an SVG element with basi styling.
+        Returns a SVG path sequence as an SVG element with basic styling.
         
         :param d: SVG path commands
         """

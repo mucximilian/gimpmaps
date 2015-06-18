@@ -9,7 +9,6 @@ from __future__ import division
 import math
 import random
 
-import randomize
 from geometry import LineSimple
 
 '''

@@ -13,16 +13,19 @@ Created on Jun 11, 2015
 '''
 
 from __future__ import division
+from abc import ABCMeta, abstractmethod
+
 import math
-import abc
 import sys
 
 class Geometry(object):
     """
     An abstract class defining the base geometry object
     """
-    _metaclass__  = abc.ABCMeta
+    
+    __metaclass__ = ABCMeta
  
+    @abstractmethod
     def __init__(self):
         """
         Constructor
@@ -32,7 +35,7 @@ class Line(Geometry):
     """
     An abstract class defining the connection between points
     """
-    _metaclass__  = abc.ABCMeta
+    __metaclass__  = ABCMeta
  
     def __init__(self, coordinates):
         """
@@ -58,7 +61,7 @@ class Line(Geometry):
         
         return line_wkt
     
-    @abc.abstractmethod
+    @abstractmethod
     def length(self):
         raise NotImplementedError
     

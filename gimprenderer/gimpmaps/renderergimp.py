@@ -13,6 +13,7 @@ from sketching import hachurizer
 from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer
 from gimpmodule import GimpImageManager
+from gimpmaps import sketchadapter
 
 class RendererGimp(object):
     '''
@@ -64,8 +65,10 @@ class RendererGimp(object):
                     svg_path = svgwrite.path.Path(svg_commands)
                     svg_path_str = svg_path.tostring()
                     
+                    line_sketched = sketchadapter.sketch_line_path(svg_path_str)
+
                     # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(svg_path_str)
+                    gimp.import_vectors(line_sketched.tostring())
             
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, 
