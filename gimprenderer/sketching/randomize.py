@@ -8,11 +8,30 @@ from __future__ import division
 import math
 import random
 
-import sketch
-from geometry import LineSimple, LineString
+from geometry import LineSimple
 
 seed = 1
 seed_loop = 1
+
+def reset_seed_loop():    
+    global seed_loop 
+    seed_loop = 1
+    return
+
+def random_beta(a = 5, b = 5):
+    
+    x = random.betavariate(a, b)
+    return x
+
+def random_uniform():
+    
+    x = random.random()
+    return x
+
+def random_uniform_int(a = -1, b = 1):
+    
+    x = random.uniform(a, b)
+    return x
         
 def line_handy(line, r):
     """
@@ -30,15 +49,13 @@ def line_handy(line, r):
     
     l = line.length()
     
-    d_m = random.uniform(-1, 1) * (l / 200)
-    m = line.point_at_pos(0.5)
-    point_m = displace_point_orthogonal(line.coords, m, d_m)
+    d_m = random_uniform_int() * (l / 200)
+    point_m = line.point_orthogonal(0.5, d_m)
     
     # Calculating a position that is +/- 10% away from the point at 75% of l
-    pos = random.uniform(0.65,0.85)
-    d_n = random.uniform(-1, 1) * r
-    n = line.point_at_pos(pos)
-    point_n = displace_point_orthogonal(line.coords, n, d_n)
+    pos = random_uniform_int(0.65, 0.85)
+    d_n = random_uniform_int() * r
+    point_n = line.point_orthogonal(pos, d_n)
     
     line_sketch = [point_a, point_m, point_n, point_b]
     
@@ -54,14 +71,14 @@ def displace_point(point, r, method = "circle"):
     :param point: Tuple of x and y coordinates.
     """
     
-    # random.seed(r * seed)
+    # random.seed(r * seed * seed_loop)
     
     coords_new = None
     
     if (method == "circle"):
         
-        angle = random.random() * 360
-        distance = random.random() * r
+        angle = random_uniform() * 360
+        distance = random_uniform() * r
         
         x = point[0] + (math.cos(math.radians(angle)) * distance)
         y = point[1] + (math.sin(math.radians(angle)) * distance)
@@ -70,53 +87,17 @@ def displace_point(point, r, method = "circle"):
         
     elif(method == "square"):
         
-        d_x = random.uniform(-r, r)
-        d_y = random.uniform(-r, r)
+        d_x = random_uniform_int(-r, r)
+        d_y = random_uniform_int(-r, r)
         
         x = d_x + point[0]
         y = d_y + point[1]
         
         coords_new = (x,y)
     
-    return coords_new
-
-def displace_point_orthogonal(line, p, d):
-    """
-    Displaces a point from a line orthogonally within a distance d.
+    return coords_new   
     
-    :param line: The line the point should be orthogonally displaced from
-    :param p: A point on the line from where to dispalce orthogonally
-    :param d: Distance the point is displaced
-    """
-    
-    line = LineSimple(line)
-    
-    v = line.vector_orthogonal()
-    
-    shift = [(p[0], p[1]), (v[0] + p[0], v[1] + p[1])]
-    shift_line = LineSimple(shift)
-    
-    p_displaced = shift_line.point_shifted(d)
-    
-    return p_displaced
-    
-def add_points_to_line(line, n = 1, method = "equal"):
-    """
-    
-    Note: The direction of the new line is always from min X to max X
-    """
-    
-    line_new = []
-    
-    points_new = get_random_points_on_line(line, n, method)        
-    
-    line_new += [line[0]]
-    line_new += points_new
-    line_new += [line[1]]
-    
-    return line_new    
-    
-def get_random_points_on_line(line, n = 1, method = "equal"):
+def random_points_on_line(line, n = 1, method = "equal"):
     """
     Computes a specified number of points on a line between two points 
     using the selected method. Returns the computed points in an array
@@ -132,9 +113,6 @@ def get_random_points_on_line(line, n = 1, method = "equal"):
     # Used to combine with the points computed later which are also sorted
     # a = min(line.coords)
     # b = max(line.coords)
-    
-    a = line.coords[0]
-    b = line.coords[1]
         
     points_on_line = []
     
@@ -148,7 +126,7 @@ def get_random_points_on_line(line, n = 1, method = "equal"):
         
             d = (length / (n + 1)) * (i + 1)
         
-            point = sketch.point_shifted((a, b), d)                
+            point = line.point_shifted(d)                
             points_on_line.append(point)
     
     # Distribute points randomly  
@@ -156,148 +134,82 @@ def get_random_points_on_line(line, n = 1, method = "equal"):
         method == "equal_uniform" or
         method == "equal_normlike"):            
     
-        random.seed(length * seed)
+        random.seed(line.length() * seed * seed_loop)
     
         # - just random
         if method == "uniform":
     
             for _ in range(0, n):
                 
-                d = length * random.random()
+                d = length * random_uniform()
         
-                point = sketch.point_shifted((a, b), d)                
+                point = line.point_shifted(d)                
                 points_on_line.append(point)        
         
         # - randomly within equal segments        
         elif method == "equal_uniform":
             
             # Computing the start and end points of the equal segments
-            segment_points = [a]
+            segment_points = [line.coords[0]]
             for i in range(0, n - 1):
                 d_part = (length / (n + 1)) * (i + 1)
-                point = sketch.point_shifted((a, b), d_part)
+                point = line.point_shifted(d_part)
                 segment_points.append(point)
-            segment_points.append(b)
+            segment_points.append(line.coords[1])
             
             # Now random points between the segments are added               
             for i in range(0, len(segment_points) - 1):                   
                 points_on_line.append(
-                    get_random_point_on_line(
+                    random_point_on_line(
                         (segment_points[i], segment_points[i + 1])
                     )
                 )
         
         # Distribute points normal distribution like on segment 
-        elif method == "equal_normlike":
-            print "'equal_normlike' not yet implemented"
+        elif method == "equal_beta":
+            # Computing the start and end points of the equal segments
+            segment_points = [line.coords[0]]
+            for i in range(0, n - 1):
+                d_part = (length / (n + 1)) * (i + 1)
+                point = line.point_shifted(d_part)
+                segment_points.append(point)
+            segment_points.append(line.coords[1])
+            
+            # Now random points between the segments are added               
+            for i in range(0, len(segment_points) - 1):                   
+                points_on_line.append(
+                    random_point_on_line(
+                        (segment_points[i], segment_points[i + 1])
+                    )
+                )
         
     # Inserting new points in the original line
     # points_on_line = sorted(points_on_line)
     
     return points_on_line
     
-def get_random_point_on_line(line):
+def random_point_on_line(line, method = "beta"):
     """
     Computes the point that is on the straight line between P0 and P1 and
     the distance d away from P0 and P1.
     
     :param line: Tuple of two coordinate pairs determining the line points.
+    :return:
     """ 
     
     line = LineSimple(line)
     
     d = line.length()
-    d_rand = random.random() * d
+    p = None
     
-    point = line.point_shifted(d_rand)
+    if (method == "uniform"):
+        p = random_uniform * d
+    elif (method == "beta"):
+        p = random_beta() * d
+    
+    point = line.point_shifted(p)
     
     return point
-
-def displace_line(line, r):
-    """
-    Displaces the two end points of a line. If the specified radius is
-    larger than the line length, the points are displaced by half of the
-    original line length.
-    """
-    
-    line = LineSimple(line)
-    
-    a = line.coords[0]
-    b = line.coords[1]
-    
-    length = line.length()
-    
-    if (length <= r):
-        r =  length/2               
-            
-    random.seed(length + seed)
-    point1 = displace_point(a, r, method = "circle")
-    point2 = displace_point(b, r, method = "circle")
-    
-    line_new = [point1, point2]
-    
-    return line_new
-
-def jitter_linestring(line, d = 10.0, method = "simple"):
-    """
-    Creates a jittered version of a Line (LineSimple or LineString) using 
-    an absolute distortion value (in image units). The line points are 
-    distorted either using circular point displacement ("displace"), 
-    random Bezier control points ("bezier") or both techniques 
-    ("displace_bezier").
-    
-    The function 'jitter_line' calls this function after additional random 
-    points have been computed and added to the input geometry.
-    
-    :param line: List of coordinate pairs determining the line
-    :param d: Jitter distortion of the line in absolute image units
-    :param method: Method used for jittering ("displace", "bezier" or
-    "displace_bezier")
-    """
-    
-    line_jittered = []
-    
-    line = LineString(line)
-    
-    if method == "simple":
-        
-        for i in range(0, len(line.coords)):
-                
-            seed_loop = i * seed
-            random.seed(seed_loop)
-            
-            point = displace_point(line.coords[i], d, "circle")
-            
-            line_jittered.append(point)             
-        
-    elif method == "bezier":
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
-            
-            a = line.coords[i]
-            b = line.coords[i + 1]
-                        
-            controlpoints += random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    elif method == "displace_bezier":
-        # TO DO: Add displacing
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
-            
-            a = line.coords[i]
-            b = line.coords[i + 1]
-                        
-            controlpoints += random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    return line_jittered  
 
 def jitter_line_bezier(line):
     """
@@ -311,7 +223,7 @@ def jitter_line_bezier(line):
     
     line = LineSimple(line)
     
-    random.seed(line.length() * seed)
+    random.seed(line.length() * seed * seed_loop)
     
     curve = []
     curve.append(line.coords[0])
@@ -326,14 +238,14 @@ def jitter_line_bezier(line):
         diff_y = p1_y - p0_y;
         
         # so the y value can go positive or negative from the typical   
-        neg = random.random() - 0.5; 
+        neg = random_uniform() - 0.5; 
             
         cp1 = (
-            -neg + p0_x + ((random.random() - 0.5) * diff_y / 8),
+            -neg + p0_x + ((random_uniform() - 0.5) * diff_y / 8),
             p0_y + 0.3 * diff_y
         )
         cp2 = (
-            -neg + p0_x + ((random.random() - 0.5) * diff_y / 8),
+            -neg + p0_x + ((random_uniform() - 0.5) * diff_y / 8),
             p0_y + 0.6 * diff_y
         )
         p = (p1_x, p1_y)
@@ -359,12 +271,12 @@ def jitter_line_handrawn(line, segments, wobble):
     
     def randomizeNormal(range_in = 1.0, mean = 0.0):
         range1 = range_in / 9;
-        rand = math.cos(2 * math.pi * random.random()) * math.sqrt(-2 * math.log(random.random()))
+        rand = math.cos(2 * math.pi * random_uniform()) * math.sqrt(-2 * math.log(random_uniform()))
         
         return round((rand * range1) + mean)
     
     def randomizeUniform (range_in = 100, mean = 0.0):
-        rand = random.random() * range_in;
+        rand = random_uniform() * range_in;
         return round((rand - (range_in / 2)) + mean);
     
     x = line[0][0]
@@ -411,35 +323,36 @@ def random_controlpoints(line, d, method = "orthogonal"):
             
     line_length_half = line.length()/2
     
-    random.seed(seed * line.length())
+    random.seed(line.length() * seed * seed_loop)
 
     cp1 = None
     cp2 = None
     
     if method == "orthogonal":
         
-        # pos = random.random()
+        # pos = random_uniform()
         pos = 0.5
         
         m = line.point_at_line_pos(pos)
         
         line1 = LineSimple([line.coords[0], m])
-        p1 = line1.point_at_line_pos(random.random())
         
         line2 = LineSimple([m ,line.coords[1]])
-        p2 = line2.point_at_line_pos(random.random())
         
-        d1 = random.uniform(-1, 1) * d
-        d2 = random.uniform(-1, 1) * d
+        d1 = random_uniform_int() * d
+        d2 = random_uniform_int() * d
         
-        cp1 = displace_point_orthogonal(line.coords, p1, d1)
-        cp2 = displace_point_orthogonal(line.coords, p2, d2)
+        cp1 = line1.point_orthogonal(random_beta(4,1), d1)
+        cp2 = line2.point_orthogonal(random_beta(1,4), d2)
+        
+        cp1 = line1.point_orthogonal(random_uniform(), d1)
+        cp2 = line2.point_orthogonal(random_uniform(), d2)
     
     elif method == "circular":        
         # Displacing point circular around the center of the line
         # A----(-*-)----B
         if d >= line_length_half:           
-            point = sketch.point_shifted(line.coords, line_length_half)
+            point = line.point_shifted(line_length_half)
             cp1 = displace_point(point, line_length_half)
             cp2 = displace_point(point, line_length_half)
         
@@ -448,14 +361,16 @@ def random_controlpoints(line, d, method = "orthogonal"):
         # away from both endpoints.
         # A-(-----)-B
         else:
-            point1 = sketch.point_shifted(line.coords, d)            
-            point2 = sketch.point_shifted(line.coords[::-1], d)
+            point1 = line.point_shifted(d)
             
-            point = get_random_point_on_line((point1, point2))
+            line_reverse = LineSimple(line.coords[::-1])       
+            point2 = line_reverse.point_shifted(d)
+            
+            point = random_point_on_line((point1, point2))
             cp1 = displace_point(point, d)
             cp2 = displace_point(point, d)
             
         
-    controlpoints = [cp1, cp2]
+    controlpoints = (cp1, cp2)
                 
     return controlpoints

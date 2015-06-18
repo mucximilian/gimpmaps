@@ -180,10 +180,31 @@ class LineSimple(Line):
         
         return (x,y)
     
+    def point_orthogonal(self, pos, d):
+        """
+        Displaces a point P which is located on a line at a relative position d 
+        between A and B orthogonally within a distance d.
+        .
+        
+        :param pos: Relative position of the point between A and B (0...1)
+        :param d: Distance the point is displaced orthogonally
+        """
+        
+        p = self.point_at_line_pos(pos)
+        
+        v = self.vector_orthogonal()
+    
+        shift = [(p[0], p[1]), (v[0] + p[0], v[1] + p[1])]
+        shift_line = LineSimple(shift)
+        
+        p_displaced = shift_line.point_shifted(d)
+        
+        return p_displaced
+    
     def point_shifted(self, d):
         """
-        Computes the point that is on the straight line between P0 and P1 and
-        the distance d away from P0.
+        Computes the point that is on the straight line between A and B and
+        the distance d away from B.
         
         :param line: Tuple of two coordinate pairs determining the line points.
         """ 
