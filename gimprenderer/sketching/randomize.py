@@ -328,16 +328,19 @@ def random_controlpoints(line, d, method = "orthogonal"):
         
         line1 = LineSimple([line.coords[0], m])
         
-        line2 = LineSimple([m ,line.coords[1]])
+        line2 = LineSimple([line.coords[1], m])
         
-        d1 = random_uniform_int() * d
-        d2 = random_uniform_int() * d
+#         d1 = random_uniform_int() * d
+#         d2 = random_uniform_int() * d
         
-        cp1 = line1.point_orthogonal(random_beta(4,1), d1)
-        cp2 = line2.point_orthogonal(random_beta(1,4), d2)
+        d1 = ((random_beta(5,5) * 2) - 1)* d
+        d2 = ((random_beta(5,5) * 2) - 1)* d
         
-        cp1 = line1.point_orthogonal(random_uniform(), d1)
-        cp2 = line2.point_orthogonal(random_uniform(), d2)
+        cp1 = line1.point_orthogonal(random_beta(5,5), d1)
+        cp2 = line2.point_orthogonal(random_beta(5,5), d2)
+        
+#         cp1 = line1.point_orthogonal(random_uniform(), d1)
+#         cp2 = line2.point_orthogonal(random_uniform(), d2)
     
     elif method == "circular":        
         # Displacing point circular around the center of the line
