@@ -58,7 +58,7 @@ class Drawing(object):
         if format_type == "fixed":
             
             try:
-                bounds = [0,0] + self.resolution
+                bounds = ((0,0), self.resolution)
                 
                 width = bounds[1][0]
                 height = bounds[1][1]
@@ -76,7 +76,7 @@ class Drawing(object):
             
             try:
                 # Calculating bounding box of all feature points as image extent
-                bounds = self.get_bounds()
+                bounds = ((0,0), self.resolution)
                 
                 width = self.resolution[0]
                 height = self.resolution[1]

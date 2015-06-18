@@ -132,7 +132,7 @@ def random_points_on_line(line, n = 1, method = "equal"):
     # Distribute points randomly  
     elif (method == "uniform" or
         method == "equal_uniform" or
-        method == "equal_normlike"):            
+        method == "equal_beta"):            
     
         random.seed(line.length() * seed * seed_loop)
     
@@ -147,39 +147,30 @@ def random_points_on_line(line, n = 1, method = "equal"):
                 points_on_line.append(point)        
         
         # - randomly within equal segments        
-        elif method == "equal_uniform":
+        elif method == "equal_uniform" or method == "equal_beta":
             
             # Computing the start and end points of the equal segments
             segment_points = [line.coords[0]]
+            
             for i in range(0, n - 1):
+                
                 d_part = (length / (n + 1)) * (i + 1)
                 point = line.point_shifted(d_part)
                 segment_points.append(point)
+                
             segment_points.append(line.coords[1])
             
-            # Now random points between the segments are added               
-            for i in range(0, len(segment_points) - 1):                   
+            # Now random points on the segments are added
+            if method == "equal_uniform":
+                method = "uniform"
+            else:
+                method = "beta"
+                        
+            for i in range(0, len(segment_points) - 1): 
+                                  
                 points_on_line.append(
                     random_point_on_line(
-                        (segment_points[i], segment_points[i + 1])
-                    )
-                )
-        
-        # Distribute points normal distribution like on segment 
-        elif method == "equal_beta":
-            # Computing the start and end points of the equal segments
-            segment_points = [line.coords[0]]
-            for i in range(0, n - 1):
-                d_part = (length / (n + 1)) * (i + 1)
-                point = line.point_shifted(d_part)
-                segment_points.append(point)
-            segment_points.append(line.coords[1])
-            
-            # Now random points between the segments are added               
-            for i in range(0, len(segment_points) - 1):                   
-                points_on_line.append(
-                    random_point_on_line(
-                        (segment_points[i], segment_points[i + 1])
+                        (segment_points[i], segment_points[i + 1], method)
                     )
                 )
         

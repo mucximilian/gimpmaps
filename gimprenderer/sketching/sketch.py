@@ -70,8 +70,6 @@ def jitter_line(line, d = 10.0, method = "displace"):
     TO DO: Adding a relative_displacement d_rel?
     """
     
-    randomize.seed = 1
-    
     line = LineString(line)
     
     line_points = []
@@ -98,6 +96,10 @@ def jitter_line(line, d = 10.0, method = "displace"):
                 line_points += reversed(points[1:-1])
                 
         line_points.append(line.coords[i + 1]) # Adding segment end point
+        
+        randomize.seed_loop += 1
+        
+    randomize.reset_seed_loop()
     
     line_jittered = jitter_linestring(line_points, d, method)
     
