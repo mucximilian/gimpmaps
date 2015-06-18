@@ -170,7 +170,7 @@ def random_points_on_line(line, n = 1, method = "equal"):
                                   
                 points_on_line.append(
                     random_point_on_line(
-                        (segment_points[i], segment_points[i + 1], method)
+                        (segment_points[i], segment_points[i + 1]), method
                     )
                 )
         
@@ -194,7 +194,7 @@ def random_point_on_line(line, method = "beta"):
     p = None
     
     if (method == "uniform"):
-        p = random_uniform * d
+        p = random_uniform() * d
     elif (method == "beta"):
         p = random_beta() * d
     

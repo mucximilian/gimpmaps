@@ -62,6 +62,9 @@ def jitter_line(line, d = 10.0, method = "displace"):
     either using circular point displacement ("displace"), random Bezier 
     control points ("bezier") or both techniques ("displace_bezier").
     
+    IMPORTANT: Do not forget to reset the randomize.seed_loop in the calling
+    environment!
+    
     :param line: List of coordinate pairs determining the line
     :param d: Jitter distortion of the line in absolute image units
     :param method: Method used for jittering ("displace", "bezier" or
@@ -72,9 +75,10 @@ def jitter_line(line, d = 10.0, method = "displace"):
     
     line = LineString(line)
     
-    line_points = []
+    line_points = []    
+    line_points.append(line.coords[0]) # Adding the first point to result   
     
-    line_points.append(line.coords[0]) # Adding the first point        
+    # Iteration over all line segments  
     for i in range(0, len(line.coords) - 1):
         
         a = line.coords[i]
@@ -86,9 +90,11 @@ def jitter_line(line, d = 10.0, method = "displace"):
         seg_breaks = int(math.floor(line_seg.length() / (d * d))) - 1
                  
         if seg_breaks > 0:
+            
             points = add_points_to_line(
-                line_seg.coords, seg_breaks, "equal_uniform"
+                line_seg.coords, seg_breaks, "equal_beta"
             )
+            
             # Check the direction of the segment and flip if necessary
             if points[0] == a:
                 line_points += points[1:-1]
@@ -98,8 +104,6 @@ def jitter_line(line, d = 10.0, method = "displace"):
         line_points.append(line.coords[i + 1]) # Adding segment end point
         
         randomize.seed_loop += 1
-        
-    randomize.reset_seed_loop()
     
     line_jittered = jitter_linestring(line_points, d, method)
     

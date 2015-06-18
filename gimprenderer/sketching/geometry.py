@@ -41,6 +41,7 @@ class Line(Geometry):
         
         # Check that line consists only of two points
         if len(coordinates) > 2:
+            print coordinates
             sys.exit("Too many points for simple line - interrupted.")
         else:
             self.coords = coordinates
