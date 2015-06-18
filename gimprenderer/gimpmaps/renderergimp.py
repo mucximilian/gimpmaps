@@ -8,7 +8,7 @@ import svgwrite
 from gimpfu import *
 from abc import ABCMeta, abstractmethod
 
-from svgsketch import hachurizer
+from sketching import hachurizer
 
 from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer

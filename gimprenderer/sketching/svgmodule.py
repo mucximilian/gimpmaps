@@ -5,6 +5,7 @@ Created on Jun 9, 2015
 
 TO DO:
 
+- Separating module from class functions!
 - Adding classes
     - geometry feature + style
     - group + style
@@ -177,7 +178,7 @@ class Drawing(object):
         Saves the SVG image using the filename set in self.create
         """
         
-        # print "Saving image as '" + self.drawing.filename + "'"
+        print "Image saved as '" + self.drawing.filename + "'"
         # print "..."
         self.drawing.save()
         # print "Done"

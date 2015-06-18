@@ -13,7 +13,6 @@ Created on Jun 11, 2015
 '''
 
 from __future__ import division
-
 import math
 import abc
 import sys
@@ -95,6 +94,24 @@ class LineSimple(Line):
         
         return (x, y)
     
+    def vector_orthogonal(self):
+        """
+        Calculates an orthogonal vector to the line using the dot product.
+        Two vectors are orthogonal when their dot product is zero.
+        """
+        
+        v1 = self.vector()
+        
+        v2 = None
+            
+        try:
+            v2_y = -v1[0] / v1[1]
+            v2 = (1, v2_y)
+        except ZeroDivisionError:   
+            v2 = (0, 1)
+        
+        return v2
+    
     def get_delta(self):
         """
         Returns the x or y distance between the two line points based on the
@@ -136,16 +153,77 @@ class LineSimple(Line):
             
             return [m,b]
     
-    def calculate_point_at_line_pos(self, t):
+    def point_at_line_pos(self, p, reverse = False):
         """
         Calculating the point at the position t * AB on the line from point A
         to point B.
+        
+        :param: Relative position between A and B (0 is at A, 0.5 middle, 1 is at B)
+        :param reverse: False, position between A and B, True between B and A.
+        Default is False
         """
         
-        x = (1-t) * self.coords[0][0] + t * self.coords[1][0];
-        y = (1-t) * self.coords[0][1] + t * self.coords[1][1];
+        a = self.coords[0]
+        b = self.coords[1]
         
-        return [x,y]
+        p1 = None
+        p2 = None        
+        if reverse:
+            p1 = b
+            p2 = a
+        else:
+            p1 = a
+            p2 = b    
+        
+        x = (1-p) * p1[0] + p * p2[0];
+        y = (1-p) * p1[1] + p * p2[1];
+        
+        return (x,y)
+    
+    def point_shifted(self, d):
+        """
+        Computes the point that is on the straight line between P0 and P1 and
+        the distance d away from P0.
+        
+        :param line: Tuple of two coordinate pairs determining the line points.
+        """ 
+        
+        line_vector = self.vector()        
+        length = self.length()
+        
+        shift = tuple((d / length) * x for x in line_vector)
+                
+        point_shifted = tuple(sum(t) for t in zip(self.coords[0], shift))
+        
+        return point_shifted
+    
+    def line_scale(self, d_abs = None, d_rel = None):
+        """
+        Equally scaling (extending or shortening at both endpoints) the line
+        either with using a relative or absolute value. Returns the new
+        endpoints as a tuple.
+        
+        :param d_abs: Scaling 
+        :param d_rel:
+        """
+        
+        d = 0
+        if (d_abs is not None and d_rel is None):
+            d = d_abs
+        elif (d_rel is not None and d_abs is None):
+            d = d_rel * self.length()
+        else:
+            d = d_abs
+            print "Two d values provied for line scaling - absolute value used"
+        
+        a_new = self.point_shifted(-d)
+        
+        # Using reversed line coordinates
+        coords_reversed = self.coords[::-1]
+        line_reversed = LineSimple(coords_reversed)        
+        b_new = line_reversed.point_shifted(-d) 
+        
+        return (a_new, b_new)
     
 class LineString(Line):
     
@@ -330,3 +408,83 @@ class LineString(Line):
                 curve.append(self.coords[i + 1])
         
         return curve
+    
+class Polygon(object):
+    """
+    Classdocs
+    """
+    
+    def __init__(self, linearrings):
+        """
+        :param coordinates: A list of coordinate tuples
+        """
+        
+        self.linearrings = linearrings
+        
+    def disjoin(self, angle_disjoin = 135.0):
+        """
+        Disjoins polygon linestrings into segments at vertices where the angle 
+        between the lines from the vertex to the vertex behind and the vertex 
+        to the vertex ahead exceeds a given threshold. Returns the calculated
+        line segments as an array.
+        
+        :param polygon: Input geometry, array of lines (arrays of coordinates)
+        :param angle_disjoin: Threshold angle for disjoin in degree.
+        """
+    
+        def get_three_point_angle(points):
+            """
+            Calculates the angle between the lines from a vertex to the vertex 
+            behind and the vertex to the vertex ahead.
+            
+            :param points: Coordinate array, containing three points 
+            (vertex behind, vertex, vertex ahead)
+            """
+            
+            p0 = points[0] # point_behind
+            p1 = points[1] # point_center
+            p2 = points[2] # point_ahead
+            
+            a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
+            b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+            c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
+            
+            angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
+        
+            return angle
+        
+        outline_segments = []
+        
+        # Get linearrings of multipolygons
+        for linearring in self.linearrings:
+            
+            segment = []
+            segment.append(linearring[0])
+            
+            # Iterate over linearring
+            for i in range(1, len(linearring) -1):
+                
+                points = []
+                
+                points.append(linearring[i - 1])
+                points.append(linearring[i])
+                points.append(linearring[i + 1])
+                
+                angle = get_three_point_angle(points)
+                
+                # Continue segment
+                if (angle >= angle_disjoin):
+                    segment.append(linearring[i])
+                    
+                # Finish segment and create new one
+                else:
+                    segment.append(linearring[i])                    
+                    outline_segments.append(segment)
+                    
+                    segment = []
+                    segment.append(linearring[i])
+                
+            segment.append(linearring[0])                    
+            outline_segments.append(segment)
+            
+        return outline_segments
