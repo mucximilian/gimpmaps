@@ -55,7 +55,7 @@ BEGIN
 			1/pixel_in_m_y
 		),
 		0, -- absolute moves (relative = 1)
-		0 -- decimal digits
+		2 -- decimal digits
 	);
 	RETURN svg;
 END;

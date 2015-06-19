@@ -36,7 +36,7 @@ BEGIN
 			1/((ul_y-lr_y)/size_y)
 		),
 		0, -- absolute moves (relative = 1)
-		1 -- decimal digits
+		2 -- decimal digits
 	);
 	RETURN svg;
 END;

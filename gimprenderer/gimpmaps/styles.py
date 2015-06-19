@@ -150,8 +150,8 @@ class StyleObjectPolygon(StyleObjectLine):
         return [
             self.brush_hachure,
             self.brush_hachure_size,
-            self.hachure_color,
-            self.hachure_dynamics
+            self.color_hachure,
+            self.dynamics_hachure
         ]
     
     def get_image_data(self):

@@ -5,10 +5,9 @@ Created on May 13, 2015
 '''
 
 import svgwrite
+import logging
 from gimpfu import *
 from abc import ABCMeta, abstractmethod
-
-from sketching import hachurizer
 
 from gimpmaps.renderermap import MapRenderer
 from tilerenderer import TileRenderer
@@ -61,19 +60,16 @@ class RendererGimp(object):
                 )
                 
                 for svg_commands in svg_geoms:
-                             
-                    svg_path = svgwrite.path.Path(svg_commands)
-                    svg_path_str = svg_path.tostring()
                     
-                    line_sketched = sketchadapter.sketch_line_path(svg_path_str)
+                    line_sketched = sketchadapter.sketch_line_path(svg_commands)
 
                     # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(line_sketched.tostring())
+                    gimp.import_vectors(line_sketched)
             
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, 
                                           sql_selection, group_line, 
-                                          0)  
+                                          0)
                 
                 # Drawing vectors into GIMP layer
                 gimp.draw_vectors(layer)
@@ -101,12 +97,9 @@ class RendererGimp(object):
                 
                 sql_selection = style_polygon.get_selection_tags()
                 line_style = style_polygon.get_line_style()
+                hachure_style = style_polygon.get_hachure_style()
                 
-                # Style settings
-                # TO DO: emulate brush dynamics?????
-                gimp.set_context(line_style)
-                
-                # TO DO: Import from style
+                # TO DO: Import from style and set in hachurizer
                 spacing = 10
                 angle = 30
                 
@@ -117,57 +110,60 @@ class RendererGimp(object):
                     style_polygon
                 )
                 
-                # Draw fill
-                for svg_commands in svg_geoms:
+                if mask:
                     
-                    svg_path = svgwrite.path.Path(svg_commands)
-            
-                    # Import vectors to GIMP image
-                    if (mask):                    
-                        # Adding vectors for stroking of lines, outlines/mask
+                    # Adding vectors for stroking of lines, outlines/mask
+                    for svg_commands in svg_geoms:
+                  
+                        svg_path = svgwrite.path.Path(svg_commands)
                         svg_path_str = svg_path.tostring()
                         gimp.import_vectors(svg_path_str)
-                    else:
-                        # Creating hachure vectors
-                        # TO DO: Adding outlines
-                        svg_renderer = hachurizer.Hachurizer(spacing, angle)                    
-    
-                        hachure = svg_renderer.get_svg_hachure(svg_path)
-                        if (hachure is not None):                   
-                            gimp.import_vectors(hachure)
-                        else:
-                            continue
                         
-                # Drawing polygon feature_styles                
-                if (mask):
                     # Adding background image to use the mask on
                     # TO DO: Get img path from style file
                     mask_image = "img/" + style_polygon.get_image_data()[0]
                     gimp.apply_vectors_as_mask(
-                        self, mask_image, group_polygon, resolution, sql_selection
-                    )
+                        self, 
+                        mask_image, group_polygon, resolution, sql_selection
+                    )    
+                
+                else:
+                
+                    layer_hachure = gimp.create_layer(resolution, 
+                            sql_selection + "_hachure", group_polygon, -1)
+                    
+                    layer_outline = gimp.create_layer(resolution, 
+                            sql_selection + "_outline", group_polygon, -1)
+                
+                    for svg_commands in svg_geoms:                              
+                        
+                        hachures = sketchadapter.sketch_polygon_hachure(
+                                                            svg_commands)
+                        if hachures is not None:
+                            
+                            for hachure in hachures:
                                 
-                else :
-                    
-                    # Creating image layer for geometry feature
-                    layer = gimp.create_layer(resolution, sql_selection,
-                                              group_polygon, 0) 
-                    
-                    # Drawing vectors into GIMP layer
-                    gimp.draw_vectors(layer)
-                    
-                # Draw outline
-                for svg_commands in svg_geoms:
-                    
-                    svg_path = svgwrite.path.Path(svg_commands)
-                    
-                    # TO DO:
-                    # Implement!!!
+                                if (hachure is not None):   
+                                                    
+                                    gimp.import_vectors(hachure)
+                                    gimp.set_context(hachure_style)
+                                    # gimp.draw_vectors(layer_hachure)
+                                    
+                                else:
+                                    continue
+                                
+                        hachure_outline = sketchadapter.sketch_polygon_path(
+                                                                svg_commands)
+
+                        gimp.import_vectors(hachure_outline)
+                        gimp.set_context(line_style)
+                        gimp.draw_vectors(layer_outline)                        
                 
             self.conn_osm.close()
             
         except TypeError:
             print "No styles for this zoom level or type error"
+            logging.warn("No style for zoom level or type error!")
             
     def draw_text(
             self, gimp, parent, text_styles, bbox, resolution, 
@@ -231,26 +227,26 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         gimp.insert_image_tiled(256, resolution, bg_image, parent, -1)        
         
         # Drawing features
-#         feature_styles = self.get_feature_styles(zoom)
-#         
-#         ## Polygon features
-#         polygon_styles = feature_styles["polygons"]
-#         self.draw_features_polygon(
-#             gimp, parent, polygon_styles, bbox, resolution, False
-#         )
-#         
-#         ## Line features
-#         line_styles = feature_styles["lines"]
-#         self.draw_features_line(
-#             gimp, parent, line_styles, bbox, resolution
-#         )
-#         
+        feature_styles = self.get_feature_styles(zoom)
+         
+        ## Polygon features
+        polygon_styles = feature_styles["polygons"]
+        self.draw_features_polygon(
+            gimp, parent, polygon_styles, bbox, resolution, False
+        )
+         
+        ## Line features
+        line_styles = feature_styles["lines"]
+        self.draw_features_line(
+            gimp, parent, line_styles, bbox, resolution
+        )
+       
         # Drawing the text
-        text_styles = self.get_text_styles(zoom)
-        polygon_text_styles = text_styles["polygons"]
-        self.draw_text(
-            gimp, parent, polygon_text_styles, bbox, resolution, True, False
-        )  
+#         text_styles = self.get_text_styles(zoom)
+#         polygon_text_styles = text_styles["polygons"]
+#         self.draw_text(
+#             gimp, parent, polygon_text_styles, bbox, resolution, True, False
+#         )  
                       
         # Save images as PNG and XCF
         gimp.save_image(out_path, parent, True, self.create_xcf)

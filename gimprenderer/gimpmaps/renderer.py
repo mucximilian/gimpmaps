@@ -48,17 +48,13 @@ class Renderer(object):
         self.t_start = datetime.datetime.now()
         self.t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
         
-        # Checking and setting log directory
-        log_dir = self.filepath + "/log/"
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)     
-        self.start_logging(self.t_start, self.t_form, log_dir + self.type)           
-            
-        # Checking and setting the output directory
+        
+        # Checking and setting the output directory for the image and log file
         self.out_dir += self.type + "_" + self.t_form + "/"
         if not os.path.exists(self.out_dir):
-            os.makedirs(self.out_dir)
-        
+            os.makedirs(self.out_dir)  
+        self.start_logging(self.t_start, self.t_form, self.out_dir + self.type)           
+
         # Copying the HTML file to view the tiles in the browser for GIMP tiles
         if(self.type == "tiles_gimp"):           
             os.system (
@@ -573,7 +569,7 @@ class Renderer(object):
         
         logging.info(Renderer.log_line)
         logging.info("End of Gimp Tile processing at " + str(t_end))
-        logging.info("processing duration: " + 
+        logging.info("Processing took " + 
             str(delta_t.total_seconds()) +
             " seconds"
         )
