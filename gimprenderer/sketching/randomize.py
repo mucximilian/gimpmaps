@@ -13,6 +13,7 @@ from geometry import LineSimple, LineString
 seed = 1
 seed_loop = 1
 
+# Random distribution functions
 def reset_seed_loop():    
     global seed_loop 
     seed_loop = 1
@@ -44,6 +45,10 @@ def line_handy(line, r):
     
     line = LineSimple(line)
     
+    # Adjust r if 2 * r is larger than the line length
+    if line.length() < 4 *r:
+        r = line.length() / 4
+        
     point_a = displace_point(line.coords[0], r)
     point_b = displace_point(line.coords[1], r)
     

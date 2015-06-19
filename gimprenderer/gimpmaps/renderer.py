@@ -15,7 +15,7 @@ import json
 
 from abc import ABCMeta, abstractmethod
 
-from gimpmaps import styles
+from gimpmaps import styles, sketchadapter
 
 class Renderer(object):
     '''
@@ -99,7 +99,7 @@ class Renderer(object):
         
     def set_style_path(self):
         """
-        Setting style path relative (if not defindend inf config) or absolute
+        Setting style path relative (if not defindend in config) or absolute
         as instance variable.
         """
         style_path = self.config["style"]["style_path"]
@@ -158,12 +158,15 @@ class Renderer(object):
         """
         
         conn = psycopg2.connect(
-            'dbname=osm_muc '
-            'user=gis '
-            'password=gis '
-            'host=localhost '
-            'port=5432'
+            "dbname=%s user=%s password=%s host=%s port=%s" % (
+                self.database["db_name"],
+                self.database["user"],
+                self.database["password"],
+                self.database["host"],
+                5432)
+            
         )
+                    
         return conn
     
     def finish(self):
@@ -190,7 +193,7 @@ class Renderer(object):
         
         for feature_style in feature_styles["lines"]:
             
-            grp = dwg.g() # Creating SVG Group
+            grp_lines = dwg.g() # Creating SVG Group
             
             svg_geoms = self.get_svg_features(
                 bbox,
@@ -199,14 +202,56 @@ class Renderer(object):
             )
     
             # Adding vectors to the group
-            for svg_commands in svg_geoms:            
-                grp.add(dwg.path(d=svg_commands))
+            for svg_commands in svg_geoms:
                 
-            dwg.add(grp)
+                line_sketched = sketchadapter.sketch_line_path(svg_commands)
+                grp_lines.add(line_sketched)
+                
+            dwg.add(grp_lines)
+        
+        for feature_style in feature_styles["polygons"]:
+            
+            grp_hachures = dwg.g() # Creating SVG Group
+            grp_outlines = dwg.g() # Creating SVG Group
+            
+            svg_geoms = self.get_svg_features(
+                bbox,
+                resolution, 
+                feature_style
+            )
+    
+            # Adding vectors to the group
+            for svg_commands in svg_geoms:
+                
+                hachures = sketchadapter.sketch_polygon_hachure(svg_commands)                
+                if hachures is not None:
+                             
+                    for hachure in hachures:
+                         
+                        if (hachure is not None):                                    
+                            grp_hachures.add(hachure)
+                                     
+                        else:
+                            continue
+                        
+                outlines = sketchadapter.sketch_polygon_outline(svg_commands)                
+                if outlines is not None:
+                             
+                    for outline in outlines:
+                         
+                        if (outline is not None):                            
+                            grp_outlines.add(outline)
+                            
+                        else:
+                            continue
+                
+            dwg.add(grp_hachures)
+            dwg.add(grp_outlines)
          
-        # Saving SVG file    
-        dwg.save()
-        print "creating SVG: " + out_file + ".svg"
+        # Saving SVG file
+        print "Creating SVG: " + out_file + ".svg ..."
+        dwg.save()        
+        print "Done!"
         
         self.conn_osm.close()
         
@@ -407,14 +452,15 @@ class Renderer(object):
                 WHERE (""" + sql_selection + ")"
                 
             # Get SVG tile geometry from database
-            curs_osm.execute(sql, (
+            params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 line_style[1]
                 )
-            )               
+            
+            curs_osm.execute(sql, params)               
         elif (style_feature.geom_type == 3):   
                         
             sql = """
@@ -442,20 +488,19 @@ class Renderer(object):
                 WHERE
                     """ + sql_selection + """
             ) x 
-            WHERE coalesce(svg, '') <> ''"""                
-                
-            # Get SVG tile geometry from database
-            curs_osm.execute(
-                sql, 
-                (
+            WHERE coalesce(svg, '') <> ''"""
+            
+            params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 line_style[1],
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 line_style[1]
-                )
-            )    
+            )           
+                
+            # Get SVG tile geometry from database
+            curs_osm.execute(sql, params)    
             
         # Getting vectors and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result

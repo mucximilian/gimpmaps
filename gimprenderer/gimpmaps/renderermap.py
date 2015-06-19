@@ -4,6 +4,7 @@ Created on May 21, 2015
 @author: mucx
 '''
 
+from __future__ import division
 from abc import ABCMeta, abstractmethod
 
 from renderer import Renderer
@@ -62,12 +63,12 @@ class MapRenderer(Renderer):
         bbox_width = abs(self.bbox[0][0] - self.bbox[1][0])
         bbox_height = abs(self.bbox[0][1] - self.bbox[1][1])
         
-        map_width = self.get_pixel_size(bbox_width, 300)
-        map_height = self.get_pixel_size(bbox_height, 300)
+        map_width = self.get_pixel_size(bbox_width)
+        map_height = self.get_pixel_size(bbox_height)
         
         return [map_width, map_height]
     
-    def get_pixel_size(self, size_m, dpi):
+    def get_pixel_size(self, size_m, dpi = 300):
         """
         Calculating the pixel size of a length given in meter using the scale 
         and desired DPI (e.g. 300 for print).        
@@ -76,6 +77,7 @@ class MapRenderer(Renderer):
         size_cm = size_m/self.scale
         
         size_inch = size_cm * 2.54
+        
         size_pixel = int(round(size_inch * dpi))
         
         return size_pixel

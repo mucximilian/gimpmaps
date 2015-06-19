@@ -457,7 +457,7 @@ class Polygon(object):
         :param angle_disjoin: Threshold angle for disjoin in degree.
         """
     
-        def get_three_point_angle(points):
+        def three_point_angle(points):
             """
             Calculates the angle between the lines from a vertex to the vertex 
             behind and the vertex to the vertex ahead.
@@ -476,6 +476,15 @@ class Polygon(object):
             
             angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
         
+            # Determine whether the edges are convex or concave
+            v1 = LineSimple([p0, p1]).vector()
+            v2 = LineSimple([p1, p2]).vector()
+            
+            det = v1[0]*v2[1] - v2[0]*v1[1] # det is negative if concave
+            
+            if det < 0:
+                angle = 360 - angle
+        
             return angle
         
         outline_segments = []
@@ -485,8 +494,8 @@ class Polygon(object):
             
             segment = []
             segment.append(linearring[0])
-            
-            # Iterate over linearring
+
+            # Iterate over all points of linearring
             for i in range(1, len(linearring) -1):
                 
                 points = []
@@ -495,7 +504,7 @@ class Polygon(object):
                 points.append(linearring[i])
                 points.append(linearring[i + 1])
                 
-                angle = get_three_point_angle(points)
+                angle = three_point_angle(points)
                 
                 # Continue segment
                 if (angle >= angle_disjoin):

@@ -64,7 +64,7 @@ class RendererGimp(object):
                     line_sketched = sketchadapter.sketch_line_path(svg_commands)
 
                     # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(line_sketched)
+                    gimp.import_vectors(line_sketched.tostring())
             
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, 
@@ -137,27 +137,37 @@ class RendererGimp(object):
                 
                     for svg_commands in svg_geoms:                              
                         
+                        # Getting and drawing the hachure lines
                         hachures = sketchadapter.sketch_polygon_hachure(
-                                                            svg_commands)
+                                                                svg_commands)
                         if hachures is not None:
-                            
+                             
                             for hachure in hachures:
-                                
+                                 
                                 if (hachure is not None):   
-                                                    
-                                    gimp.import_vectors(hachure)
+                                                     
+                                    gimp.import_vectors(hachure.tostring())
                                     gimp.set_context(hachure_style)
-                                    # gimp.draw_vectors(layer_hachure)
-                                    
+                                    gimp.draw_vectors(layer_hachure)
+                                     
                                 else:
                                     continue
-                                
-                        hachure_outline = sketchadapter.sketch_polygon_path(
-                                                                svg_commands)
-
-                        gimp.import_vectors(hachure_outline)
-                        gimp.set_context(line_style)
-                        gimp.draw_vectors(layer_outline)                        
+                               
+                        # Getting and drawing the outline lines 
+                        outlines = sketchadapter.sketch_polygon_outline(
+                                                                svg_commands)                
+                        
+                        if outlines is not None:
+                                     
+                            for outline in outlines:
+                                 
+                                if (outline is not None):                            
+                                    gimp.import_vectors(outline.tostring())
+                                    gimp.set_context(line_style)
+                                    gimp.draw_vectors(layer_outline)
+                                    
+                                else:
+                                    continue                     
                 
             self.conn_osm.close()
             

@@ -53,17 +53,17 @@ def displace_line(line, r):
     
     return line_new
 
-def handy_hachures(hachures):
+def handy_hachures(hachures, d):
     
     hachures_handy = []
     hachures_displaced = []
     
     for hachure in hachures:
         
-        hachure_displaced = displace_line(hachure, 3.0)
+        hachure_displaced = displace_line(hachure, d)
         hachures_displaced.append(hachure_displaced)
         
-        hachure_handy = randomize.line_handy(hachure_displaced, 3.0)
+        hachure_handy = randomize.line_handy(hachure_displaced, d)
         
         hachures_handy.append(hachure_handy)
         
@@ -167,6 +167,13 @@ def path_to_linestring(path):
         )
     
     return linestring
+
+def path_to_linearring(path):
+    
+    linearring = path_to_linestring(path)
+    linearring.append(linearring[0])
+    
+    return linearring
     
 def path_to_polygon(path):
     
@@ -179,7 +186,7 @@ def path_to_polygon(path):
         
         polygon_str = polygon_str.strip()
         
-        polygon = path_to_linestring(polygon_str)
+        polygon = path_to_linearring(polygon_str)
         polygons.append(polygon)
         
     return polygons
