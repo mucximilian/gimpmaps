@@ -51,6 +51,9 @@ class RendererGimp(object):
                 # Style settings
                 # TO DO: emulate brush dynamics?????
                 gimp.set_context(line_style)
+                
+                            
+                logging.info("Querying database")
     
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
@@ -58,6 +61,9 @@ class RendererGimp(object):
                     resolution, 
                     style_line
                 )
+                
+                            
+                logging.info("Processing lines")
                 
                 for svg_commands in svg_geoms:
                     
@@ -72,6 +78,9 @@ class RendererGimp(object):
                                           0)
                 
                 # Drawing vectors into GIMP layer
+                
+                logging.info("Drawing lines")
+                
                 gimp.draw_vectors(layer)
                 
             self.conn_osm.close()
@@ -103,12 +112,16 @@ class RendererGimp(object):
                 spacing = 10
                 angle = 30
                 
+                logging.info("Querying database")
+                
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
                     bbox,
                     resolution, 
                     style_polygon
                 )
+                
+                logging.info("Processing polygons")
                 
                 if mask:
                     
@@ -135,7 +148,9 @@ class RendererGimp(object):
                     layer_outline = gimp.create_layer(resolution, 
                             sql_selection + "_outline", group_polygon, -1)
                 
-                    for svg_commands in svg_geoms:                              
+                    for svg_commands in svg_geoms:            
+                        
+                        print "Processing hachure"                  
                         
                         # Getting and drawing the hachure lines
                         hachures = sketchadapter.sketch_polygon_hachure(
@@ -152,6 +167,8 @@ class RendererGimp(object):
                                      
                                 else:
                                     continue
+                                
+                        print "Processing outline"
                                
                         # Getting and drawing the outline lines 
                         outlines = sketchadapter.sketch_polygon_outline(

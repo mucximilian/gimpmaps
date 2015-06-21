@@ -178,7 +178,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 8
+                    "brush_size": 6
                 }, 
                 "osm_tags": [
                     "highway='tertiary' OR highway='tertiary_link'"
@@ -196,10 +196,10 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 8
+                    "brush_size": 6
                 }, 
                 "osm_tags": [
-                    "highway='residential'"
+                    "highway='residential' OR highway='living_street'"
                 ], 
                 "zoom_max": 20
             }, 
@@ -214,7 +214,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 8
+                    "brush_size": 6
                 }, 
                 "osm_tags": [
                     "highway='secondary' OR highway='secondary_link'"
@@ -232,7 +232,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 12
+                    "brush_size": 8
                 }, 
                 "osm_tags": [
                     "highway='primary' OR highway='primary_link'"
@@ -250,7 +250,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 12
+                    "brush_size": 8
                 }, 
                 "osm_tags": [
                     "highway='trunk' OR highway='trunk_link'"
@@ -268,7 +268,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 16
+                    "brush_size": 12
                 }, 
                 "osm_tags": [
                     "highway='motorway' OR highway='motorway_link'"
@@ -308,6 +308,38 @@
                 }, 
                 "zoom_max": 20, 
                 "fill_color": null
+            },
+            {
+                "z_order": 3, 
+                "osm_tags": [
+                    "\"natural\"='water'"
+                ], 
+                "image": "hachure_blue_050708.png", 
+                "zoom_min": 17, 
+                "stroke_line": {
+                    "color": [
+                        120, 
+                        140, 
+                        255
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "2. Hardness 100", 
+                    "brush_size": 2
+                }, 
+                "stroke_hachure": {
+                    "angle": 35, 
+                    "brush_size": 2, 
+                    "color": [
+                        140, 
+                        180, 
+                        255
+                    ], 
+                    "spacing": 10, 
+                    "brush": "2. Hardness 100", 
+                    "dynamics": "Dynamics Off"
+                }, 
+                "zoom_max": 20, 
+                "fill_color": null
             }, 
             {
                 "z_order": 3, 
@@ -318,9 +350,9 @@
                 "zoom_min": 10, 
                 "stroke_line": {
                     "color": [
-                        50, 
-                        70, 
-                        30
+                        60, 
+                        80, 
+                        40
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
@@ -372,7 +404,39 @@
                 }, 
                 "zoom_max": 20, 
                 "fill_color": null
-            }, 
+            },
+            {
+                "z_order": 2, 
+                "osm_tags": [
+                    "landuse='grass'"
+                ], 
+                "image": "hachure_green_060705.png", 
+                "zoom_min": 14, 
+                "stroke_line": {
+                    "color": [
+                        100, 
+                        120, 
+                        80
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "2. Hardness 100", 
+                    "brush_size": 2
+                }, 
+                "stroke_hachure": {
+                    "angle": 35, 
+                    "brush_size": 2, 
+                    "color": [
+                        140, 
+                        160, 
+                        100
+                    ], 
+                    "spacing": 10, 
+                    "brush": "2. Hardness 100", 
+                    "dynamics": "Dynamics Off"
+                }, 
+                "zoom_max": 20, 
+                "fill_color": null
+            },  
             {
                 "z_order": 1, 
                 "osm_tags": [

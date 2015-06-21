@@ -195,14 +195,18 @@ class Renderer(object):
             
             grp_lines = dwg.g() # Creating SVG Group
             
+            logging.info("##### Reading line geometry")
+            
             svg_geoms = self.get_svg_features(
                 bbox,
                 resolution, 
                 feature_style
-            )
+            )           
     
             # Adding vectors to the group
             for svg_commands in svg_geoms:
+                
+                logging.info("##### Sketching line geometry")
                 
                 line_sketched = sketchadapter.sketch_line_path(svg_commands)
                 grp_lines.add(line_sketched)
@@ -214,6 +218,7 @@ class Renderer(object):
             grp_hachures = dwg.g() # Creating SVG Group
             grp_outlines = dwg.g() # Creating SVG Group
             
+            logging.info("##### Reading polygon geometry")
             svg_geoms = self.get_svg_features(
                 bbox,
                 resolution, 
@@ -223,6 +228,7 @@ class Renderer(object):
             # Adding vectors to the group
             for svg_commands in svg_geoms:
                 
+                logging.info("##### Sketching polygon hachures")
                 hachures = sketchadapter.sketch_polygon_hachure(svg_commands)                
                 if hachures is not None:
                              
@@ -234,6 +240,7 @@ class Renderer(object):
                         else:
                             continue
                         
+                logging.info("##### Sketching polygon outlines")
                 outlines = sketchadapter.sketch_polygon_outline(svg_commands)                
                 if outlines is not None:
                              
@@ -422,6 +429,9 @@ class Renderer(object):
         svg_geometries = []
         
         sql_selection = style_feature.get_selection_tags()
+        
+        # TO DO: Check selection tags for format and escape column names
+        
         line_style = style_feature.get_line_style()
         
         # Query svg tiles from database               
@@ -465,30 +475,34 @@ class Renderer(object):
                         
             sql = """
             SELECT * FROM (
-                SELECT
-                    gimpmaps_scale_svg_polygon(
-                        way,
-                        %s, %s, %s, %s,
-                        %s, %s,
-                        %s
-                    ) AS svg
-                FROM (
+                SELECT svg FROM (
                     SELECT
-                        *
-                    FROM planet_osm_polygon 
-                    WHERE ST_Intersects ( 
-                        way, 
+                        gimpmaps_scale_svg_polygon(
+                            ST_GeometryN(
+                                ST_Union(way),generate_series(
+                                    1,ST_NumGeometries(ST_Union(way))
+                                )
+                            ), 
+                            %s, %s, %s, %s, 
+                            %s, %s, %s
+                        ) AS svg
+                    FROM 
+                        planet_osm_polygon
+                    WHERE 
+                        way 
+                        &&
                         gimpmaps_get_bbox(
-                            %s, %s, %s, %s,
-                            %s, %s,
-                            %s
-                        ) 
-                    )
-                ) t
-                WHERE
-                    """ + sql_selection + """
+                            %s, %s, %s, %s, 
+                            %s, %s, %s
+                        )
+                    AND 
+                        ST_Area(way) > (%s * %s) ^ 2
+                    AND 
+                    (""" + sql_selection + """)
+                )t    
             ) x 
-            WHERE coalesce(svg, '') <> ''"""
+            WHERE coalesce(svg, '') <> ''
+            """
             
             params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
@@ -496,11 +510,11 @@ class Renderer(object):
                 line_style[1],
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
-                line_style[1]
+                line_style[1], line_style[1], line_style[1]
             )           
                 
             # Get SVG tile geometry from database
-            curs_osm.execute(sql, params)    
+            curs_osm.execute(sql, params)
             
         # Getting vectors and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
