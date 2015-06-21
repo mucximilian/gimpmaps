@@ -3,10 +3,10 @@ gimprenderer/.project
 gimprenderer/.pydevproject
 gimprenderer/gimpmaps/log/
 gimprenderer/gimpmaps/results/
+gimprenderer/gimpmaps/styles/
 gimprenderer/test/
 gimprenderer/sketching/results/
 sql/old/
 *.pyc
 *.xcf
-*.png
 *.log
