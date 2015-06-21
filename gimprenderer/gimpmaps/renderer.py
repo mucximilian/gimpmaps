@@ -187,8 +187,7 @@ class Renderer(object):
         # Create SVG file name with extension
         dwg = svgwrite.Drawing(
             out_file + ".svg",
-            height = resolution[0],
-            width = resolution[1]
+            size=(resolution[0],resolution[1])
         )
         
         for feature_style in feature_styles["lines"]:
