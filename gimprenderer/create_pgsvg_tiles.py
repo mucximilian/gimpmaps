@@ -2,7 +2,7 @@
 
 from gimpfu import *
 
-from gimpmaps import renderergimp
+from gimpmaps.renderergimp import TileRendererGimp
 
 """
 Run this file from the bash script provided in the directory above.
@@ -10,7 +10,7 @@ Run this file from the bash script provided in the directory above.
 
 def run(config_file):
     
-    tile_renderer = renderergimp.TileRendererGimp(config_file)    
+    tile_renderer = TileRendererGimp(config_file)    
     tile_renderer.render()
 
 register(

@@ -4,7 +4,11 @@
 FROM (
 	SELECT 
 		gimpmaps_generalize_polygon(
-			ST_Polygonize(ST_Collect(ST_DumpRings(ST_Union(way)))), 
+			ST_GeometryN(
+				ST_Union(way),generate_series(
+					1,ST_NumGeometries(ST_Union(way))
+				)
+			),
 			1.313
 		) AS svg
 	FROM 
@@ -18,5 +22,6 @@ FROM (
 		)
 	AND
 		ST_Area(way) > (3 * 3) ^ 2
+	AND building IS NOT NULL
 
 )t	

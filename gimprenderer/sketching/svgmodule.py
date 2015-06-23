@@ -178,10 +178,11 @@ class Drawing(object):
         Saves the SVG image using the filename set in self.create
         """
         
-        print "Image saved as '" + self.drawing.filename + "'"
-        # print "..."
+        print "Saving image as '" + self.drawing.filename + "' ..."
+
         self.drawing.save()
-        # print "Done"
+        
+        print "Done"
         
     def get_formatted_time(self):
         """
@@ -376,7 +377,8 @@ class Drawing(object):
             
             points = []
             
-            for path in self.paths_bezier:                               
+            for path in self.paths_bezier:
+                                         
                 for i in range(0, len(path[0]), 3):
                     
                     points.append(path[0][i])

@@ -160,7 +160,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 3
+                    "brush_size": 4
                 }, 
                 "osm_tags": [
                     "waterway='river'"
@@ -178,7 +178,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 6
+                    "brush_size": 2
                 }, 
                 "osm_tags": [
                     "highway='tertiary' OR highway='tertiary_link'"
@@ -196,7 +196,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 6
+                    "brush_size": 2
                 }, 
                 "osm_tags": [
                     "highway='residential' OR highway='living_street'"
@@ -214,7 +214,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 6
+                    "brush_size": 2
                 }, 
                 "osm_tags": [
                     "highway='secondary' OR highway='secondary_link'"
@@ -232,7 +232,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 8
+                    "brush_size": 2
                 }, 
                 "osm_tags": [
                     "highway='primary' OR highway='primary_link'"
@@ -250,7 +250,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 8
+                    "brush_size": 2
                 }, 
                 "osm_tags": [
                     "highway='trunk' OR highway='trunk_link'"
@@ -268,7 +268,7 @@
                     ], 
                     "dynamics": "Dynamics Off", 
                     "brush": "2. Hardness 100", 
-                    "brush_size": 12
+                    "brush_size": 3
                 }, 
                 "osm_tags": [
                     "highway='motorway' OR highway='motorway_link'"

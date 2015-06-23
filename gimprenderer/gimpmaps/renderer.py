@@ -511,6 +511,8 @@ class Renderer(object):
                 resolution[0], resolution[1],
                 line_style[1], line_style[1], line_style[1]
             )           
+            
+            print params
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, params)

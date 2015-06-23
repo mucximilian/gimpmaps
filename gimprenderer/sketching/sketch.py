@@ -6,9 +6,9 @@ Created on Jun 5, 2015
 
 from __future__ import division
 import math
-import random
 
 import randomize
+import handyrenderer
 from geometry import LineSimple, LineString, Polygon
 
 seed = 1
@@ -28,43 +28,19 @@ def add_points_to_line(line, n = 1, method = "equal"):
     
     return line_new
 
-def displace_line(line, r):
-    """
-    Displaces the two end points of a line. If the specified radius is
-    larger than the line length, the points are displaced by half of the
-    original line length.
-    """
-    
-    line = LineSimple(line)
-    
-    a = line.coords[0]
-    b = line.coords[1]
-    
-    length = line.length()
-    
-    if (length <= r):
-        r =  length/2               
-            
-    random.seed(length + seed)
-    point1 = randomize.displace_point(a, r, method = "circle")
-    point2 = randomize.displace_point(b, r, method = "circle")
-    
-    line_new = [point1, point2]
-    
-    return line_new
-
 def handy_hachures(hachures, d):
     
     hachures_handy = []
-    hachures_displaced = []
+    
+    randomize.reset_seed_loop()
     
     for hachure in hachures:
         
-        hachure_displaced = displace_line(hachure, d)
-        hachures_displaced.append(hachure_displaced)
+        hachure_displaced = randomize.displace_line(hachure, d)
         
         hachure_handy = randomize.line_handy(hachure_displaced, d)
-        
+        # hachure_handy = handyrenderer.line(hachure_displaced, d)[0]
+
         hachures_handy.append(hachure_handy)
         
         randomize.seed_loop += 1
@@ -122,8 +98,6 @@ def jitter_line(line, d = 10.0, method = "displace"):
                 line_points += reversed(points[1:-1])
                 
         line_points.append(line.coords[i + 1]) # Adding segment end point
-        
-        randomize.seed_loop += 1
     
     line_jittered = randomize.jitter_linestring(line_points, d, method)
     
@@ -138,16 +112,12 @@ def jitter_polygon(polygon, d = 10.0, method = "displace"):
     segments_jittered = []
     
     randomize.seed = 1
-     
+
     for segment in segments:
         
         segment_jittered = jitter_line(segment, 10, "bezier")
         segments_jittered.append(segment_jittered)
-        
-        randomize.seed_loop += 1
-        
-    randomize.reset_seed_loop()
-    
+          
     return segments_jittered
 
 ################################################################################

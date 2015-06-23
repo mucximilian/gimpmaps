@@ -2,7 +2,7 @@
 
 from gimpfu import *
 
-from gimpmaps import renderergimp
+from gimpmaps.renderergimp import MapRendererGimp
 
 """
 Run this file from the bash script provided in the directory above.
@@ -10,7 +10,7 @@ Run this file from the bash script provided in the directory above.
 
 def run(config_file):
     
-    gimp_renderer = renderergimp.MapRendererGimp(config_file)    
+    gimp_renderer = MapRendererGimp(config_file)    
     gimp_renderer.render()
 
 register(

@@ -397,7 +397,7 @@ class LineString(Line):
             controlpoints.append([bp[1][0], bp[1][1]])
             controlpoints.append([bp[2][0], bp[2][1]])
             
-        print controlpoints
+        #print controlpoints
             
         curve = self.get_curve(controlpoints)
         
@@ -486,6 +486,8 @@ class Polygon(object):
                 angle = 360 - angle
         
             return angle
+        
+        ########################################################################
         
         outline_segments = []
         

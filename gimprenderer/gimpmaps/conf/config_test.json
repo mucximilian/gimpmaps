@@ -21,7 +21,7 @@
     },
     "style":{
     	"style_path":null,
-    	"style_name":"chalk",
+    	"style_name":"test",
         "polygon_fill":{
         	"type":"hachure",
         	"color_fill":true,

@@ -40,13 +40,11 @@ def line(line, max_offset):
     # Ensure random perturbation is no more than 10% of line length.
     lenSq = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)
     offset = max_offset
-
     if (max_offset * max_offset * 100 > lenSq):
         offset = math.sqrt(lenSq)/10.0
-
-    half_offset = offset/2
     
-    random.seed(line.length() * seed)
+    # Disable for testing
+    #random.seed(line.length() * seed)
     
     divergePoint = 0.2 + random.random() * 0.2
 
@@ -62,10 +60,10 @@ def line(line, max_offset):
                                           midDispX, midDispY, 
                                           divergePoint, offset)
     
-    # Calculating line 2
+    # Calculating line 2 with half the offset
     line2 = get_displaced_linepoints(x1, y1, x2, y2, 
                                           midDispX, midDispY, 
-                                          divergePoint, half_offset)
+                                          divergePoint, offset/2)
                 
     return [line1, line2]
     

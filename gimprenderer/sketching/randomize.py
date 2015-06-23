@@ -34,7 +34,7 @@ def random_uniform_int(a = -1, b = 1):
     x = random.uniform(a, b)
     return x
         
-def line_handy(line, r):
+def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     """
     Does what the Handy renderer is supposed to do (according to paper).
     
@@ -54,7 +54,7 @@ def line_handy(line, r):
     
     l = line.length()
     
-    d_m = random_uniform_int() * (l / 200)
+    d_m = random_uniform_int() * (l / 200) * bowing
     point_m = line.point_orthogonal(0.5, d_m)
     
     # Calculating a position that is +/- 10% away from the point at 75% of l
@@ -73,8 +73,6 @@ def displace_point(point, r, method = "circle"):
     
     :param point: Tuple of x and y coordinates.
     """
-    
-    random.seed(r * seed * seed_loop)
     
     coords_new = None
     
@@ -99,6 +97,32 @@ def displace_point(point, r, method = "circle"):
         coords_new = (x,y)
     
     return coords_new   
+    
+def displace_line(line, r):
+    """
+    Displaces the two end points of a line. If the specified radius is
+    larger than the line length, the points are displaced by half of the
+    original line length.
+    """
+    
+    line = LineSimple(line)
+    
+    a = line.coords[0]
+    b = line.coords[1]
+    
+    length = line.length()
+    
+    if (length <= r):
+        r =  length/2               
+    
+    random.seed(length + seed_loop)
+    
+    point1 = displace_point(a, r, method = "circle")
+    point2 = displace_point(b, r, method = "circle")
+    
+    line_new = [point1, point2]
+    
+    return line_new   
     
 def random_points_on_line(line, n = 1, method = "equal"):
     """
@@ -275,7 +299,7 @@ def jitter_line_bezier(line):
     
     line = LineSimple(line)
     
-    random.seed(line.length() * seed * seed_loop)
+    random.seed(1)
     
     curve = []
     curve.append(line.coords[0])
@@ -375,7 +399,7 @@ def random_controlpoints(line, d, method = "orthogonal"):
             
     line_length_half = line.length()/2
     
-    random.seed(line.length() * seed * seed_loop)
+    random.seed(1)
 
     cp1 = None
     cp2 = None

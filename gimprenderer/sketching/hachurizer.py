@@ -4,6 +4,8 @@ Created on Apr 28, 2015
 @author: mucx
 '''
 
+from __future__ import division
+
 from shapely.geometry import LineString
 from shapely.geometry import MultiLineString
 from shapely.geometry import Polygon

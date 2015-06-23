@@ -48,7 +48,7 @@ def sketch_polygon_hachure(path):
     
     if (hachures is not None):
     
-        hachures_handy = sketch.handy_hachures(hachures, 2.0) 
+        hachures_handy = sketch.handy_hachures(hachures, 3.0) 
         
         paths_svg = []         
         for hachure in hachures_handy:
