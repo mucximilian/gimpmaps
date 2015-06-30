@@ -11,7 +11,10 @@ class GimpImageManager():
     def __init__(self):
         pass
     
-    def insert_image_tiled(self, tile_size, resolution, tile, parent, pos):
+    def insert_image_tiled(self, resolution, tile, parent, pos):
+        
+        # TO DO: Get tile_size from image
+        tile_size = 256
         
         width = resolution[0]
         height = resolution[1]
@@ -29,13 +32,14 @@ class GimpImageManager():
             for j in range(0, tiles_in_y):
                 y = j * tile_size
                 
-                layer = pdb.gimp_file_load_layer(self.image, tile)
+                layer_image = pdb.gimp_file_load_layer(self.image, tile)
                 
-                pdb.gimp_image_insert_layer(self.image, layer, tiles, -1)
-                pdb.gimp_layer_set_offsets(layer, x , y)
+                pdb.gimp_image_insert_layer(self.image, layer_image, tiles, -1)
+                pdb.gimp_layer_set_offsets(layer_image, x , y)
                 
                 if layer_count > 0:
-                    pdb.gimp_image_merge_down(self.image, layer, CLIP_TO_IMAGE)
+                    pdb.gimp_image_merge_down(self.image, layer_image,
+                                              CLIP_TO_IMAGE)
                     
                 layer_count += 1
                 
@@ -46,7 +50,7 @@ class GimpImageManager():
         # PDB function merge layer group??
         # layer = pdb.gimp_layer_new_from_visible(self.image, self.image, "image")
         
-    def create_image(self, resolution):
+    def image_create(self, resolution):
         
         image = pdb.gimp_image_new(
            resolution[0],
@@ -54,6 +58,42 @@ class GimpImageManager():
            RGB
         )
         self.image = image
+        
+    def image_save(self, out_path, drawable, create_png, create_xcf):
+
+        if not create_png and not create_xcf:
+            print "Nothing to save..."
+        else:
+            if (create_png):
+                out = out_path + ".png"
+                pdb.gimp_file_save(
+                    self.image, 
+                    drawable,
+                    out,
+                    out
+                )
+            
+            if (create_xcf):            
+                out = out_path + ".xcf"
+                pdb.gimp_file_save(
+                    self.image, 
+                    drawable,
+                    out,
+                    out
+                )
+            
+    def image_close(self):
+        
+        pdb.gimp_image_delete(self.image)
+        pdb.gimp_context_pop()
+        
+    def create_gimp_image(self, resolution, out_path, create_png, create_xcf):
+        
+        self.image_create(resolution)        
+        
+        layer = self.create_layer(resolution, "layer", None, 0)
+        
+        self.image_save(out_path, layer, create_png, create_xcf)
         
     def create_layer(self, resolution, name, parent, pos):
         layer = pdb.gimp_layer_new(
@@ -81,6 +121,13 @@ class GimpImageManager():
         
         layer = pdb.gimp_file_load_layer(self.image, background_img)
         pdb.gimp_image_insert_layer(self.image, layer, parent, pos)
+        
+    def remove_layer(self, layer):
+        pdb.gimp_image_remove_layer(self.image, layer)
+        
+    def get_active_layer(self):
+        active_layer = pdb.gimp_image_get_active_layer(self.image)
+        return active_layer
         
     def reset_context(self):
         pdb.gimp_context_set_defaults()
@@ -279,7 +326,7 @@ class GimpImageManager():
         vectors = pdb.gimp_vectors_new_from_text_layer(self.image, text)    
         pdb.gimp_image_insert_vectors(self.image, vectors, None, 0)
         
-        self.select_vectors()
+        self.vectors_select()
         
         buffer_size = style_text.buffer_size
         buffer_color = style_text.buffer_color
@@ -293,10 +340,7 @@ class GimpImageManager():
             1
         )
         
-        self.set_foreground(buffer_color)        
-        pdb.gimp_edit_fill(text_layer_stroke, FOREGROUND_FILL)
-            
-        pdb.gimp_selection_clear(self.image)
+        self.fill_selection(text_layer_stroke, buffer_color)
         
     def draw_textbuffer_mask(self, group_polygon_text, text_points,
                              style_text, resolution):
@@ -325,7 +369,7 @@ class GimpImageManager():
                     
                 self.remove_layer(text_layer)
             
-        self.select_vectors()
+        self.vectors_select()
                 
         pdb.gimp_selection_grow(self.image, buffer_size)
         
@@ -358,7 +402,7 @@ class GimpImageManager():
         )
         
         self.set_context(line_style)    
-        self.draw_vectors(text_layer_stroke)        
+        self.vectors_draw(text_layer_stroke)        
     
     def get_text_extent(self, text_point, text_style):
         """
@@ -371,13 +415,12 @@ class GimpImageManager():
             text_style[0]
         )
         return extent
+    
+    def fill_selection(self, layer, color):
         
-    def draw_vectors(self, layer):
-        
-        for vector in self.image.vectors:
-                     
-            pdb.gimp_edit_stroke_vectors(layer, vector)                    
-            pdb.gimp_image_remove_vectors(self.image, vector)
+        self.set_foreground(color)        
+        pdb.gimp_edit_fill(layer, FOREGROUND_FILL)            
+        pdb.gimp_selection_clear(self.image)
             
     def simplify_selection(self):
         """
@@ -389,64 +432,28 @@ class GimpImageManager():
         pdb.gimp_selection_grow(self.image, 2)
         pdb.gimp_selection_shrink(self.image, 2)
         
-    def remove_layer(self, layer):
-        pdb.gimp_image_remove_layer(self.image, layer)
-        
-    def save_image(self, out_path, drawable, create_png, create_xcf):
-
-        if not create_png and not create_xcf:
-            print "Nothing to save..."
-        else:
-            if (create_png):
-                out = out_path + ".png"
-                pdb.gimp_file_save(
-                    self.image, 
-                    drawable,
-                    out,
-                    out
-                )
-            
-            if (create_xcf):            
-                out = out_path + ".xcf"
-                pdb.gimp_file_save(
-                    self.image, 
-                    drawable,
-                    out,
-                    out
-                )
-            
-    def close_image(self):
-        
-        pdb.gimp_image_delete(self.image)
-        pdb.gimp_context_pop()
-        
-    def create_gimp_image(self, resolution, out_path, create_png, create_xcf):
-        
-        self.create_image(resolution)        
-        
-        layer = self.create_layer(resolution, "layer", None, 0)
-        
-        self.save_image(out_path, layer, create_png, create_xcf)
-        
-    def get_active_layer(self):
-        active_layer = pdb.gimp_image_get_active_layer(self.image)
-        return active_layer
-        
-    def import_vectors(self, svg_path_str):
+    def vectors_import(self, svg_path_str):
         pdb.gimp_vectors_import_from_string(
             self.image, 
             svg_path_str, 
             -1, 1, 1,
         )
         
-    def select_vectors(self):
+    def vectors_select(self):
         
         for vector in self.image.vectors:
             
             pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)                        
             pdb.gimp_image_remove_vectors(self.image, vector)
             
-    def apply_vectors_as_mask(self, mask_image, group_polygon,
+    def vectors_draw(self, layer):
+        
+        for vector in self.image.vectors:
+                     
+            pdb.gimp_edit_stroke_vectors(layer, vector)                    
+            pdb.gimp_image_remove_vectors(self.image, vector)
+            
+    def vectors_as_mask(self, mask_image, group_polygon,
                               resolution, layer_name):
         
         # Creating a layer group for vector and raster layers
@@ -457,8 +464,8 @@ class GimpImageManager():
                                          vector_raster_group, 0) 
         
         # Adding background image to use the mask on
-        layer_mask_image = pdb.gimp_file_load_layer(self.image, mask_image)
-        pdb.gimp_image_insert_layer(self.image, layer_mask_image, 
+        layer_image = pdb.gimp_file_load_layer(self.image, mask_image)
+        pdb.gimp_image_insert_layer(self.image, layer_image, 
                                     vector_raster_group, 1)
         
         # TO DO: Check why duplicate for loop?
@@ -467,10 +474,10 @@ class GimpImageManager():
             pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
             
         # Selecting vectors in GIMP layer
-        self.select_vectors()
+        self.vectors_select()
         
         # Apply mask of collected vectors on background image
-        mask = pdb.gimp_layer_create_mask(layer_mask_image, 4)
-        pdb.gimp_layer_add_mask(layer_mask_image, mask)
+        mask = pdb.gimp_layer_create_mask(layer_image, 4)
+        pdb.gimp_layer_add_mask(layer_image, mask)
         
         pdb.gimp_selection_clear(self.image)

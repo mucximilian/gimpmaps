@@ -70,7 +70,7 @@ class RendererGimp(object):
                     line_sketched = sketchadapter.sketch_line_path(svg_commands)
 
                     # Adding vectors for stroking of lines, outlines/mask
-                    gimp.import_vectors(line_sketched.tostring())
+                    gimp.vectors_import(line_sketched.tostring())
             
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, 
@@ -81,7 +81,7 @@ class RendererGimp(object):
                 
                 logging.info("Drawing lines")
                 
-                gimp.draw_vectors(layer)
+                gimp.vectors_draw(layer)
                 
             self.conn_osm.close()
             
@@ -95,21 +95,21 @@ class RendererGimp(object):
         Drawing the geometry features as GIMP images and saving to PNG and/or XCF
         """
         
-        try:
+        self.conn_osm = self.connect_to_osm_db()
         
-            self.conn_osm = self.connect_to_osm_db()
+        # Creating layer groups for the feature type groups       
+        group_polygon = gimp.create_layer_group(parent, -1)
+
+        for style_polygon in polygon_styles:
             
-            # Creating layer groups for the feature type groups       
-            group_polygon = gimp.create_layer_group(parent, -1)
-    
-            for style_polygon in polygon_styles:
+            try:
                 
                 sql_selection = style_polygon.get_selection_tags()
                 line_style = style_polygon.get_line_style()
                 hachure_style = style_polygon.get_hachure_style()
                 
                 # TO DO: Import from style and set in hachurizer
-                spacing = 10
+                spacing = 30
                 angle = 30
                 
                 logging.info("Querying database")
@@ -130,27 +130,40 @@ class RendererGimp(object):
                   
                         svg_path = svgwrite.path.Path(svg_commands)
                         svg_path_str = svg_path.tostring()
-                        gimp.import_vectors(svg_path_str)
+                        gimp.vectors_import(svg_path_str)
                         
                     # Adding background image to use the mask on
                     # TO DO: Get img path from style file
                     mask_image = "img/" + style_polygon.get_image_data()[0]
-                    gimp.apply_vectors_as_mask(
+                    gimp.vectors_as_mask(
                         self, 
                         mask_image, group_polygon, resolution, sql_selection
                     )    
                 
                 else:
+                    
+                    group = gimp.create_layer_group(group_polygon, -1)
+                
+                    layer_fill = gimp.create_layer(resolution, 
+                            sql_selection + "_fill", group, -1)
                 
                     layer_hachure = gimp.create_layer(resolution, 
-                            sql_selection + "_hachure", group_polygon, -1)
+                            sql_selection + "_hachure", group, -1)
                     
                     layer_outline = gimp.create_layer(resolution, 
-                            sql_selection + "_outline", group_polygon, -1)
+                            sql_selection + "_outline", group, -1)
                 
-                    for svg_commands in svg_geoms:            
+                    for svg_commands in svg_geoms:                        
                         
-                        print "Processing hachure"                  
+                        logging.info("Processing fill")
+                        
+                        # Adding fill
+                        path = svgwrite.path.Path(svg_commands)
+                        gimp.vectors_import(path.tostring())
+                        gimp.vectors_select()                                    
+                        gimp.fill_selection(layer_fill, style_polygon.fill)
+            
+                        logging.info("Processing hachure")              
                         
                         # Getting and drawing the hachure lines
                         hachures = sketchadapter.sketch_polygon_hachure(
@@ -160,15 +173,17 @@ class RendererGimp(object):
                             for hachure in hachures:
                                  
                                 if (hachure is not None):   
+                                    
+                                    logging.info("Drawing hachure")
                                                      
-                                    gimp.import_vectors(hachure.tostring())
+                                    gimp.vectors_import(hachure.tostring())
                                     gimp.set_context(hachure_style)
-                                    gimp.draw_vectors(layer_hachure)
+                                    gimp.vectors_draw(layer_hachure)
                                      
                                 else:
                                     continue
                                 
-                        print "Processing outline"
+                        logging.info("Processing outline")
                                
                         # Getting and drawing the outline lines 
                         outlines = sketchadapter.sketch_polygon_outline(
@@ -179,18 +194,20 @@ class RendererGimp(object):
                             for outline in outlines:
                                  
                                 if (outline is not None):                            
-                                    gimp.import_vectors(outline.tostring())
+                                    
+                                    # Adding outline
+                                    gimp.vectors_import(outline.tostring())                                    
                                     gimp.set_context(line_style)
-                                    gimp.draw_vectors(layer_outline)
+                                    gimp.vectors_draw(layer_outline)
                                     
                                 else:
-                                    continue                     
-                
-            self.conn_osm.close()
+                                    continue                        
             
-        except TypeError:
-            print "No styles for this zoom level or type error"
-            logging.warn("No style for zoom level or type error!")
+            except TypeError:
+                print "No styles for this zoom level or type error"
+                logging.info("NOTE: No style for zoom level or type error!")
+                
+        self.conn_osm.close()
             
     def draw_text(
             self, gimp, parent, text_styles, bbox, resolution, 
@@ -241,7 +258,7 @@ class MapRendererGimp(MapRenderer, RendererGimp):
                
         # Creating a GIMP Manager instance and an image
         gimp = GimpImageManager()
-        gimp.create_image(resolution)
+        gimp.image_create(resolution)
         
         # Resetting GIMP image context
         gimp.reset_context()
@@ -251,7 +268,7 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         
         # Background image
         bg_image = self.get_bg_img(zoom) 
-        gimp.insert_image_tiled(256, resolution, bg_image, parent, -1)        
+        gimp.insert_image_tiled(resolution, bg_image, parent, -1)        
         
         # Drawing features
         feature_styles = self.get_feature_styles(zoom)
@@ -276,9 +293,9 @@ class MapRendererGimp(MapRenderer, RendererGimp):
 #         )  
                       
         # Save images as PNG and XCF
-        gimp.save_image(out_path, parent, True, self.create_xcf)
+        gimp.image_save(out_path, parent, True, self.create_xcf)
         
-        gimp.close_image()
+        gimp.image_close()
         
     
         
@@ -299,7 +316,7 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         
         # Creating a GIMP Manager instance and an image
         gimp = GimpImageManager()
-        gimp.create_image(resolution)
+        gimp.image_create(resolution)
         
         # Resetting GIMP image context
         gimp.reset_context()
@@ -322,6 +339,6 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         )      
                       
         # Save images as PNG and XCF
-        gimp.save_image(out_path, parent, True, self.create_xcf)
+        gimp.image_save(out_path, parent, True, self.create_xcf)
         
-        gimp.close_image()
+        gimp.image_close()

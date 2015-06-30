@@ -326,6 +326,7 @@ class Renderer(object):
                     polygon["stroke_hachure"]["color"],
                     polygon["stroke_hachure"]["dynamics"],
                     polygon["image"],
+                    polygon["fill_color"]
                 )
               
                 polygons.append(style_object)
@@ -449,16 +450,18 @@ class Renderer(object):
                     SELECT
                         *
                     FROM planet_osm_line 
-                    WHERE ST_Intersects ( 
-                        way, 
+                    WHERE
+                        way
+                        &&
                         gimpmaps_get_bbox(
                             %s, %s, %s, %s, 
                             %s, %s,
                             %s
-                        ) 
-                    )
+                        )
+                    AND 
+                    (""" + sql_selection + """)
                 ) t
-                WHERE (""" + sql_selection + ")"
+                """
                 
             # Get SVG tile geometry from database
             params = (

@@ -187,7 +187,7 @@ class Hachurizer(object):
         
         # Check if provided angle is valid
         if (self.angle > 180 or self.angle == 90 or self.angle == 0):
-            print "Angle '" + str(self.angle) + "' is too large or 90 degrees"                
+            print "Angle '" + str(self.angle) + "' is too large or 90 or 0 degrees"                
             return
         
         angle = 180 - self.angle # Necessary as SVG coordinates are flipped

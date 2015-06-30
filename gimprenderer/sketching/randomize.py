@@ -78,6 +78,13 @@ def displace_point(point, r, method = "circle"):
     
     if (method == "circle"):
         
+        x = random_uniform_int(-r, r) * r        
+        y = math.sqrt(r^2 - x ^2)
+        
+        coords_new = (x,y)
+    
+    elif (method == "polar"):
+        
         angle = random_uniform() * 360
         distance = random_uniform() * r
         

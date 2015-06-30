@@ -110,7 +110,7 @@ class StyleObjectPolygon(StyleObjectLine):
         geom_type, tags, z_order,
         brush, brush_size, color, dynamics,
         brush_hachure, brush_hachure_size, color_hachure, dynamics_hachure,
-        image):
+        image, fill_color):
             
         StyleObject.__init__(self, geom_type, tags, z_order)
         self.brush = brush
@@ -122,6 +122,7 @@ class StyleObjectPolygon(StyleObjectLine):
         self.color_hachure = color_hachure
         self.dynamics_hachure = dynamics_hachure
         self.image = image
+        self.fill = fill_color
         
     def string_style(self):
         """
@@ -138,7 +139,8 @@ class StyleObjectPolygon(StyleObjectLine):
             "Hachure style: " + self.brush_hachure + "(" + str(self.brush_hachure_size) + ")\n" +
             "Hachure color: " + self.string_color(self.color_hachure) + "\n" +
             "Hachure dynamics: " + self.dynamics_hachure + "\n" +
-            "Image: " + self.image + "\n"
+            "Image: " + str(self.image) + "\n" +
+            "Fill color: " + self.string_color(self.fill) + "\n"
         )
         return out
 
