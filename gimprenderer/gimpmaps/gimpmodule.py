@@ -11,10 +11,10 @@ class GimpImageManager():
     def __init__(self):
         pass
     
-    def image_insert_tiled(self, resolution, image, parent, pos):
+    def image_insert_tiled(self, resolution, image, parent,
+                           pos = -1, img_span = 1):
         
-        # TO DO: Get tile_size from image
-        tile_size = 256
+        tile_size = img_span * 256
         
         width = resolution[0]
         height = resolution[1]
@@ -44,13 +44,14 @@ class GimpImageManager():
                 layer_count += 1
                 
         # Set layer id as variable to access it again for label mask
-        self.background = self.get_active_layer()
+        layer = self.get_active_layer()
         
         # TO DO:
         # PDB function merge layer group??
         # layer = pdb.gimp_layer_new_from_visible(self.image, self.image, "image")
+        return layer
         
-    def image_insert(self, image, tile_part_x, tile_part_y, parent, pos):
+    def image_insert_tile(self, image, tile_part_x, tile_part_y, parent, pos):
         
         x_off = - tile_part_x * 256
         y_off = - tile_part_y * 256
@@ -387,8 +388,7 @@ class GimpImageManager():
                 
         pdb.gimp_selection_grow(self.image, buffer_size)
         
-        bg_copy = pdb.gimp_layer_copy(self.background, 1)
-        
+        bg_copy = pdb.gimp_layer_copy(self.background, 1)        
         pdb.gimp_image_insert_layer(self.image, bg_copy, group_label, -1)
                 
         mask = pdb.gimp_layer_create_mask(bg_copy, 4)
@@ -467,20 +467,12 @@ class GimpImageManager():
             pdb.gimp_edit_stroke_vectors(layer, vector)                    
             pdb.gimp_image_remove_vectors(self.image, vector)
             
-    def vectors_as_mask(self, mask_image, parent,
-                              resolution,
-                              tile_part_x = 0, tile_part_y = 0):
+    def vectors_as_mask(self, image_layer, parent, resolution):
         
-        # Adding background image to use the mask on
-        layer_image = self.image_insert(mask_image,
-                                        tile_part_x, tile_part_y, 
-                                        parent, 1)        
-            
-        # Selecting vectors in GIMP layer
         self.vectors_select()
         
-        # Apply mask of collected vectors on background image
-        mask = pdb.gimp_layer_create_mask(layer_image, 4)
-        pdb.gimp_layer_add_mask(layer_image, mask)
+        # Apply mask of collected vectors on image layer
+        mask = pdb.gimp_layer_create_mask(image_layer, 4)
+        pdb.gimp_layer_add_mask(image_layer, mask)
         
         pdb.gimp_selection_clear(self.image)

@@ -50,8 +50,7 @@ class RendererGimp(object):
                 
                 # Style settings
                 # TO DO: emulate brush dynamics?????
-                gimp.set_context(line_style)
-                
+                gimp.set_context(line_style)                
                             
                 logging.info("Querying database")
     
@@ -60,8 +59,7 @@ class RendererGimp(object):
                     bbox,
                     resolution, 
                     style_line
-                )
-                
+                )                
                             
                 logging.info("Processing lines")
                 
@@ -133,12 +131,12 @@ class RendererGimp(object):
                         gimp.vectors_import(svg_path_str)
                         
                     # Adding background image to use the mask on
-                    # TO DO: Get img path from style file
-                    mask_image = "img/" + style_polygon.get_image_data()[0]
-                    gimp.vectors_as_mask(
-                        self, 
-                        mask_image, group_polygon, resolution, sql_selection
-                    )    
+                    mask_image = self.style_path + "/img/" + style_polygon.get_image_data()[0]
+                    
+                    img_layer = self.image_mask(gimp, mask_image, group_polygon,
+                                                resolution)
+                    
+                    gimp.vectors_as_mask(img_layer, group_polygon, resolution)
                 
                 else:
                     
@@ -268,7 +266,8 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         
         # Background image
         bg_image = self.get_bg_img(zoom) 
-        gimp.image_insert_tiled(resolution, bg_image, parent, -1)        
+        background = gimp.image_insert_tiled(resolution, bg_image, parent)
+        gimp.background = background        
         
         # Drawing features
         feature_styles = self.get_feature_styles(zoom)
@@ -297,7 +296,12 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         
         gimp.image_close()
         
-    
+    def image_mask(self, gimp, image, parent, resolution):
+        
+        img_layer = gimp.image_insert_tiled(resolution, image, parent, -1, 
+                                self.img_tile_span)
+        
+        return img_layer
         
 class TileRendererGimp(TileRenderer, RendererGimp):
     """
@@ -326,7 +330,10 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         
         # Background image
         bg_image = styles["background_img"]
-        gimp.create_layer_image(parent, bg_image, -1)
+        
+        gimp.image_insert_tile(bg_image, 
+                            self.tile_span_count_x, self.tile_span_count_y,
+                            parent, -1)
         
         # Drawing polygon features
         self.draw_features_polygon(
@@ -342,3 +349,11 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         gimp.image_save(out_path, parent, True, self.create_xcf)
         
         gimp.image_close()
+        
+    def image_mask(self, gimp, image, parent, resolution):        
+        
+        img_mask = gimp.image_insert_tile(image, 
+                                          self.tile_span_count_x, 
+                                          self.tile_span_count_y,
+                                          parent, -1)
+        return img_mask
