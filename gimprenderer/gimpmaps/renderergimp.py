@@ -268,7 +268,7 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         
         # Background image
         bg_image = self.get_bg_img(zoom) 
-        gimp.insert_image_tiled(resolution, bg_image, parent, -1)        
+        gimp.image_insert_tiled(resolution, bg_image, parent, -1)        
         
         # Drawing features
         feature_styles = self.get_feature_styles(zoom)

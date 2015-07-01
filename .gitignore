@@ -6,6 +6,7 @@ gimprenderer/gimpmaps/results/
 gimprenderer/gimpmaps/styles/
 gimprenderer/test/
 gimprenderer/sketching/results/
+gimprenderer/*.png
 sql/old/
 *.pyc
 *.xcf

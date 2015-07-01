@@ -11,7 +11,7 @@ class GimpImageManager():
     def __init__(self):
         pass
     
-    def insert_image_tiled(self, resolution, tile, parent, pos):
+    def image_insert_tiled(self, resolution, image, parent, pos):
         
         # TO DO: Get tile_size from image
         tile_size = 256
@@ -32,7 +32,7 @@ class GimpImageManager():
             for j in range(0, tiles_in_y):
                 y = j * tile_size
                 
-                layer_image = pdb.gimp_file_load_layer(self.image, tile)
+                layer_image = pdb.gimp_file_load_layer(self.image, image)
                 
                 pdb.gimp_image_insert_layer(self.image, layer_image, tiles, -1)
                 pdb.gimp_layer_set_offsets(layer_image, x , y)
@@ -50,6 +50,20 @@ class GimpImageManager():
         # PDB function merge layer group??
         # layer = pdb.gimp_layer_new_from_visible(self.image, self.image, "image")
         
+    def image_insert(self, image, tile_part_x, tile_part_y, parent, pos):
+        
+        x_off = - tile_part_x * 256
+        y_off = - tile_part_y * 256
+        
+        layer_image = pdb.gimp_file_load_layer(self.image, image)
+                
+        pdb.gimp_image_insert_layer(self.image, layer_image, parent, -1)
+        pdb.gimp_layer_set_offsets(layer_image, x_off , y_off)
+        
+        pdb.gimp_layer_resize_to_image_size (layer_image)
+        
+        return layer_image
+        
     def image_create(self, resolution):
         
         image = pdb.gimp_image_new(
@@ -59,7 +73,7 @@ class GimpImageManager():
         )
         self.image = image
         
-    def image_save(self, out_path, drawable, create_png, create_xcf):
+    def image_save(self, out_path, drawable, create_png = True, create_xcf = False):
 
         if not create_png and not create_xcf:
             print "Nothing to save..."
@@ -453,25 +467,14 @@ class GimpImageManager():
             pdb.gimp_edit_stroke_vectors(layer, vector)                    
             pdb.gimp_image_remove_vectors(self.image, vector)
             
-    def vectors_as_mask(self, mask_image, group_polygon,
-                              resolution, layer_name):
-        
-        # Creating a layer group for vector and raster layers
-        vector_raster_group = self.create_layer_group(group_polygon, 0)
-        
-        # Creating vector layer
-        layer_vector = self.create_layer(resolution, layer_name,
-                                         vector_raster_group, 0) 
+    def vectors_as_mask(self, mask_image, parent,
+                              resolution,
+                              tile_part_x = 0, tile_part_y = 0):
         
         # Adding background image to use the mask on
-        layer_image = pdb.gimp_file_load_layer(self.image, mask_image)
-        pdb.gimp_image_insert_layer(self.image, layer_image, 
-                                    vector_raster_group, 1)
-        
-        # TO DO: Check why duplicate for loop?
-        # Drawing and selecting vectors in GIMP layer
-        for vector in self.image.vectors:
-            pdb.gimp_edit_stroke_vectors(layer_vector, vector)                   
+        layer_image = self.image_insert(mask_image,
+                                        tile_part_x, tile_part_y, 
+                                        parent, 1)        
             
         # Selecting vectors in GIMP layer
         self.vectors_select()
