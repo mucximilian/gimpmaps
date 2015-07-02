@@ -38,10 +38,13 @@ class StyleObject(object):
         return geometry_type_name
     
     def string_color(self, color):
-        out = (
-               ",".join(str(x) for x in color)
-        )
-        return out
+        if color is not None:
+            out = (
+                   ",".join(str(x) for x in color)
+            )
+            return out
+        else:
+            return None
 
 class StyleObjectLine(StyleObject):
     """
@@ -140,7 +143,7 @@ class StyleObjectPolygon(StyleObjectLine):
             "Hachure color: " + self.string_color(self.color_hachure) + "\n" +
             "Hachure dynamics: " + self.dynamics_hachure + "\n" +
             "Image: " + str(self.image) + "\n" +
-            "Fill color: " + self.string_color(self.fill) + "\n"
+            "Fill color: " + str(self.string_color(self.fill)) + "\n"
         )
         return out
 

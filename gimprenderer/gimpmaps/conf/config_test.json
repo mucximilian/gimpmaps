@@ -26,7 +26,8 @@
         	"type":"hachure",
         	"color_fill":true,
         	"outline":true
-        }
+        },
+        "img_tile_span": 1
     },
     "out_dir":null
 }

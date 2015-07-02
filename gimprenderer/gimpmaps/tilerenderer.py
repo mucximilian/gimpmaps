@@ -126,7 +126,7 @@ class TileRenderer(Renderer):
     
     def get_img_tile_span(self):
         
-        img_tile_span = self.config["img_tile_span"]
+        img_tile_span = self.config["style"]["img_tile_span"]
         
         self.img_tile_span = img_tile_span
     
@@ -207,7 +207,7 @@ class TileRenderer(Renderer):
     # Printing functions
     def print_tiling_data_info_x(self, x, tiling_data):
         indent = "  "
-        out = (indent + "row " 
+        out = (indent + "column " 
             + str(x + tiling_data[2][0] - tiling_data[1][0]) + "/" 
             + str(tiling_data[2][0]) + " (" + str(x) + ")")
         print out

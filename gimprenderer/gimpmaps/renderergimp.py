@@ -87,7 +87,7 @@ class RendererGimp(object):
             print "No styles for this zoom level or type error"
         
     def draw_features_polygon(
-            self, gimp, parent, polygon_styles, bbox, resolution, mask
+            self, gimp, parent, polygon_styles, bbox, resolution
         ):
         """
         Drawing the geometry features as GIMP images and saving to PNG and/or XCF
@@ -121,7 +121,7 @@ class RendererGimp(object):
                 
                 logging.info("Processing polygons")
                 
-                if mask:
+                if self.polygon_fill["type"] == "mask":
                     
                     # Adding vectors for stroking of lines, outlines/mask
                     for svg_commands in svg_geoms:
@@ -138,7 +138,7 @@ class RendererGimp(object):
                     
                     gimp.vectors_as_mask(img_layer, group_polygon, resolution)
                 
-                else:
+                elif self.polygon_fill["type"] == "hachure":
                     
                     group = gimp.create_layer_group(group_polygon, -1)
                 
@@ -275,7 +275,7 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         ## Polygon features
         polygon_styles = feature_styles["polygons"]
         self.draw_features_polygon(
-            gimp, parent, polygon_styles, bbox, resolution, False
+            gimp, parent, polygon_styles, bbox, resolution
         )
          
         ## Line features
@@ -332,12 +332,13 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         bg_image = styles["background_img"]
         
         gimp.image_insert_tile(bg_image, 
-                            self.tile_span_count_x, self.tile_span_count_y,
+                            self.img_tile_span_count_x,
+                            self.img_tile_span_count_y,
                             parent, -1)
         
         # Drawing polygon features
         self.draw_features_polygon(
-            gimp, parent, styles["features"]["polygons"], bbox, resolution, False
+            gimp, parent, styles["features"]["polygons"], bbox, resolution
         )  
         
         # Drawing line features
@@ -353,7 +354,7 @@ class TileRendererGimp(TileRenderer, RendererGimp):
     def image_mask(self, gimp, image, parent, resolution):        
         
         img_mask = gimp.image_insert_tile(image, 
-                                          self.tile_span_count_x, 
-                                          self.tile_span_count_y,
+                                          self.img_tile_span_count_x, 
+                                          self.img_tile_span_count_y,
                                           parent, -1)
         return img_mask

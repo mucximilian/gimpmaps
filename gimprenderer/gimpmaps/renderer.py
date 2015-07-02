@@ -74,7 +74,7 @@ class Renderer(object):
         self.read_file_config(self.config_file) # setting self.config   
         
         # Setting instance variables
-        self.set_style_path() # self.style_path
+        self.set_style() # self.style
         self.set_out_dir() # self.out_dir
         self.set_bbox() # self.bbox
         self.set_database() # self.database
@@ -97,7 +97,7 @@ class Renderer(object):
     def set_database(self):        
         self.database = self.config["osm_db"]
         
-    def set_style_path(self):
+    def set_style(self):
         """
         Setting style path relative (if not defindend in config) or absolute
         as instance variable.
@@ -109,7 +109,12 @@ class Renderer(object):
 
         style_path += self.config["style"]["style_name"]
         
-        self.style_path = style_path  
+        self.style_path = style_path
+        
+        self.style_name = self.config["style"]["style_name"]
+        self.polygon_fill = self.config["style"]["polygon_fill"]
+        self.polygon_fill = self.config["style"]["polygon_fill"]
+        
         
     ############################################################################
     

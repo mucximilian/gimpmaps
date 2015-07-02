@@ -139,7 +139,7 @@
             }
         ]
     }, 
-    "name": "Test Tiles", 
+    "name": "Test Tiles",
     "background": [
         {
             "zoom_min": 0, 
