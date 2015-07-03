@@ -54,7 +54,10 @@ class Drawing(object):
         # Additional space that is added to the image bounds
         img_buffer = 10.0
         
-        # Image dimensions are the bounding box of all geometries plus a buffer
+        """
+        Image dimensions are defined by the bounding box of all geometries 
+        plus a buffer
+        """
         if format_type == "fixed":
             
             try:

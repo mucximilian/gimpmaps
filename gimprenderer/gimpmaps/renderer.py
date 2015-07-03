@@ -109,12 +109,10 @@ class Renderer(object):
 
         style_path += self.config["style"]["style_name"]
         
-        self.style_path = style_path
-        
+        self.style_path = style_path        
         self.style_name = self.config["style"]["style_name"]
         self.polygon_fill = self.config["style"]["polygon_fill"]
-        self.polygon_fill = self.config["style"]["polygon_fill"]
-        
+        self.img_tile_span = self.config["style"]["img_tile_span"]   
         
     ############################################################################
     
@@ -426,7 +424,7 @@ class Renderer(object):
         return image
     
     ############################################################################
-    def get_svg_features(self, bbox, resolution, style_feature):
+    def get_svg_features(self, bbox, resolution, style_feature, outline = True):
         """
         Returning a list of SVG commands to draw a geometry feature
         """
@@ -478,7 +476,12 @@ class Renderer(object):
                 )
             
             curs_osm.execute(sql, params)               
-        elif (style_feature.geom_type == 3):   
+        elif (style_feature.geom_type == 3):
+            
+            brush_size = 0
+            if outline:
+                brush_size = line_style[1]
+                            
                         
             sql = """
             SELECT * FROM (
@@ -491,7 +494,8 @@ class Renderer(object):
                                 )
                             ), 
                             %s, %s, %s, %s, 
-                            %s, %s, %s
+                            %s, %s, %s,
+                            %s
                         ) AS svg
                     FROM 
                         planet_osm_polygon
@@ -514,13 +518,14 @@ class Renderer(object):
             params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
-                line_style[1],
+                brush_size, outline,
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
-                line_style[1], line_style[1], line_style[1]
-            )           
+                brush_size,
+                brush_size, brush_size
+            )
             
-            print params
+            logging.info(params)
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, params)

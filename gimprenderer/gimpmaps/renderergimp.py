@@ -52,7 +52,7 @@ class RendererGimp(object):
                 # TO DO: emulate brush dynamics?????
                 gimp.set_context(line_style)                
                             
-                logging.info("Querying database")
+                logging.info("            Querying database")
     
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
@@ -61,7 +61,7 @@ class RendererGimp(object):
                     style_line
                 )                
                             
-                logging.info("Processing lines")
+                logging.info("            Processing lines")
                 
                 for svg_commands in svg_geoms:
                     
@@ -77,7 +77,7 @@ class RendererGimp(object):
                 
                 # Drawing vectors into GIMP layer
                 
-                logging.info("Drawing lines")
+                logging.info("            Drawing lines")
                 
                 gimp.vectors_draw(layer)
                 
@@ -110,28 +110,34 @@ class RendererGimp(object):
                 spacing = 30
                 angle = 30
                 
-                logging.info("Querying database")
+                logging.info("            Querying database")
+                
+                outline = True
+                if self.polygon_fill["outline"] is None:
+                    outline = False
                 
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
                     bbox,
                     resolution, 
-                    style_polygon
+                    style_polygon,
+                    outline
                 )
                 
-                logging.info("Processing polygons")
+                logging.info("            Processing polygons")
                 
                 if self.polygon_fill["type"] == "mask":
                     
-                    # Adding vectors for stroking of lines, outlines/mask
+                    logging.info("            Processing mask")
+                    
+                    # Adding vectors for mask
                     for svg_commands in svg_geoms:
                   
                         svg_path = svgwrite.path.Path(svg_commands)
-                        svg_path_str = svg_path.tostring()
-                        gimp.vectors_import(svg_path_str)
+                        gimp.vectors_import(svg_path.tostring())
                         
                     # Adding background image to use the mask on
-                    mask_image = self.style_path + "/img/" + style_polygon.get_image_data()[0]
+                    mask_image = self.style_path + "/img/" + style_polygon.get_image_data()
                     
                     img_layer = self.image_mask(gimp, mask_image, group_polygon,
                                                 resolution)
@@ -153,15 +159,17 @@ class RendererGimp(object):
                 
                     for svg_commands in svg_geoms:                        
                         
-                        logging.info("Processing fill")
+                        logging.info("            Processing fill")
                         
-                        # Adding fill
-                        path = svgwrite.path.Path(svg_commands)
-                        gimp.vectors_import(path.tostring())
-                        gimp.vectors_select()                                    
-                        gimp.fill_selection(layer_fill, style_polygon.fill)
+                        # Adding color fill
+                        logging.info(style_polygon.fill)
+                        if style_polygon.fill is not None:
+                            path = svgwrite.path.Path(svg_commands)
+                            gimp.vectors_import(path.tostring())
+                            gimp.vectors_select()                                    
+                            gimp.fill_selection(layer_fill, style_polygon.fill)
             
-                        logging.info("Processing hachure")              
+                        logging.info("            Processing hachure")              
                         
                         # Getting and drawing the hachure lines
                         hachures = sketchadapter.sketch_polygon_hachure(
@@ -172,7 +180,7 @@ class RendererGimp(object):
                                  
                                 if (hachure is not None):   
                                     
-                                    logging.info("Drawing hachure")
+                                    logging.info("            Drawing hachure")
                                                      
                                     gimp.vectors_import(hachure.tostring())
                                     gimp.set_context(hachure_style)
@@ -181,25 +189,37 @@ class RendererGimp(object):
                                 else:
                                     continue
                                 
-                        logging.info("Processing outline")
-                               
-                        # Getting and drawing the outline lines 
-                        outlines = sketchadapter.sketch_polygon_outline(
-                                                                svg_commands)                
-                        
-                        if outlines is not None:
-                                     
-                            for outline in outlines:
+                        logging.info("            Processing outline")
+                      
+                if self.polygon_fill["outline"] == "sketchy":
+                         
+                    # Getting and drawing the outline lines 
+                    outlines = sketchadapter.sketch_polygon_outline(
+                                                            svg_commands)                
+                    
+                    if outlines is not None:
                                  
-                                if (outline is not None):                            
-                                    
-                                    # Adding outline
-                                    gimp.vectors_import(outline.tostring())                                    
-                                    gimp.set_context(line_style)
-                                    gimp.vectors_draw(layer_outline)
-                                    
-                                else:
-                                    continue                        
+                        for outline in outlines:
+                             
+                            if (outline is not None):                            
+                                
+                                # Adding outline
+                                gimp.vectors_import(outline.tostring())                                    
+                                gimp.set_context(line_style)
+                                gimp.vectors_draw(layer_outline)
+                                
+                            else:
+                                continue
+                            
+                elif self.polygon_fill["outline"] == "regular":
+                    
+                    for svg_commands in svg_geoms:
+                        # Adding outline
+                        svg_path = svgwrite.path.Path(svg_commands)
+                        gimp.vectors_import(svg_path.tostring())                                    
+                        gimp.set_context(line_style)
+                        gimp.vectors_draw(layer_outline)
+                             
             
             except TypeError:
                 print "No styles for this zoom level or type error"
@@ -353,8 +373,12 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         
     def image_mask(self, gimp, image, parent, resolution):        
         
-        img_mask = gimp.image_insert_tile(image, 
+        img_layer = gimp.image_insert_tile(image, 
                                           self.img_tile_span_count_x, 
                                           self.img_tile_span_count_y,
                                           parent, -1)
-        return img_mask
+        
+        logging.info("img_layer:")
+        logging.info(img_layer)
+        
+        return img_layer

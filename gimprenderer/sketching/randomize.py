@@ -24,14 +24,19 @@ def random_beta(a = 5, b = 5):
     x = random.betavariate(a, b)
     return x
 
+def random_beta_int(x1, x2, a = 5, b = 5):
+    
+    x = x1 + random.betavariate(a, b) * (x2 - x1)
+    return x 
+
 def random_uniform():
     
     x = random.random()
     return x
 
-def random_uniform_int(a = -1, b = 1):
+def random_uniform_int(x1 = -1, x2 = 1):
     
-    x = random.uniform(a, b)
+    x = random.uniform(x1, x2)
     return x
         
 def line_handy(line, r, bowing = 1.0, roughness = 1.0):
@@ -77,9 +82,12 @@ def displace_point(point, r, method = "circle"):
     coords_new = None
     
     if (method == "circle"):
+
+        x = random_uniform_int(-1, 1) * r 
+        y = math.sqrt(r**2 - x**2)
         
-        x = random_uniform_int(-r, r) * r        
-        y = math.sqrt(r^2 - x ^2)
+        x = point[0] + x
+        y = point[1] + random_uniform_int(-1, 1) * y
         
         coords_new = (x,y)
     
@@ -87,6 +95,16 @@ def displace_point(point, r, method = "circle"):
         
         angle = random_uniform() * 360
         distance = random_uniform() * r
+        
+        x = point[0] + (math.cos(math.radians(angle)) * distance)
+        y = point[1] + (math.sin(math.radians(angle)) * distance)
+        
+        coords_new = (x,y)
+        
+    elif (method == "polar_beta"):
+        
+        angle = random_uniform() * 360
+        distance = random_beta() * r
         
         x = point[0] + (math.cos(math.radians(angle)) * distance)
         y = point[1] + (math.sin(math.radians(angle)) * distance)

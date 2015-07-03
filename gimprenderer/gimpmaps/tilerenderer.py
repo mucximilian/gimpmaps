@@ -57,7 +57,6 @@ class TileRenderer(Renderer):
             feature_styles = self.get_feature_styles(zoom)
             text_styles = self.get_text_styles(zoom)
             bg_image = self.get_bg_img(zoom)
-            img_tile_span = self.get_img_tile_span() 
             
             styles = {
                 "features":feature_styles,
@@ -101,12 +100,12 @@ class TileRenderer(Renderer):
                         out_path
                     )
                     
-                    if(self.img_tile_span_count_y < img_tile_span):
+                    if(self.img_tile_span_count_y < self.img_tile_span):
                         self.img_tile_span_count_y += 1
                     else:
                         self.img_tile_span_count_y = 0
                     
-                if(self.img_tile_span_count_x < img_tile_span):
+                if(self.img_tile_span_count_x < self.img_tile_span):
                     self.img_tile_span_count_x += 1
                 else:
                     self.img_tile_span_count_x = 0                
@@ -123,12 +122,6 @@ class TileRenderer(Renderer):
         zoom_levels = range(zoom_min, zoom_max + 1)
         
         return zoom_levels
-    
-    def get_img_tile_span(self):
-        
-        img_tile_span = self.config["style"]["img_tile_span"]
-        
-        self.img_tile_span = img_tile_span
     
     def get_tile_of_point(self, point_ul, zoom):
         """
