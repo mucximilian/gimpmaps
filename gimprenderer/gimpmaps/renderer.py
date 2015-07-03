@@ -478,11 +478,12 @@ class Renderer(object):
             curs_osm.execute(sql, params)               
         elif (style_feature.geom_type == 3):
             
+            # Setting brush size to 0 if no outline is drawn
             brush_size = 0
             if outline:
-                brush_size = line_style[1]
-                            
-                        
+                brush_size = line_style[1]                            
+            
+            # TO DO: Buffer first, then union
             sql = """
             SELECT * FROM (
                 SELECT svg FROM (
@@ -524,8 +525,6 @@ class Renderer(object):
                 brush_size,
                 brush_size, brush_size
             )
-            
-            logging.info(params)
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, params)
