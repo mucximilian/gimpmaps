@@ -23,10 +23,7 @@ class TileRenderer(Renderer):
     origin_y = 2 * math.pi * 6378137 / 2.0
     
     tile_size = 256
-    
-    img_tile_span_count_x = 0
-    img_tile_span_count_y = 0
-    
+
     @abstractmethod
     def __init__(self, config_file):
         
@@ -100,15 +97,22 @@ class TileRenderer(Renderer):
                         out_path
                     )
                     
-                    if(self.img_tile_span_count_y < self.img_tile_span):
+                    if(self.img_tile_span_count_y < self.img_tile_span - 1):
                         self.img_tile_span_count_y += 1
                     else:
                         self.img_tile_span_count_y = 0
+                        logging.info("resetting img_tile_span_count_y")
                     
-                if(self.img_tile_span_count_x < self.img_tile_span):
+                if(self.img_tile_span_count_x < self.img_tile_span - 1):
                     self.img_tile_span_count_x += 1
+                    logging.info("incrementing img_tile_span_count_x")
+                    self.img_tile_span_count_y = 0
+                    logging.info("resetting img_tile_span_count_y")      
                 else:
-                    self.img_tile_span_count_x = 0                
+                    self.img_tile_span_count_x = 0        
+                    logging.info("resetting img_tile_span_count_x")   
+                    self.img_tile_span_count_y = 0
+                    logging.info("resetting img_tile_span_count_y")     
         
         self.finish()
         
@@ -226,6 +230,7 @@ class TileRenderer(Renderer):
     # Logging functions    
     def log_tiling_data_info_zoom(self, zoom, tiling_data):
         logging.info("zoom level: " + str(zoom))
+        logging.info("img_tile_span: " + str(self.img_tile_span))
         logging.info("tile ul: " + str(tiling_data[0]))
         logging.info("tile lr: " + str(tiling_data[1]))
         logging.info("tiles in x: " + str(tiling_data[2][0]))

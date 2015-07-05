@@ -371,14 +371,14 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         
         gimp.image_close()
         
-    def image_mask(self, gimp, image, parent, resolution):        
+    def image_mask(self, gimp, image, parent, resolution): 
+        
+        logging.info(self.img_tile_span_count_x)
+        logging.info(self.img_tile_span_count_y)
         
         img_layer = gimp.image_insert_tile(image, 
                                           self.img_tile_span_count_x, 
                                           self.img_tile_span_count_y,
                                           parent, -1)
-        
-        logging.info("img_layer:")
-        logging.info(img_layer)
         
         return img_layer

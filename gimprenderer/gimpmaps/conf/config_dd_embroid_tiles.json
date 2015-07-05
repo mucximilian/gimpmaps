@@ -1,0 +1,33 @@
+{
+    "osm_db":{
+        "host":"localhost",
+        "user":"gis",
+        "password":"gis",
+        "db_name":"osm_dd"
+    },
+    "map":{
+        "bounding_box":[
+            [1528600, 6631200],
+            [1530300, 6630000]
+            ],
+        "image":{
+        	"scale":1000
+        },
+        "tiles":{
+        	"zoom_level_min":17,
+        	"zoom_level_max":18
+        },
+        "create_xcf":false
+    },
+    "style":{
+    	"style_path":null,
+    	"style_name":"embroid",
+        "polygon_fill":{
+            "type":"mask",
+            "color_fill":false,
+            "outline":null
+        },
+        "img_tile_span": 2
+    },
+    "out_dir":null
+}

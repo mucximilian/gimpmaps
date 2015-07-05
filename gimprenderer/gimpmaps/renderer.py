@@ -490,8 +490,10 @@ class Renderer(object):
                     SELECT
                         gimpmaps_scale_svg_polygon(
                             ST_GeometryN(
-                                ST_Union(way),generate_series(
-                                    1,ST_NumGeometries(ST_Union(way))
+                                ST_Union(way),
+                                generate_series(
+                                    1,
+                                    ST_NumGeometries(ST_Union(way))
                                 )
                             ), 
                             %s, %s, %s, %s, 
@@ -528,6 +530,7 @@ class Renderer(object):
                 
             # Get SVG tile geometry from database
             curs_osm.execute(sql, params)
+            # logging.info(curs_osm.mogrify(sql, params))
             
         # Getting vectors and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
