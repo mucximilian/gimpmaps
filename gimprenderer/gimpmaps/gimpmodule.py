@@ -189,8 +189,8 @@ class GimpImageManager():
         
         effect = style_text.effect
         
-        print type(effect)
-        print type(style_text.font)
+        # print effect
+        # print style_text.font
         
         # Create text layer with 100 px buffer around original image
         # TO DO: Adding buffer as configuration parameter?
@@ -230,7 +230,8 @@ class GimpImageManager():
                     
                     text = self.draw_text(text_point, text_style, text_layer)
                     
-                    pdb.gimp_floating_sel_anchor(text)
+                    pdb.gimp_floating_sel_anchor(text)                    
+                    pdb.gimp_layer_resize_to_image_size(text_layer)
                     
                 elif(effect == "text_buffercolor"):
                     
@@ -238,6 +239,9 @@ class GimpImageManager():
                     
                     self.draw_textbuffer_color(text, resolution, text_point, 
                                                group_label, style_text)
+                    
+                    pdb.gimp_floating_sel_anchor(text)                    
+                    pdb.gimp_layer_resize_to_image_size(text_layer)
                     
                 elif(effect == "text_outline" or
                     effect == "text_outline_buffermask"):
@@ -247,7 +251,8 @@ class GimpImageManager():
                     self.draw_text_outline(text, resolution_new, group_label, 
                                            line_style, text_point[0])
                     
-                    pdb.gimp_floating_sel_anchor(text)
+                    pdb.gimp_floating_sel_anchor(text)                    
+                    pdb.gimp_layer_resize_to_image_size(text_layer)
                     
                 elif(effect == "outline_text"):
                     
@@ -258,7 +263,8 @@ class GimpImageManager():
                     
                     pdb.gimp_image_raise_item(self.image, text_layer)
                     
-                    pdb.gimp_floating_sel_anchor(text)
+                    pdb.gimp_floating_sel_anchor(text)                    
+                    pdb.gimp_layer_resize_to_image_size(text_layer)
                     
                 elif(effect == "text_outline_buffercolor"):
                     
@@ -270,7 +276,8 @@ class GimpImageManager():
                     self.draw_text_outline(text, resolution, group_label, 
                                            line_style, text_point[0])
                     
-                    pdb.gimp_floating_sel_anchor(text)
+                    pdb.gimp_floating_sel_anchor(text)                    
+                    pdb.gimp_layer_resize_to_image_size(text_layer)
                     
                 elif(effect == "outline" or
                      effect == "outline_buffermask"):
@@ -357,11 +364,13 @@ class GimpImageManager():
         
         self.fill_selection(text_layer_stroke, buffer_color)
         
+        pdb.gimp_selection_clear(self.image)
+        
     def draw_textbuffer_mask(self, group_polygon_text, text_points,
                              style_text, resolution):
         """
-        This function calculates a buffer around the text using the text 
-        outline vectors and uses it as a mask on the background image.
+        Calculating a buffer around the text using text outline vectors and 
+        apply it as a mask on the background image.
         """
         
         group_label = self.create_layer_group(group_polygon_text, -1)
@@ -416,7 +425,8 @@ class GimpImageManager():
         )
         
         self.set_context(line_style)    
-        self.vectors_draw(text_layer_stroke)        
+        self.vectors_draw(text_layer_stroke)
+        pdb.gimp_layer_resize_to_image_size(text_layer_stroke)   
     
     def get_text_extent(self, text_point, text_style):
         """

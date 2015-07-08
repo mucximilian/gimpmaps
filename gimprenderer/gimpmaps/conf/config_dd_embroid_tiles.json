@@ -20,6 +20,7 @@
         "create_xcf":false
     },
     "style":{
+        "text":false,
     	"style_path":null,
     	"style_name":"embroid",
         "polygon_fill":{

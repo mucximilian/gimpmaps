@@ -118,8 +118,8 @@ class Renderer(object):
     
     def read_file_config(self, config_file):
         """
-        Reading the provided config file and storing the dictionary with the
-        object.
+        Reading the provided config file and storing the configuration 
+        dictionary with the object.
         """
         
         filepath = ""
@@ -542,7 +542,7 @@ class Renderer(object):
             
             svg_geometries.append(row[0])
             
-        out = "      " + sql_selection + " (" + str(len(svg_geometries)) + ")"
+        out = "          " + sql_selection + " (" + str(len(svg_geometries)) + ")"
         logging.info(out)
         print(out)
         
@@ -557,8 +557,9 @@ class Renderer(object):
         # Query text in tile from database               
         curs_osm = self.conn_osm.cursor()
         
+        # TO DO: Check why DISTINCT is necessary (duplicate records in OSM DB)
         sql = """
-            SELECT 
+            SELECT DISTINCT
                 name,
                 gimpmaps_scale_text_polygon_point(
                     way, 
@@ -580,21 +581,23 @@ class Renderer(object):
             ) t
             WHERE (""" + sql_selection + ")"
             
-        # Get SVG tile geometry from database
-        curs_osm.execute(sql, (
+        params = (
             bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
             resolution[0], resolution[1],
             bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
             resolution[0], resolution[1],
             0 # Tile bbox buffer. TO DO: Determine by text length?
-            )
         )
+            
+        # Get SVG tile geometry from database
+        curs_osm.execute(sql, params)
+        # logging.info(curs_osm.mogrify(sql, params))
         
         # Getting text points and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
         for row in curs_osm.fetchall():
             
-            logging.info(row[0])
+            logging.info("                " + row[0])
             
             # Escape if no SVG geometry is provided               
             if (row[0] == None or row[0] ==''): 
@@ -602,7 +605,7 @@ class Renderer(object):
             
             text_points.append([row[0], [row[1][0], -row[1][1]]])
             
-        out = "      " + sql_selection + " (" + str(len(text_points)) + ")"
+        out = "          " + sql_selection + " (" + str(len(text_points)) + ")"
         logging.info(out)
         print(out)
         

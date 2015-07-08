@@ -198,6 +198,9 @@ class StyleObjectText(StyleObjectLine):
             "Brush dynamics: " + self.dynamics + "\n"
             "Font style: " + self.font + "(" + str(self.font_size) + ")\n" +
             "Font color: " + self.string_color(self.font_color) + "\n"
+            "Effect: " + self.effect + "\n"
+            "Buffer size: " + str(self.buffer_size) + "\n"
+            "Buffer color: " + self.string_color(self.buffer_color) + "\n"
         )
         return out
     

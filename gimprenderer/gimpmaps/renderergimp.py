@@ -52,7 +52,7 @@ class RendererGimp(object):
                 # TO DO: emulate brush dynamics?????
                 gimp.set_context(line_style)                
                             
-                logging.info("            Querying database")
+                logging.info("      Querying database")
     
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
@@ -61,7 +61,7 @@ class RendererGimp(object):
                     style_line
                 )                
                             
-                logging.info("            Processing lines")
+                logging.info("      Processing lines")
                 
                 for svg_commands in svg_geoms:
                     
@@ -77,11 +77,13 @@ class RendererGimp(object):
                 
                 # Drawing vectors into GIMP layer
                 
-                logging.info("            Drawing lines")
+                logging.info("      Drawing lines")
                 
                 gimp.vectors_draw(layer)
                 
             self.conn_osm.close()
+            
+            logging.info("\n")
             
         except TypeError:
             print "No styles for this zoom level or type error"
@@ -110,7 +112,7 @@ class RendererGimp(object):
                 spacing = 30
                 angle = 30
                 
-                logging.info("            Querying database")
+                logging.info("      Querying database")
                 
                 outline = True
                 if self.polygon_fill["outline"] is None:
@@ -124,11 +126,11 @@ class RendererGimp(object):
                     outline
                 )
                 
-                logging.info("            Processing polygons")
+                logging.info("      Processing polygons")
                 
                 if self.polygon_fill["type"] == "mask":
                     
-                    logging.info("            Processing mask")
+                    logging.info("      Processing mask")
                     
                     # Adding vectors for mask
                     for svg_commands in svg_geoms:
@@ -159,7 +161,7 @@ class RendererGimp(object):
                 
                     for svg_commands in svg_geoms:                        
                         
-                        logging.info("            Processing fill")
+                        logging.info("      Processing fill")
                         
                         # Adding color fill
                         logging.info(style_polygon.fill)
@@ -169,7 +171,7 @@ class RendererGimp(object):
                             gimp.vectors_select()                                    
                             gimp.fill_selection(layer_fill, style_polygon.fill)
             
-                        logging.info("            Processing hachure")              
+                        logging.info("      Processing hachure")              
                         
                         # Getting and drawing the hachure lines
                         hachures = sketchadapter.sketch_polygon_hachure(
@@ -180,7 +182,7 @@ class RendererGimp(object):
                                  
                                 if (hachure is not None):   
                                     
-                                    logging.info("            Drawing hachure")
+                                    logging.info("      Drawing hachure")
                                                      
                                     gimp.vectors_import(hachure.tostring())
                                     gimp.set_context(hachure_style)
@@ -189,7 +191,7 @@ class RendererGimp(object):
                                 else:
                                     continue
                                 
-                        logging.info("            Processing outline")
+                        logging.info("      Processing outline")
                       
                 if self.polygon_fill["outline"] == "sketchy":
                          
@@ -219,7 +221,8 @@ class RendererGimp(object):
                         gimp.vectors_import(svg_path.tostring())                                    
                         gimp.set_context(line_style)
                         gimp.vectors_draw(layer_outline)
-                             
+                        
+                logging.info("\n")                             
             
             except TypeError:
                 print "No styles for this zoom level or type error"
@@ -240,18 +243,23 @@ class RendererGimp(object):
             group_polygon_text = gimp.create_layer_group(parent, -1)
             
             for style_text in text_styles:             
-                            
+                        
+                logging.info("      Querying database")
+                
                 # Import labels and coordinates from database
                 text_points = self.get_text(
                     bbox,
                     resolution, 
                     style_text
-                )         
-                        
+                )
+                
+                logging.info("      Drawing label")
                 gimp.draw_labels(
                     group_polygon_text, text_points, style_text,
                     resolution
                 )
+                
+                logging.info("\n")
             
         except TypeError:
             print "No styles for this zoom level or type error"
@@ -305,11 +313,13 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         )
        
         # Drawing the text
-#         text_styles = self.get_text_styles(zoom)
-#         polygon_text_styles = text_styles["polygons"]
-#         self.draw_text(
-#             gimp, parent, polygon_text_styles, bbox, resolution, True, False
-#         )  
+        if self.config["style"]["text"]:
+            
+            text_styles = self.get_text_styles(zoom)
+            polygon_text_styles = text_styles["polygons"]
+            self.draw_text(
+                gimp, parent, polygon_text_styles, bbox, resolution, True, False
+            )  
                       
         # Save images as PNG and XCF
         gimp.image_save(out_path, parent, True, self.create_xcf)
