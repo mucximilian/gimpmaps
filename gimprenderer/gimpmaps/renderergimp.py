@@ -295,18 +295,23 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         # Background image
         bg_image = self.get_bg_img(zoom) 
         background = gimp.image_insert_tiled(resolution, bg_image, parent)
-        gimp.background = background        
+        gimp.background = background
+        
+        logging.info("Inserting background")
+        logging.info(bg_image)    
         
         # Drawing features
         feature_styles = self.get_feature_styles(zoom)
          
         ## Polygon features
+        logging.info("Inserting polygons")
         polygon_styles = feature_styles["polygons"]
         self.draw_features_polygon(
             gimp, parent, polygon_styles, bbox, resolution
         )
          
         ## Line features
+        logging.info("Inserting lines")
         line_styles = feature_styles["lines"]
         self.draw_features_line(
             gimp, parent, line_styles, bbox, resolution

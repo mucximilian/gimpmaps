@@ -40,14 +40,16 @@ class Renderer(object):
         Setting the instance variables and defining logfile and the result
         directory.
         """
+    
+        print "################################################################"
+        print "Starting GIMP map processing"
         
         self.set_filepath() # setting self.filepath        
         
         self.set_from_config()
         
         self.t_start = datetime.datetime.now()
-        self.t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-        
+        self.t_form = datetime.datetime.now().strftime('%Y%m%d_%H%M')        
         
         # Checking and setting the output directory for the image and log file
         self.out_dir += self.type + "_" + self.t_form + "/"
@@ -56,6 +58,7 @@ class Renderer(object):
         self.start_logging(self.t_start, self.t_form, self.out_dir + self.type)           
 
         # Copying the HTML file to view the tiles in the browser for GIMP tiles
+        # TO DO: Set center, bounds and zoom level in HTML file 
         if(self.type == "tiles_gimp"):           
             os.system (
                 "cp %s %s" % (
@@ -84,9 +87,12 @@ class Renderer(object):
         out_dir = self.config["out_dir"]
         
         if (out_dir is None):        
-            self.out_dir = self.filepath + "/results/"     
+            self.out_dir = self.filepath + "/../../results/gimprenderer/"     
         else:
-            self.out_dir = out_dir
+            if out_dir.endswith("/"):
+                self.out_dir = out_dir
+            else:
+                self.out_dir = out_dir + "/"            
         
     def set_bbox(self):        
         self.bbox = self.config["map"]["bounding_box"]
@@ -124,7 +130,7 @@ class Renderer(object):
         
         filepath = ""
         
-        print self.filepath
+        print "Filepath = " + self.filepath
         
         if (config_file.startswith("/")):
             filepath = config_file
@@ -146,6 +152,7 @@ class Renderer(object):
         return json_style
     
     def set_filepath(self):
+        
         filepath = os.path.dirname(
             os.path.abspath(
                 inspect.getfile(
@@ -614,6 +621,8 @@ class Renderer(object):
     ############################################################################
     # Logging functions
     def start_logging(self, t_start, t_form, log_dir):
+        
+        print "Start logging..."
         
         # logging setup
         logging.basicConfig(
