@@ -2,12 +2,10 @@ gimprenderer/.settings
 gimprenderer/.project
 gimprenderer/.pydevproject
 gimprenderer/gimpmaps/log/
-gimprenderer/gimpmaps/results/
 gimprenderer/gimpmaps/styles/
 gimprenderer/test/
-gimprenderer/sketching/results/
-gimprenderer/*.png
+results/
+examples/
+scripts/
 sql/old/
 *.pyc
-*.xcf
-*.log
