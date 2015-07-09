@@ -5,7 +5,6 @@ gimprenderer/gimpmaps/log/
 gimprenderer/gimpmaps/styles/
 gimprenderer/test/
 results/
-examples/
 scripts/
 sql/old/
 *.pyc
