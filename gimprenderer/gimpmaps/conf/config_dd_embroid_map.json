@@ -21,6 +21,7 @@
     },
     "style":{
     	"text":true,
+        "sketchy":false,
     	"style_path":null,
     	"style_name":"embroid",
         "polygon_fill":{
@@ -28,7 +29,7 @@
             "color_fill":false,
             "outline":null
         },
-        "img_tile_span": 2
+        "img_tile_span":2
     },
-    "out_dir":"/home/mucx/Desktop"
+    "out_dir":"null
 }

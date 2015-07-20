@@ -20,21 +20,33 @@ def reset_seed_loop():
     return
 
 def random_beta(a = 5, b = 5):
+    """
+    Computes beta distributed value between 0 and 1 with given alpha and beta
+    """ 
     
     x = random.betavariate(a, b)
     return x
 
-def random_beta_int(x1, x2, a = 5, b = 5):
+def random_beta_int(x1 = -1, x2 = 1, a = 5, b = 5):
+    """
+    Computes beta distributed value between x1 and x2 with given alpha and beta
+    """ 
     
     x = x1 + random.betavariate(a, b) * (x2 - x1)
     return x 
 
 def random_uniform():
+    """
+    Computes uniform distributed value between 0 and 1
+    """ 
     
     x = random.random()
     return x
 
 def random_uniform_int(x1 = -1, x2 = 1):
+    """
+    Computes uniform distributed value between x1 and x2
+    """ 
     
     x = random.uniform(x1, x2)
     return x
@@ -71,7 +83,7 @@ def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     
     return line_handy
 
-def displace_point(point, r, method = "circle"):
+def displace_point(point, r, method = "polar"):
     """
     Displaces a point, r defines the radius within which the point 
     coordinates are randomly perturbed (with a uniform random deviate).
@@ -79,47 +91,75 @@ def displace_point(point, r, method = "circle"):
     :param point: Tuple of x and y coordinates.
     """
     
+    def square(d_x, d_y):
+        
+        x = d_x + point[0]
+        y = d_y + point[1]
+        
+        return (x,y)
+    
+    def circle(rand_x, rand_y):
+        
+        delta_x = rand_x * r 
+        delta_y = math.sqrt(r**2 - delta_x**2)
+        
+        x = point[0] + delta_x
+        y = point[1] + rand_y * delta_y
+        
+        return (x,y)
+    
+    def polar(angle, distance):
+        
+        x = point[0] + (math.cos(math.radians(angle)) * distance)
+        y = point[1] + (math.sin(math.radians(angle)) * distance)
+        
+        return (x,y)
+    
+    #################################################
+    
     coords_new = None
     
-    if (method == "circle"):
+    if(method == "square"):
+        
+        d_x = random_uniform_int(-r, r)
+        d_y = random_uniform_int(-r, r)
+        
+        coords_new = square(d_x, d_y)
+        
+    if(method == "square_beta"):
+        
+        d_x = random_beta_int(-r, r)
+        d_y = random_beta_int(-r, r)
+        
+        coords_new = square(d_x, d_y)
+    
+    elif (method == "circle"):
 
-        x = random_uniform_int(-1, 1) * r 
-        y = math.sqrt(r**2 - x**2)
+        rand_x = random_uniform_int()
+        rand_y = random_uniform_int()
         
-        x = point[0] + x
-        y = point[1] + random_uniform_int(-1, 1) * y
+        coords_new = circle(rand_x, rand_y)
         
-        coords_new = (x,y)
+    elif (method == "circle_beta"):
+
+        rand_x = random_beta_int()
+        rand_y = random_beta_int()
+        
+        coords_new = circle(rand_x, rand_y)
     
     elif (method == "polar"):
         
         angle = random_uniform() * 360
         distance = random_uniform() * r
         
-        x = point[0] + (math.cos(math.radians(angle)) * distance)
-        y = point[1] + (math.sin(math.radians(angle)) * distance)
-        
-        coords_new = (x,y)
+        coords_new = polar(angle, distance)
         
     elif (method == "polar_beta"):
         
         angle = random_uniform() * 360
         distance = random_beta() * r
         
-        x = point[0] + (math.cos(math.radians(angle)) * distance)
-        y = point[1] + (math.sin(math.radians(angle)) * distance)
-        
-        coords_new = (x,y)
-        
-    elif(method == "square"):
-        
-        d_x = random_uniform_int(-r, r)
-        d_y = random_uniform_int(-r, r)
-        
-        x = d_x + point[0]
-        y = d_y + point[1]
-        
-        coords_new = (x,y)
+        coords_new = polar(angle, distance)
     
     return coords_new   
     
@@ -151,8 +191,8 @@ def displace_line(line, r):
     
 def random_points_on_line(line, n = 1, method = "equal"):
     """
-    Computes a specified number of points on a line between two points 
-    using the selected method. Returns the computed points in an array
+    Computes positions of a specified number of points on a line between two 
+    points using the selected method. Returns the computed points in an array
     which can be added to the line then.
     
     :param line: Tuple of two coordinate pairs determining the line points.
@@ -221,8 +261,9 @@ def random_points_on_line(line, n = 1, method = "equal"):
             for i in range(0, len(segment_points) - 1): 
                                   
                 points_on_line.append(
-                    random_point_on_line(
-                        (segment_points[i], segment_points[i + 1]), method
+                    random_points_on_line(
+                        (segment_points[i], segment_points[i + 1]),
+                        method = method
                     )
                 )
         
@@ -233,11 +274,13 @@ def random_points_on_line(line, n = 1, method = "equal"):
     
 def random_point_on_line(line, method = "beta"):
     """
-    Computes the point that is on the straight line between P0 and P1 and
-    the distance d away from P0 and P1.
+    Computes a random point on the straight line between P0 and P1 using the
+    specified random distribution method.
     
-    :param line: Tuple of two coordinate pairs determining the line points.
-    :return:
+    :param line: A tuple of two coordinate pairs determining the line points.
+    :return: point
+    
+    TO DO: Check if function can be removed
     """ 
     
     line = LineSimple(line)
@@ -283,7 +326,7 @@ def jitter_linestring(line, d = 10.0, method = "simple"):
             
             line_jittered.append(point)             
         
-    elif method == "bezier":
+    elif method == "bezier" or method == "displace_bezier":
     
         controlpoints = []
         
@@ -291,22 +334,15 @@ def jitter_linestring(line, d = 10.0, method = "simple"):
             
             a = line.coords[i]
             b = line.coords[i + 1]
-                        
-            controlpoints += random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    elif method == "displace_bezier":
-        # TO DO: Add displacing
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
             
-            a = line.coords[i]
-            b = line.coords[i + 1]
-                        
-            controlpoints += random_controlpoints((a, b), d)
+            if method == "displace_bezier":                
+                
+                point_displaced = displace_point([a,b], d/2)                        
+                controlpoints += random_controlpoints(point_displaced, d)
+                
+            else:
+                
+                controlpoints += random_controlpoints((a, b), d)
         
         line_jittered = line.get_curve(controlpoints)
         
@@ -418,7 +454,7 @@ def random_controlpoints(line, d, method = "orthogonal"):
     # TO DO:
     # - Avoid overlapping controlpoints
     # - Control points alternating on opposite sides of the line 
-    # --> smoother line
+    #     --> smoother line
     
     line = LineSimple(line)
             

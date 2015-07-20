@@ -11,8 +11,7 @@
             [1310000, 6080000]
             ],
         "image":{
-        	"scale":10000,
-        	"create_xcf":true
+        	"scale":10000
         },
         "tiles":{
         	"zoom_level_min":12,
@@ -21,9 +20,16 @@
         "create_xcf":true
     },
     "style":{
+    	"text":false,
+    	"sketchy":false,
     	"style_path":null,
     	"style_name":"chalk",
-        "polygon_fill":"hachure"
+        "polygon_fill":{
+            "type":"hachure",
+            "color_fill":false,
+            "outline":null
+        },
+        "img_tile_span":2
     },
     "out_dir":null
 }

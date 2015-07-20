@@ -8,7 +8,6 @@ from __future__ import division
 import math
 
 import randomize
-import handyrenderer
 from geometry import LineSimple, LineString, Polygon
 
 seed = 1
