@@ -261,7 +261,7 @@ def random_points_on_line(line, n = 1, method = "equal"):
             for i in range(0, len(segment_points) - 1): 
                                   
                 points_on_line.append(
-                    random_points_on_line(
+                    random_point_on_line(
                         (segment_points[i], segment_points[i + 1]),
                         method = method
                     )
@@ -279,8 +279,6 @@ def random_point_on_line(line, method = "beta"):
     
     :param line: A tuple of two coordinate pairs determining the line points.
     :return: point
-    
-    TO DO: Check if function can be removed
     """ 
     
     line = LineSimple(line)
@@ -472,25 +470,24 @@ def random_controlpoints(line, d, method = "orthogonal"):
         
         m = line.point_at_line_pos(pos)
         
-        line1 = LineSimple([line.coords[0], m])
-        
+        line1 = LineSimple([line.coords[0], m])        
         line2 = LineSimple([line.coords[1], m])
         
 #         d1 = random_uniform_int() * d
 #         d2 = random_uniform_int() * d
         
-        d1 = ((random_beta(5,5) * 2) - 1)* d
-        d2 = ((random_beta(5,5) * 2) - 1)* d
+        d1 = random_beta_int() * d
+        d2 = random_beta_int() * d
         
-        cp1 = line1.point_orthogonal(random_beta(5,5), d1)
-        cp2 = line2.point_orthogonal(random_beta(5,5), d2)
+        cp1 = line1.point_orthogonal(random_beta(), d1)
+        cp2 = line2.point_orthogonal(random_beta(), d2)
         
 #         cp1 = line1.point_orthogonal(random_uniform(), d1)
 #         cp2 = line2.point_orthogonal(random_uniform(), d2)
     
     elif method == "circular":        
         # Displacing point circular around the center of the line
-        # A----(-*-)----B
+        # A(-----+-----)B
         if d >= line_length_half:           
             point = line.point_shifted(line_length_half)
             cp1 = displace_point(point, line_length_half)
@@ -499,10 +496,11 @@ def random_controlpoints(line, d, method = "orthogonal"):
         # Displacing the point circular on a random position that is on a line
         # which is an inside segment of the original line but the distance d 
         # away from both endpoints.
-        # A-(-----)-B
+        # A--(---+---)--B
         else:
-            point1 = line.point_shifted(d)
-            
+            # Getting the start and end points of the segment which are d away
+            # from the original points
+            point1 = line.point_shifted(d)    
             line_reverse = LineSimple(line.coords[::-1])       
             point2 = line_reverse.point_shifted(d)
             

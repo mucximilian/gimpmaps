@@ -474,12 +474,12 @@ class Drawing(object):
         :param curve: The curve with computed Bezier control points
         """
         
-        m = curve.pop(0)
+        m = curve[0]
         
         svg = "M " + self.coord_string(m) + " C"
         
-        for p in curve:
-            svg += " " + self.coord_string(p)
+        for i in range(1, len(curve)):
+            svg += " " + self.coord_string(curve[i])
             
         return svg
     
@@ -490,13 +490,13 @@ class Drawing(object):
         
         :param line: Array of line point coordinates
         """
-        
-        m = line.pop(0)      
+
+        m = line[0]
           
         svg = "M " + self.coord_string(m) + " L"
         
-        for p in line:
-            svg += " " + self.coord_string(p)
+        for i in range(1, len(line)):
+            svg += " " + self.coord_string(line[i])
             
         return svg
     
