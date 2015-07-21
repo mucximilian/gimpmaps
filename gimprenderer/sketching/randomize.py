@@ -19,7 +19,7 @@ def reset_seed_loop():
     seed_loop = 1
     return
 
-def random_beta(a = 5, b = 5):
+def random_beta(a = 2, b = 2):
     """
     Computes beta distributed value between 0 and 1 with given alpha and beta
     """ 
@@ -50,6 +50,18 @@ def random_uniform_int(x1 = -1, x2 = 1):
     
     x = random.uniform(x1, x2)
     return x
+
+def random_sign():
+    """
+    Computes a value that is either -1 or 1
+    """
+    
+    x = (random.random() * 2) - 1
+
+    if x >= 0:
+        return 1
+    else:
+        return -1
         
 def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     """
@@ -83,7 +95,7 @@ def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     
     return line_handy
 
-def displace_point(point, r, method = "polar"):
+def displace_point(point, r, method = "polar_beta"):
     """
     Displaces a point, r defines the radius within which the point 
     coordinates are randomly perturbed (with a uniform random deviate).
@@ -457,8 +469,6 @@ def random_controlpoints(line, d, method = "orthogonal"):
     line = LineSimple(line)
             
     line_length_half = line.length()/2
-    
-    random.seed(1)
 
     cp1 = None
     cp2 = None
@@ -468,6 +478,7 @@ def random_controlpoints(line, d, method = "orthogonal"):
         # pos = random_uniform()
         pos = 0.5
         
+        # TO DO: not central but random position maybe?
         m = line.point_at_line_pos(pos)
         
         line1 = LineSimple([line.coords[0], m])        
@@ -476,8 +487,8 @@ def random_controlpoints(line, d, method = "orthogonal"):
 #         d1 = random_uniform_int() * d
 #         d2 = random_uniform_int() * d
         
-        d1 = random_beta_int() * d
-        d2 = random_beta_int() * d
+        d1 = random_sign() * random_beta() * d
+        d2 = random_sign() * random_beta() * d
         
         cp1 = line1.point_orthogonal(random_beta(), d1)
         cp2 = line2.point_orthogonal(random_beta(), d2)
@@ -485,7 +496,7 @@ def random_controlpoints(line, d, method = "orthogonal"):
 #         cp1 = line1.point_orthogonal(random_uniform(), d1)
 #         cp2 = line2.point_orthogonal(random_uniform(), d2)
     
-    elif method == "circular":        
+    elif method == "polar":        
         # Displacing point circular around the center of the line
         # A(-----+-----)B
         if d >= line_length_half:           
