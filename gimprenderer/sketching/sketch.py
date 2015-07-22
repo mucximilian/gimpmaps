@@ -19,7 +19,7 @@ def add_points_to_line(line, n = 1, method = "equal"):
     
     line_new = []
     
-    points_new = randomize.random_points_on_line(line, n, method)        
+    points_new = randomize.add_random_points_to_line(line, n, method)        
     
     line_new += [line[0]]
     line_new += points_new
@@ -48,7 +48,7 @@ def handy_hachures(hachures, d):
         
     return hachures_handy
 
-def jitter_line(line, d = 10.0, method = "displace"):
+def jitter_line(line, d = 10.0, method = "curve"):
     """
     Creates a jittered version of a Line (LineSimple or LineString) using 
     an absolute distortion value (in image units). Depending on the 
@@ -62,18 +62,21 @@ def jitter_line(line, d = 10.0, method = "displace"):
     
     :param line: List of coordinate pairs determining the line
     :param d: Jitter distortion of the line in absolute image units
-    :param method: Method used for jittering ("displace", "bezier" or
-    "displace_bezier")
+    :param method: Method used for jittering ("displace", "curve" or
+    "displace_curve")
     
+    TO DO: Adding displace_bezier method
     TO DO: Adding a relative_displacement d_rel?
     """
     
     line = LineString(line)
     
     line_points = []    
+    
+    # First step: Adding random points
     line_points.append(line.coords[0]) # Adding the first point to result   
     
-    # Iteration over all line segments  
+    # Iteration over all line segments to add random points
     for i in range(0, len(line.coords) - 1):
         
         a = line.coords[i]
@@ -98,7 +101,32 @@ def jitter_line(line, d = 10.0, method = "displace"):
                 
         line_points.append(line.coords[i + 1]) # Adding segment end point
     
-    line_jittered = randomize.jitter_linestring(line_points, d, method)
+    # Second step: Displacing points
+    if method == "displace" or method == "displace_curve":
+        line_points_displaced = []
+        
+        for point in line_points:
+            
+            point_displaced = randomize.displace_point(point, d)
+            line_points_displaced.append(point_displaced)
+            
+        line_points = line_points_displaced
+        
+    line = LineString(line_points)
+    
+    # Third step: Adding random control points
+    if method == "curve" or method == "displace_curve":
+        
+        controlpoints = []
+        
+        for i in range(0, len(line.coords) - 1):
+        
+            a = line.coords[i]
+            b = line.coords[i + 1]    
+                
+            controlpoints += randomize.random_controlpoints((a, b), d)
+        
+        line_jittered = line.get_curve(controlpoints)
     
     return line_jittered
 

@@ -201,7 +201,7 @@ def displace_line(line, r):
     
     return line_new   
     
-def random_points_on_line(line, n = 1, method = "equal"):
+def add_random_points_to_line(line, n = 1, method = "equal"):
     """
     Computes positions of a specified number of points on a line between two 
     points using the selected method. Returns the computed points in an array
@@ -258,7 +258,7 @@ def random_points_on_line(line, n = 1, method = "equal"):
             
             for i in range(0, n - 1):
                 
-                d_part = (length / (n + 1)) * (i + 1)
+                d_part = (length / n ) * (i + 1)
                 point = line.point_shifted(d_part)
                 segment_points.append(point)
                 
@@ -270,12 +270,12 @@ def random_points_on_line(line, n = 1, method = "equal"):
             else:
                 method = "beta"
                         
-            for i in range(0, len(segment_points) - 1): 
+            for i in range(0, len(segment_points) - 1):
                                   
                 points_on_line.append(
-                    random_point_on_line(
+                    add_random_point_to_line(
                         (segment_points[i], segment_points[i + 1]),
-                        method = method
+                        method
                     )
                 )
         
@@ -284,7 +284,7 @@ def random_points_on_line(line, n = 1, method = "equal"):
     
     return points_on_line
     
-def random_point_on_line(line, method = "beta"):
+def add_random_point_to_line(line, method = "beta"):
     """
     Computes a random point on the straight line between P0 and P1 using the
     specified random distribution method.
@@ -306,57 +306,6 @@ def random_point_on_line(line, method = "beta"):
     point = line.point_shifted(p)
     
     return point
-
-def jitter_linestring(line, d = 10.0, method = "simple"):
-    """
-    Creates a jittered version of a Line (LineSimple or LineString) using 
-    an absolute distortion value (in image units). The line points are 
-    distorted either using circular point displacement ("displace"), 
-    random Bezier control points ("bezier") or both techniques 
-    ("displace_bezier").
-    
-    The function 'jitter_line' calls this function after additional random 
-    points have been computed and added to the input geometry.
-    
-    :param line: List of coordinate pairs determining the line
-    :param d: Jitter distortion of the line in absolute image units
-    :param method: Method used for jittering ("displace", "bezier" or
-    "displace_bezier")
-    """
-    
-    line_jittered = []
-    
-    line = LineString(line)
-    
-    if method == "simple":
-        
-        for i in range(0, len(line.coords)):
-            
-            point = displace_point(line.coords[i], d, "circle")
-            
-            line_jittered.append(point)             
-        
-    elif method == "bezier" or method == "displace_bezier":
-    
-        controlpoints = []
-        
-        for i in range(0, len(line.coords) - 1):
-            
-            a = line.coords[i]
-            b = line.coords[i + 1]
-            
-            if method == "displace_bezier":                
-                
-                point_displaced = displace_point([a,b], d/2)                        
-                controlpoints += random_controlpoints(point_displaced, d)
-                
-            else:
-                
-                controlpoints += random_controlpoints((a, b), d)
-        
-        line_jittered = line.get_curve(controlpoints)
-        
-    return line_jittered
 
 def jitter_line_bezier(line):
     """
@@ -451,7 +400,7 @@ def jitter_line_handrawn(line, segments, wobble):
         
     return ' '.join(points);
 
-def random_controlpoints(line, d, method = "orthogonal"):
+def random_controlpoints(line, d, method = "polar"):
     """
     Computes a random point that is on the straight line between P0 and P1 
     and the minimum distance d away from P0 and P1. The distance is 
@@ -459,12 +408,13 @@ def random_controlpoints(line, d, method = "orthogonal"):
     
     :param line: Tuple of two coordinate pairs determining the line points
     P0 and P1.
+    
+    TO DO:
+    - Control points alternating on opposite sides of the line 
+        --> smoother line
     """
     
-    # TO DO:
-    # - Avoid overlapping controlpoints
-    # - Control points alternating on opposite sides of the line 
-    #     --> smoother line
+    # 
     
     line = LineSimple(line)
             
@@ -473,7 +423,7 @@ def random_controlpoints(line, d, method = "orthogonal"):
     cp1 = None
     cp2 = None
     
-    if method == "orthogonal":
+    if method == "orthogonal" or method == "orthogonal_beta":
         
         # pos = random_uniform()
         pos = 0.5
@@ -486,23 +436,39 @@ def random_controlpoints(line, d, method = "orthogonal"):
         
 #         d1 = random_uniform_int() * d
 #         d2 = random_uniform_int() * d
+
+        if method == "orthogonal":
         
-        d1 = random_sign() * random_beta() * d
-        d2 = random_sign() * random_beta() * d
-        
-        cp1 = line1.point_orthogonal(random_beta(), d1)
-        cp2 = line2.point_orthogonal(random_beta(), d2)
+            d1 = random_sign() * random_uniform() * d
+            d2 = random_sign() * random_uniform() * d
+            
+            cp1 = line1.point_orthogonal(random_uniform(), d1)
+            cp2 = line2.point_orthogonal(random_uniform(), d2)
+            
+        else:
+            
+            d1 = random_sign() * random_beta() * d
+            d2 = random_sign() * random_beta() * d
+            
+            cp1 = line1.point_orthogonal(random_beta(), d1)
+            cp2 = line2.point_orthogonal(random_beta(), d2)
         
 #         cp1 = line1.point_orthogonal(random_uniform(), d1)
 #         cp2 = line2.point_orthogonal(random_uniform(), d2)
     
-    elif method == "polar":        
+    elif method == "polar" or method == "polar_beta":        
         # Displacing point circular around the center of the line
         # A(-----+-----)B
         if d >= line_length_half:           
             point = line.point_shifted(line_length_half)
-            cp1 = displace_point(point, line_length_half)
-            cp2 = displace_point(point, line_length_half)
+            
+            if method == "polar":            
+                cp1 = displace_point(point, line_length_half, "polar")
+                cp2 = displace_point(point, line_length_half, "polar")
+                
+            else:                
+                cp1 = displace_point(point, line_length_half)
+                cp2 = displace_point(point, line_length_half)
         
         # Displacing the point circular on a random position that is on a line
         # which is an inside segment of the original line but the distance d 
@@ -515,9 +481,14 @@ def random_controlpoints(line, d, method = "orthogonal"):
             line_reverse = LineSimple(line.coords[::-1])       
             point2 = line_reverse.point_shifted(d)
             
-            point = random_point_on_line((point1, point2))
-            cp1 = displace_point(point, d)
-            cp2 = displace_point(point, d)
+            if method == "polar_beta":
+                point = add_random_point_to_line((point1, point2))
+                cp1 = displace_point(point, d)
+                cp2 = displace_point(point, d)
+            else:
+                point = add_random_point_to_line((point1, point2), "uniform")
+                cp1 = displace_point(point, d, "polar")
+                cp2 = displace_point(point, d, "polar")
             
         
     controlpoints = (cp1, cp2)
