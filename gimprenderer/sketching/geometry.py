@@ -446,7 +446,7 @@ class Polygon(object):
         
         self.linearrings = linearrings
         
-    def disjoin(self, angle_disjoin = 135.0):
+    def disjoin(self, angle_disjoin = 120.0):
         """
         Disjoins polygon linestrings into segments at vertices where the angle 
         between the lines from the vertex to the vertex behind and the vertex 
@@ -476,6 +476,7 @@ class Polygon(object):
             
             angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
         
+            """
             # Determine whether the edges are convex or concave
             v1 = LineSimple([p0, p1]).vector()
             v2 = LineSimple([p1, p2]).vector()
@@ -484,6 +485,9 @@ class Polygon(object):
             
             if det < 0:
                 angle = 360 - angle
+                
+            Great but useless...
+            """
         
             return angle
         
@@ -509,7 +513,7 @@ class Polygon(object):
                 angle = three_point_angle(points)
                 
                 # Continue segment
-                if (angle >= angle_disjoin):
+                if (angle > angle_disjoin):
                     segment.append(linearring[i])
                     
                 # Finish segment and create new one

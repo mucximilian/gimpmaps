@@ -19,7 +19,7 @@ def reset_seed_loop():
     seed_loop = 1
     return
 
-def random_beta(a = 2, b = 2):
+def random_beta(a = 5, b = 5):
     """
     Computes beta distributed value between 0 and 1 with given alpha and beta
     """ 
@@ -63,7 +63,7 @@ def random_sign():
     else:
         return -1
         
-def line_handy(line, r, bowing = 1.0, roughness = 1.0):
+def line_points_handy(line, d, bowing = 1.0, roughness = 1.0):
     """
     Does what the Handy renderer is supposed to do (according to paper).
     
@@ -75,11 +75,11 @@ def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     line = LineSimple(line)
     
     # Adjust r if 2 * r is larger than the line length
-    if line.length() < 4 *r:
-        r = line.length() / 4
+    if line.length() < 4 *d:
+        d = line.length() / 4
         
-    point_a = displace_point(line.coords[0], r)
-    point_b = displace_point(line.coords[1], r)
+    point_a = displace_point(line.coords[0], d * roughness)
+    point_b = displace_point(line.coords[1], d * roughness)
     
     l = line.length()
     
@@ -88,12 +88,12 @@ def line_handy(line, r, bowing = 1.0, roughness = 1.0):
     
     # Calculating a position that is +/- 10% away from the point at 75% of l
     pos = random_uniform_int(0.65, 0.85)
-    d_n = random_uniform_int() * r
+    d_n = random_uniform_int() * d
     point_n = line.point_orthogonal(pos, d_n)
     
-    line_handy = [point_a, point_m, point_n, point_b]
+    line_points_handy = [point_a, point_m, point_n, point_b]
     
-    return line_handy
+    return line_points_handy
 
 def displace_point(point, r, method = "polar_beta"):
     """
@@ -201,7 +201,7 @@ def displace_line(line, r):
     
     return line_new   
     
-def add_random_points_to_line(line, n = 1, method = "equal"):
+def add_random_points_to_line(line, n = 1, method = "equal_beta"):
     """
     Computes positions of a specified number of points on a line between two 
     points using the selected method. Returns the computed points in an array
@@ -237,8 +237,6 @@ def add_random_points_to_line(line, n = 1, method = "equal"):
     elif (method == "uniform" or
         method == "equal_uniform" or
         method == "equal_beta"):            
-    
-        random.seed(line.length() * seed * seed_loop)
     
         # - just random
         if method == "uniform":
@@ -400,7 +398,7 @@ def jitter_line_handrawn(line, segments, wobble):
         
     return ' '.join(points);
 
-def random_controlpoints(line, d, method = "polar"):
+def random_controlpoints(line, d, method = "polar_beta"):
     """
     Computes a random point that is on the straight line between P0 and P1 
     and the minimum distance d away from P0 and P1. The distance is 

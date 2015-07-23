@@ -12,7 +12,7 @@ from geometry import LineSimple, LineString, Polygon
 
 seed = 1
 
-def add_points_to_line(line, n = 1, method = "equal"):
+def add_points_to_line(line, n = 1, method = "equal_beta"):
     """
     Note: The direction of the new line is always from min X to max X
     """
@@ -37,7 +37,7 @@ def handy_hachures(hachures, d):
         
         hachure_displaced = randomize.displace_line(hachure, d)
         
-        hachure_handy = randomize.line_handy(hachure_displaced, d)
+        hachure_handy = line_handy(hachure_displaced, d)
         # hachure_handy = handyrenderer.line(hachure_displaced, d)[0]
 
         hachures_handy.append(hachure_handy)
@@ -47,6 +47,16 @@ def handy_hachures(hachures, d):
     randomize.reset_seed_loop()
         
     return hachures_handy
+
+def line_handy(line, d, bowing = 1.0, roughness = 1.0):
+    
+    line_handy = randomize.line_points_handy(line, d, bowing, roughness)
+    
+    line = LineString(line_handy)
+    
+    line_handy = line.catmull_rom_bezier()
+    
+    return line_handy
 
 def jitter_line(line, d = 10.0, method = "curve"):
     """
@@ -130,11 +140,11 @@ def jitter_line(line, d = 10.0, method = "curve"):
     
     return line_jittered
 
-def jitter_polygon(polygon, d = 10.0, method = "displace"):
+def jitter_polygon(polygon, d = 10.0, method = "curve"):
     
     polygon = Polygon(polygon)
     
-    segments = polygon.disjoin(120)
+    segments = polygon.disjoin(90)
     
     segments_jittered = []
     
@@ -142,7 +152,7 @@ def jitter_polygon(polygon, d = 10.0, method = "displace"):
 
     for segment in segments:
         
-        segment_jittered = jitter_line(segment, 10, "bezier")
+        segment_jittered = jitter_line(segment, d, method)
         segments_jittered.append(segment_jittered)
           
     return segments_jittered
