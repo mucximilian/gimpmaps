@@ -183,7 +183,10 @@ class Drawing(object):
         
         print "Saving image as '" + self.drawing.filename + "' ..."
 
-        self.drawing.save()
+        try:
+            self.drawing.save()
+        except TypeError:
+            print "Error with malformed SVG input for drawing"
         
         print "Done"
         

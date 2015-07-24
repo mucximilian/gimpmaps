@@ -28,10 +28,13 @@ def add_points_to_line(line, n = 1, method = "equal_beta"):
     return line_new
 
 def handy_hachures(hachures, d):
+    """
+    Returns handy rendererd hachures
+    
+    :param hachures: List of hachure lines
+    """
     
     hachures_handy = []
-    
-    randomize.reset_seed_loop()
     
     for hachure in hachures:
         
@@ -40,11 +43,7 @@ def handy_hachures(hachures, d):
         hachure_handy = line_handy(hachure_displaced, d)
         # hachure_handy = handyrenderer.line(hachure_displaced, d)[0]
 
-        hachures_handy.append(hachure_handy)
-        
-        randomize.seed_loop += 1
-        
-    randomize.reset_seed_loop()
+        hachures_handy.append(hachure_handy)        
         
     return hachures_handy
 
@@ -140,11 +139,11 @@ def jitter_line(line, d = 10.0, method = "curve"):
     
     return line_jittered
 
-def jitter_polygon(polygon, d = 10.0, method = "curve"):
+def jitter_polygon(polygon, d, method = "curve"):
     
     polygon = Polygon(polygon)
     
-    segments = polygon.disjoin(90)
+    segments = polygon.disjoin(120)
     
     segments_jittered = []
     

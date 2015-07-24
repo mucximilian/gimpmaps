@@ -10,6 +10,7 @@ import svgwrite
 
 import sketching.sketch as sketch
 from sketching import hachurizer
+from _dbus_bindings import Array
 
 def sketch_line_path(path):
     
@@ -44,7 +45,10 @@ def sketch_polygon_hachure(path):
     svg_path = svgwrite.path.Path(path)    
     
     hachurizer_svg = hachurizer.Hachurizer(8.0, 35.0)
-    hachures = hachurizer_svg.get_svg_hachure(svg_path)
+    
+    # TO DO: Update function input parameter !!!!!!
+    
+    hachures = hachurizer_svg.get_hachure(svg_path)
     
     if (hachures is not None):
     
@@ -102,3 +106,5 @@ def coord_string(point):
     """
     
     return str(point[0]) + "," + str(point[1])
+
+    

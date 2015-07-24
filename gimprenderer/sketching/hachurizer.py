@@ -27,71 +27,61 @@ class Hachurizer(object):
         self.spacing = spacing
         self.angle = angle
         
-    def get_svg_hachure(self, path):
+    def get_hachure(self, polygon, result = "hachure_clipped"):
         """
         Returns a SVG hachure for the specified polygon input path
         """
         
         # TO DO: Check if input is polygon!
         
-        # Creating a (Multi-)Polygon consisting of an array of points        
-        polygon = self.multipolygon_from_svgpath(path)
+        try:
         
-        hachure_lines = self.create_hachure_lines(polygon)
-                      
-        # multiline_svg = self.create_svg_multilinepath(intersections)
-        
-        if (len(hachure_lines) == 0):            
-            print "No hachures created for polygon with given parameters"
-            return None
-        else:
-            # lines = MultiLineString(hachure_lines)
-            # hachure = lines.svg()  
-            # return hachure
-            hachure_lines_simple = []
+            multipolygon = self.multipolygon_from_list(polygon)
             
-            for line in hachure_lines:
-                hachure_lines_simple.append(list(line.coords))
+            hachure_lines = self.create_hachure_lines(multipolygon, result)
+                          
+            # multiline_svg = self.create_svg_multilinepath(intersections)
+        
+            if (len(hachure_lines) == 0):            
+                print "No hachures created for polygon with given parameters"
+                return
+            else:
+                # lines = MultiLineString(hachure_lines)
+                # hachure = lines.svg()  
+                # return hachure
+                hachure_lines_simple = []
                 
-            return hachure_lines_simple 
+                for line in hachure_lines:
+                    hachure_lines_simple.append(list(line.coords))
+                    
+                return hachure_lines_simple
             
-    
-    def multipolygon_from_svgpath(self, path):
-        """
-        Returning a Shapely multipolygon array from a SVG path input
-        """
+        except TypeError:
+            
+            print "False input parameters..."
+               
+            
+    def multipolygon_from_list(self, poly_list):
         
         multipolygon_list = []
         
-        # Getting the "d" string of the SVG path
-        path_str = path.commands[0]
-        
-        # Split path into single polygons
-        path_str_polygons = path_str.split("Z");
-        
-        # Removing last item from list which is empty due to split
-        path_str_polygons.pop()    
-        
-        # Getting first SVG polygon string as exterior (outline)
-        exterior = self.create_coordlist_from_string(path_str_polygons.pop(0))
-        exterior_polygon = Polygon(exterior)        
+        exterior = poly_list[0]
+        exterior_polygon = Polygon(exterior)
 
         # Adding all polygons to a list of polygons
         polygons = []
-        for polygon_str in path_str_polygons:
-            polygon_coords = self.create_coordlist_from_string(polygon_str)            
+        for i in range(1, len(poly_list)):
             
-            # Appending the created polygon to the multipolygon list            
-
-            # check if polygon is within exterior outline
-            # TRUE add as polygon_coords to polygons
-            # FALSE add as polygon to multipolygon
-            polygon = Polygon(polygon_coords)
+            # Appending the created polygon to the multipolygon list
+            # check if polygon is within exterior outline:
+            #     if TRUE add as polygon_coords to polygons
+            #     if FALSE add as polygon to multipolygon
+            polygon = Polygon(poly_list[i])
             
             if (polygon.within(exterior_polygon)):
-                polygons.append(polygon_coords)
+                polygons.append(poly_list[i])
             else:
-                multipolygon_list.append(polygon)            
+                multipolygon_list.append(polygon)
 
         polygon = Polygon(exterior, polygons)
         multipolygon_list.insert(0, polygon)
@@ -105,88 +95,46 @@ class Hachurizer(object):
         multipolygon = MultiPolygon(multipolygon_list)
         return multipolygon
     
-    def create_coordlist_from_string(self, polygon_str):
-        """
-        Returning a list of coordinates representing the input SVG polygon
-        string
-        """
-        
-        # Array for the coordinates (x/y points) of the polygon
-        polygon_coords = []           
-        
-        polygon_str = polygon_str.strip() # Trim whitespaces
-        
-        # Split SVG polygon string into single points
-        points_str = polygon_str.split(" ");           
-        points_str.remove('L')
-        points_str.remove('M')
-        
-        # Appending coordinates to polygon coordinates array
-        for i in range(0, len(points_str), 2):
-            polygon_coords.append(
-                [float(points_str[i]), float(points_str[i+1])]
-            )
-            
-        # Adding first coordinate again
-        polygon_coords.append([float(points_str[0]), float(points_str[1])])
-        
-        return polygon_coords
-    
-    def create_hachure_lines(self, polygon):
+    def create_hachure_lines(self, polygon, result = "hachure_clipped"):
         """
         Returning hachure as an array of lines 
         """
                
         # Creating the bounding box hachure lines
-        lines = self.calculate_bbox_hachure(polygon.bounds)     
+        lines = self.calculate_bbox_hachure(polygon.bounds)
         
-        intersections = []
-        
-        for line in lines:
-            # Calculating the intersection of hachure lines and polygon
-            self.calculateIntersection(line, polygon, intersections)
-
-        # Filter and randomize hachure lines
-        # TO DO:
-        # hachure_lines = randomizeLines(intersection)
-
-        multiline = MultiLineString(intersections)
-               
-        return multiline
-    
-    def create_svg_multilinepath(self, multiline):
-        """
-        Converts a Shapely multilinestring into a SVG multiline path string.
-        Deprecated, Shapely .svg() function used now.
-        """
-        
-        multiline_svg = ""
-        
-        for line in multiline:
-            multiline_svg += "M "
+        if result == "hachure_raw":
             
-            i = 0            
-            for point in line.coords:
-                
-                multiline_svg += (
-                    str(round(point[0],2)) + " " + 
-                    str(round(point[1],2)) + " ")
-                
-                if (i == 0):
-                    multiline_svg += "L "
-                
-                i += 1     
-
-        return multiline_svg
+            multiline = MultiLineString(lines)
+                   
+            return multiline
+            
+        else:
+        
+            intersections = []
+            
+            for line in lines:
+                # Calculating the intersection of hachure lines and polygon
+                self.calculateIntersection(line, polygon, intersections)
+    
+            # Filter and randomize hachure lines
+            # TO DO:
+            # hachure_lines = randomizeLines(intersection)
+    
+            multiline = MultiLineString(intersections)
+                   
+            return multiline
     
     def calculate_bbox_hachure(self, bbox):
         """
-        Returning the hachure lines of a specified bounding box, calculated 
+        Returning the raw hachure lines of a specified bounding box, calculated 
         based on given spacing and angle
         """
         
         # Check if provided angle is valid
-        if (self.angle > 180 or self.angle == 90 or self.angle == 0):
+        if (self.angle > 180 or
+            self.angle <= 0 or
+            self.angle == 90):
             print "Angle '" + str(self.angle) + "' is too large or 90 or 0 degrees"                
             return
         
@@ -281,3 +229,111 @@ class Hachurizer(object):
         except shapely.geos.TopologicalError:
             print "INVALID GEOMETRY:"
             print polygon.svg()
+    
+    ############################################################################        
+    # Obsolete functions
+    
+    def multipolygon_from_svgpath(self, path):
+        """
+        Returning a Shapely multipolygon array from a SVG path input
+        
+        TO DO: DELETE!
+        """
+        
+        multipolygon_list = []
+        
+        # Getting the "d" string of the SVG path
+        path_str = path.commands[0]
+        
+        # Split path into single polygons
+        path_str_polygons = path_str.split("Z");
+        
+        # Removing last item from list which is empty due to split
+        path_str_polygons.pop()    
+        
+        # Getting first SVG polygon string as exterior (outline)
+        exterior = self.create_coordlist_from_string(path_str_polygons.pop(0))
+        exterior_polygon = Polygon(exterior)        
+
+        # Adding all polygons to a list of polygons
+        polygons = []
+        for polygon_str in path_str_polygons:
+            polygon_coords = self.create_coordlist_from_string(polygon_str)            
+            
+            # Appending the created polygon to the multipolygon list            
+
+            # check if polygon is within exterior outline
+            # TRUE add as polygon_coords to polygons
+            # FALSE add as polygon to multipolygon
+            polygon = Polygon(polygon_coords)
+            
+            if (polygon.within(exterior_polygon)):
+                polygons.append(polygon_coords)
+            else:
+                multipolygon_list.append(polygon)            
+
+        polygon = Polygon(exterior, polygons)
+        multipolygon_list.insert(0, polygon)
+            
+        # Extracting the first polygon as outline from the multipolygon array
+        #exterior = multipolygon.pop(0)
+        
+        # Creating Shapely polygon from outline and remaining polygons
+        #polygon = Polygon(exterior, multipolygon)
+        
+        multipolygon = MultiPolygon(multipolygon_list)
+        return multipolygon
+    
+    def create_coordlist_from_string(self, polygon_str):
+        """
+        Returning a list of coordinates representing the input SVG polygon
+        string
+        
+        TO DO: DELETE
+        """
+        
+        # Array for the coordinates (x/y points) of the polygon
+        polygon_coords = []           
+        
+        polygon_str = polygon_str.strip() # Trim whitespaces
+        
+        # Split SVG polygon string into single points
+        points_str = polygon_str.split(" ");           
+        points_str.remove('L')
+        points_str.remove('M')
+        
+        # Appending coordinates to polygon coordinates array
+        for i in range(0, len(points_str), 2):
+            polygon_coords.append(
+                [float(points_str[i]), float(points_str[i+1])]
+            )
+            
+        # Adding first coordinates again for end point
+        polygon_coords.append([float(points_str[0]), float(points_str[1])])
+        
+        return polygon_coords
+    
+    def create_svg_multilinepath(self, multiline):
+        """
+        Converts a Shapely multilinestring into a SVG multiline path string.
+        Deprecated, Shapely .svg() function used now.
+        """
+        
+        multiline_svg = ""
+        
+        for line in multiline:
+            multiline_svg += "M "
+            
+            i = 0            
+            for point in line.coords:
+                
+                multiline_svg += (
+                    str(round(point[0],2)) + " " + 
+                    str(round(point[1],2)) + " ")
+                
+                if (i == 0):
+                    multiline_svg += "L "
+                
+                i += 1     
+
+        return multiline_svg
