@@ -14,7 +14,7 @@ from renderer import Renderer
 
 class TileRenderer(Renderer):
     '''
-    An abstract metaclass that handles the tiling
+    An abstract metaclass that handles the tile rendering
     '''
     
     __metaclass__ = ABCMeta

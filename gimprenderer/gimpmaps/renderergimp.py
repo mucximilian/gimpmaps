@@ -9,7 +9,7 @@ import logging
 from gimpfu import *
 from abc import ABCMeta, abstractmethod
 
-from gimpmaps.renderermap import MapRenderer
+from renderermap import MapRenderer
 from tilerenderer import TileRenderer
 from gimpmodule import GimpImageManager
 from gimpmaps import sketchadapter

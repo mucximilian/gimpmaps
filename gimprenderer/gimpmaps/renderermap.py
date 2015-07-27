@@ -11,7 +11,7 @@ from renderer import Renderer
 
 class MapRenderer(Renderer):
     '''
-    classdocs
+    An abstract metaclass that handles the map rendering
     '''
     __metaclass__ = ABCMeta
 
