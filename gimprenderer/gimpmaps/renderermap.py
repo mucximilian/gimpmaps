@@ -33,6 +33,7 @@ class MapRenderer(Renderer):
         
         self.set_scale()
         
+        # Zoom level needed to determine styling
         zoom = self.get_zoom_level_for_scale()
         resolution = self.calculate_resolution()
         

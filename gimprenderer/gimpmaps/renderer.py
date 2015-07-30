@@ -451,7 +451,7 @@ class Renderer(object):
             
             sql = """
                 SELECT 
-                    gimpmaps_scale_svg_line(
+                    gimpmaps_line_svg(
                         way, 
                         %s, %s, %s, %s, 
                         %s, %s
@@ -493,33 +493,33 @@ class Renderer(object):
             # TO DO: Buffer first, then union
             sql = """
             SELECT * FROM (
-                SELECT svg FROM (
+                SELECT 
+                    gimpmaps_polygon_svg(
+                        way, 
+                        %s, %s, %s, %s, 
+                        %s, %s, %s,
+                        %s
+                    ) AS svg
+                FROM (
                     SELECT
-                        gimpmaps_scale_svg_polygon(
-                            ST_GeometryN(
-                                ST_Union(way),
-                                generate_series(
-                                    1,
-                                    ST_NumGeometries(ST_Union(way))
-                                )
-                            ), 
-                            %s, %s, %s, %s, 
-                            %s, %s, %s,
-                            %s
-                        ) AS svg
-                    FROM 
+                        ST_GeometryN(
+                            ST_Union(way),
+                            generate_series(
+                                1,
+                                ST_NumGeometries(ST_Union(way))
+                            )
+                        ) AS way
+                    FROM
                         planet_osm_polygon
                     WHERE 
                         way 
                         &&
                         gimpmaps_get_bbox(
-                            %s, %s, %s, %s, 
-                            %s, %s, %s
+                        %s, %s, %s, %s, 
+                        %s, %s, %s
                         )
                     AND 
-                        ST_Area(way) > (%s * %s) ^ 2
-                    AND 
-                    (""" + sql_selection + """)
+                        (""" + sql_selection + """)
                 )t    
             ) x 
             WHERE coalesce(svg, '') <> ''
@@ -532,7 +532,7 @@ class Renderer(object):
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 brush_size,
-                brush_size, brush_size
+                brush_size
             )
                 
             # Get SVG tile geometry from database
@@ -568,7 +568,7 @@ class Renderer(object):
         sql = """
             SELECT DISTINCT
                 name,
-                gimpmaps_scale_text_polygon_point(
+                gimpmaps_text_polygon(
                     way, 
                     %s, %s, %s, %s, 
                     %s, %s
@@ -577,14 +577,14 @@ class Renderer(object):
                 SELECT
                     *
                 FROM planet_osm_polygon 
-                WHERE ST_Intersects ( 
-                    way, 
+                WHERE
+                    way
+                    && 
                     gimpmaps_get_bbox(
                         %s, %s, %s, %s, 
                         %s, %s,
                         %s
-                    ) 
-                )
+                    )
             ) t
             WHERE (""" + sql_selection + ")"
             
