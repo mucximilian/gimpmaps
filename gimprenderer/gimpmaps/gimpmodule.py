@@ -442,8 +442,11 @@ class GimpImageManager():
     
     def fill_selection(self, layer, color):
         
-        self.set_foreground(color)        
-        pdb.gimp_edit_fill(layer, FOREGROUND_FILL)            
+        self.set_foreground(color)
+        if not pdb.gimp_selection_is_empty(self.image):
+                
+            pdb.gimp_edit_fill(layer, FOREGROUND_FILL)            
+        
         pdb.gimp_selection_clear(self.image)
             
     def simplify_selection(self):
@@ -457,32 +460,42 @@ class GimpImageManager():
         pdb.gimp_selection_shrink(self.image, 2)
         
     def vectors_import(self, svg_path_str):
+        
         pdb.gimp_vectors_import_from_string(
             self.image, 
             svg_path_str, 
             -1, 1, 1,
         )
         
-    def vectors_select(self):
+    def vectors_select(self, remove = True):
         
         for vector in self.image.vectors:
             
-            pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)                        
-            pdb.gimp_image_remove_vectors(self.image, vector)
+            pdb.gimp_image_select_item(self.image, CHANNEL_OP_ADD, vector)
             
-    def vectors_draw(self, layer):
+            if remove:                      
+                pdb.gimp_image_remove_vectors(self.image, vector)
+            
+    def vectors_draw(self, layer, remove = True):
         
         for vector in self.image.vectors:
                      
-            pdb.gimp_edit_stroke_vectors(layer, vector)                    
-            pdb.gimp_image_remove_vectors(self.image, vector)
+            pdb.gimp_edit_stroke_vectors(layer, vector)   
             
-    def vectors_as_mask(self, image_layer, parent, resolution):
+            if remove:                 
+                pdb.gimp_image_remove_vectors(self.image, vector)
+            
+    def vectors_as_mask(self, image_layer, parent, resolution, remove = True):
         
-        self.vectors_select()
+        self.vectors_select(remove)
         
         # Apply mask of collected vectors on image layer
         mask = pdb.gimp_layer_create_mask(image_layer, 4)
         pdb.gimp_layer_add_mask(image_layer, mask)
         
         pdb.gimp_selection_clear(self.image)
+        
+    def get_vector_count(self):
+        
+        return len(self.image.vectors)
+        

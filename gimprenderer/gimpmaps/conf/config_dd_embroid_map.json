@@ -20,16 +20,16 @@
         "create_xcf":true
     },
     "style":{
-    	"text":true,
+    	"text":false,
         "sketchy":false,
     	"style_path":null,
     	"style_name":"embroid",
         "polygon_fill":{
             "type":"mask",
             "color_fill":false,
-            "outline":null
+            "outline":false
         },
         "img_tile_span":2
     },
-    "out_dir":"null
+    "out_dir":null
 }

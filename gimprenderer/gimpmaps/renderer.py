@@ -62,7 +62,7 @@ class Renderer(object):
         if(self.type == "tiles_gimp"):           
             os.system (
                 "cp %s %s" % (
-                    self.filepath + "/results/index.html",
+                    self.filepath + "/div/index.html",
                     self.out_dir + "index.html"
                 )
             )
@@ -482,12 +482,13 @@ class Renderer(object):
                 line_style[1]
                 )
             
-            curs_osm.execute(sql, params)               
+            curs_osm.execute(sql, params)
+                       
         elif (style_feature.geom_type == 3):
             
             # Setting brush size to 0 if no outline is drawn
             brush_size = 0
-            if outline:
+            if outline and self.polygon_fill["type"] != "fill":
                 brush_size = line_style[1]                            
             
             # TO DO: Buffer first, then union
@@ -520,15 +521,17 @@ class Renderer(object):
                         )
                     AND 
                         (""" + sql_selection + """)
-                )t    
+                )t
+                WHERE
+                    ST_Area(way) > (2 * %s) ^ 2
             ) x 
             WHERE coalesce(svg, '') <> ''
             """
             
             params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
-                resolution[0], resolution[1],
-                brush_size, outline,
+                resolution[0], resolution[1], brush_size, 
+                outline,
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 brush_size,
@@ -536,8 +539,8 @@ class Renderer(object):
             )
                 
             # Get SVG tile geometry from database
+#             logging.info(curs_osm.mogrify(sql, params))
             curs_osm.execute(sql, params)
-            # logging.info(curs_osm.mogrify(sql, params))
             
         # Getting vectors and displaying count
         # TO DO: Fix in SQL query: no row number even with empty result
@@ -585,6 +588,29 @@ class Renderer(object):
                         %s, %s,
                         %s
                     )
+            ) t
+            WHERE (""" + sql_selection + ")"
+            
+        sql = """
+            SELECT 
+                name,
+                gimpmaps_scale_text_polygon_point(
+                    way, 
+                    %s, %s, %s, %s, 
+                    %s, %s
+                ) AS svg
+            FROM (
+                SELECT
+                    *
+                FROM planet_osm_polygon 
+                WHERE ST_Intersects ( 
+                    way, 
+                    gimpmaps_get_bbox(
+                        %s, %s, %s, %s, 
+                        %s, %s,
+                        %s
+                    ) 
+                )
             ) t
             WHERE (""" + sql_selection + ")"
             

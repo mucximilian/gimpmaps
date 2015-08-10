@@ -1,0 +1,32 @@
+{
+    "osm_db":{
+        "host":"localhost",
+        "user":"gis",
+        "password":"gis",
+        "db_name":"osm_muc"
+    },
+    "map":{
+        "bounding_box":[
+            [1275000, 6131500],
+            [1289700, 6118200]
+            ],
+        "image":{
+            "scale":10000
+        },
+        "tiles":{
+            "zoom_level_min":12,
+            "zoom_level_max":13
+        },
+        "create_xcf":true
+    },
+    "style":{
+        "style_path":null,
+        "style_name":"chalk",
+        "polygon_fill":{
+            "type":"hachure",
+            "color_fill":true,
+            "outline":true
+        }
+    },
+    "out_dir":null
+}

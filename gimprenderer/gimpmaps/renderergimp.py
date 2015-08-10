@@ -63,12 +63,22 @@ class RendererGimp(object):
                             
                 logging.info("      Processing lines")
                 
+                # TO DO: read from config
+                sketchy = False
+                
                 for svg_commands in svg_geoms:
                     
-                    line_sketched = sketchadapter.sketch_line_path(svg_commands)
-
-                    # Adding vectors for stroking of lines, outlines/mask
-                    gimp.vectors_import(line_sketched.tostring())
+                    if sketchy:
+                    
+                        line_sketched = sketchadapter.sketch_line_path(svg_commands)
+    
+                        # Adding vectors for stroking of lines, outlines/mask
+                        gimp.vectors_import(line_sketched.tostring())
+                        
+                    else:
+                        
+                        svg_path = svgwrite.path.Path(svg_commands)
+                        gimp.vectors_import(svg_path.tostring())
             
                 # Creating image layer for geometry feature
                 layer = gimp.create_layer(resolution, 
@@ -112,11 +122,11 @@ class RendererGimp(object):
                 spacing = 30
                 angle = 30
                 
-                logging.info("      Querying database")
-                
                 outline = True
                 if self.polygon_fill["outline"] is None:
                     outline = False
+                
+                logging.info("      Querying database")
                 
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
@@ -135,6 +145,8 @@ class RendererGimp(object):
                     # Adding vectors for mask
                     for svg_commands in svg_geoms:
                   
+                        # TO DO: Add if sketchy
+                  
                         svg_path = svgwrite.path.Path(svg_commands)
                         gimp.vectors_import(svg_path.tostring())
                         
@@ -144,7 +156,21 @@ class RendererGimp(object):
                     img_layer = self.image_mask(gimp, mask_image, group_polygon,
                                                 resolution)
                     
-                    gimp.vectors_as_mask(img_layer, group_polygon, resolution)
+                    
+                    remove_vectors = True
+                    if self.polygon_fill["outline"]:
+                        remove_vectors = False
+                        
+                    gimp.vectors_as_mask(img_layer, group_polygon, resolution, remove_vectors)
+                    
+                    # Adding outline
+                    if self.polygon_fill["outline"]:
+                        
+                        layer_outline = gimp.create_layer(resolution, 
+                            sql_selection + "_outline", group_polygon, -1)
+                        
+                        gimp.set_context(line_style)
+                        gimp.vectors_draw(layer_outline)
                 
                 elif self.polygon_fill["type"] == "hachure":
                     
@@ -162,12 +188,14 @@ class RendererGimp(object):
                     for svg_commands in svg_geoms:                        
                         
                         logging.info("      Processing fill")
-                        
-                        # Adding color fill
-                        logging.info(style_polygon.fill)
+                                               
                         if style_polygon.fill is not None:
+                            
+                            # TO DO: Add if sketchy
+                            
                             path = svgwrite.path.Path(svg_commands)
-                            gimp.vectors_import(path.tostring())
+                            gimp.vectors_import(path.tostring())                           
+                                                        
                             gimp.vectors_select()                                    
                             gimp.fill_selection(layer_fill, style_polygon.fill)
             
@@ -190,10 +218,55 @@ class RendererGimp(object):
                                      
                                 else:
                                     continue
-                                
+                        
+                    if self.polygon_fill["outline"]:
+                        
                         logging.info("      Processing outline")
+                
+                        for svg_commands in svg_geoms:
+
+                            # TO DO: Add if sketchy
+                            svg_path = svgwrite.path.Path(svg_commands)
+                            gimp.vectors_import(svg_path.tostring())                                   
+                        
+                        gimp.set_context(line_style)
+                        gimp.vectors_draw(layer_outline)
+                        
+                elif self.polygon_fill["type"] == "fill":
+                    
+                    group = gimp.create_layer_group(group_polygon, -1)
+                
+                    layer_fill = gimp.create_layer(resolution, 
+                            sql_selection + "_fill", group, -1)
+                    
+                    logging.info("      Processing fill")
+                        
+                    # Adding color fill
+                    logging.info(style_polygon.fill)
+                    
+                    for svg_commands in svg_geoms:                 
+                       
+                        path = svgwrite.path.Path(svg_commands)
+                        gimp.vectors_import(path.tostring())
+                    
+                    remove_vectors = True
+                    if self.polygon_fill["outline"]:
+                        remove_vectors = False
+                    
+                    if style_polygon.fill is not None:
+            
+                        gimp.vectors_select(remove_vectors)                                    
+                        gimp.fill_selection(layer_fill, style_polygon.fill)
+                        
+                    if self.polygon_fill["outline"]:
+                    
+                        layer_outline = gimp.create_layer(resolution, 
+                        sql_selection + "_outline", group_polygon, -1)
+                    
+                    gimp.set_context(line_style)
+                    gimp.vectors_draw(layer_outline)                   
                       
-                if self.polygon_fill["outline"] == "sketchy":
+                if self.config["style"]["sketchy"]:
                          
                     # Getting and drawing the outline lines 
                     outlines = sketchadapter.sketch_polygon_outline(
@@ -212,16 +285,7 @@ class RendererGimp(object):
                                 
                             else:
                                 continue
-                            
-                elif self.polygon_fill["outline"] == "regular":
-                    
-                    for svg_commands in svg_geoms:
-                        # Adding outline
-                        svg_path = svgwrite.path.Path(svg_commands)
-                        gimp.vectors_import(svg_path.tostring())                                    
-                        gimp.set_context(line_style)
-                        gimp.vectors_draw(layer_outline)
-                        
+                                                   
                 logging.info("\n")                             
             
             except TypeError:
@@ -387,10 +451,7 @@ class TileRendererGimp(TileRenderer, RendererGimp):
         gimp.image_close()
         
     def image_mask(self, gimp, image, parent, resolution): 
-        
-        logging.info(self.img_tile_span_count_x)
-        logging.info(self.img_tile_span_count_y)
-        
+             
         img_layer = gimp.image_insert_tile(image, 
                                           self.img_tile_span_count_x, 
                                           self.img_tile_span_count_y,

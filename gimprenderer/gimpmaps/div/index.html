@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GIMP tiles</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+html, body { overflow: hidden; padding: 0; height: 100%; width: 100%; font-family: 'Lucida Grande',Geneva,Arial,Verdana,sans-serif; }
+body { margin: 0px; background: #fff; }
+#map { height: 100%; border: 1px solid #888; }
+.olImageLoadError { display: none; }
+.olControlLayerSwitcher .layersDiv { border-radius: 10px 0 0 10px; }
+#logo img {width: 200px;}
+</style>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+var map;
+var overlay_visible = true;
+var mapBounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(51.0, 13.7),
+    new google.maps.LatLng(51.1, 13.8)
+);
+    
+var mapMinZoom = 10;
+var mapMaxZoom = 20;
+
+var maptiler = new google.maps.ImageMapType({
+    getTileUrl: function(coord, zoom) { 
+        var proj = map.getProjection();
+        var z2 = Math.pow(2, zoom);
+        var tileXSize = 256 / z2;
+        var tileYSize = 256 / z2;
+        var tileBounds = new google.maps.LatLngBounds(
+            proj.fromPointToLatLng(new google.maps.Point(coord.x * tileXSize, (coord.y + 1) * tileYSize)),
+            proj.fromPointToLatLng(new google.maps.Point((coord.x + 1) * tileXSize, coord.y * tileYSize))
+        );
+        //var y = (z2 -1) - coord.y;
+        var y = coord.y;
+        var x = coord.x;
+        
+        if (mapBounds.intersects(tileBounds) && (mapMinZoom <= zoom) && (zoom <= mapMaxZoom)) {
+            tile = zoom + "/" + x + "/" + y + ".png";
+            console.log(tile);
+            return tile;
+            
+            }
+        else {
+            return "http://www.maptiler.org/img/none.png";
+            console.log("none");
+        }
+    },
+    tileSize: new google.maps.Size(256, 256),
+    isPng: true,
+
+    opacity: 1.0
+});
+
+function init() {
+    var opts = {
+        streetViewControl: false,
+        center: new google.maps.LatLng(51.053, 13.741),
+        zoom: 14
+    };
+    map = new google.maps.Map(document.getElementById("map"), opts);
+    
+    var switchControlDiv = document.createElement('div');
+    var switchControl = new switchControlMap(switchControlDiv, map);
+    switchControlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(switchControlDiv);
+                    
+    map.setMapTypeId('satellite');
+    map.overlayMapTypes.insertAt(0, maptiler);
+}
+
+function switchControlMap(controlDiv, map) {
+
+    controlDiv.style.padding = '5px';
+
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderRadius = '5px';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.title = 'Toggle Overlay';
+    controlDiv.appendChild(controlUI);
+
+    var controlText = document.createElement('div');
+    controlText.id = 'checkbox_div';
+    controlText.style.fontFamily = 'Arial,sans-serif';
+    controlText.style.fontSize = '12px';
+    controlText.style.padding = '6px';
+    controlText.innerHTML = '<form><input type="checkbox" id="overlay_switch" checked>Overlay</form>';
+    controlUI.appendChild(controlText);
+
+    google.maps.event.addDomListener(controlUI, 'click', function() {
+        if (overlay_visible) {
+            map.overlayMapTypes.setAt(0, null);
+            overlay_visible = false;
+        } else {
+            map.overlayMapTypes.setAt(0, maptiler);
+            overlay_visible = true;
+        }
+    });
+}
+</script>
+</head>
+<body onload="init()">
+<div id="map"></div>
+</body>
+</html>

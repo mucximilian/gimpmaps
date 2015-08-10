@@ -3,30 +3,33 @@
         "host":"localhost",
         "user":"gis",
         "password":"gis",
-        "db_name":"osm_muc"
+        "db_name":"osm_dd"
     },
     "map":{
         "bounding_box":[
-            [1275000, 6131500],
-            [1289700, 6118200]
+            [1526000, 6633000],
+            [1533000, 6627000]
             ],
         "image":{
         	"scale":10000
         },
         "tiles":{
-        	"zoom_level_min":12,
-        	"zoom_level_max":13
+        	"zoom_level_min":14,
+        	"zoom_level_max":15
         },
-        "create_xcf":true
+        "create_xcf":false
     },
     "style":{
+        "text":false,
+        "sketchy":false,
     	"style_path":null,
-    	"style_name":"chalk",
+    	"style_name":"chalk_demo_tiles",
         "polygon_fill":{
-        	"type":"hachure",
+        	"type":"fill",
         	"color_fill":true,
-        	"outline":true
-        }
+        	"outline":false
+        },
+        "img_tile_span":1
     },
     "out_dir":null
 }
