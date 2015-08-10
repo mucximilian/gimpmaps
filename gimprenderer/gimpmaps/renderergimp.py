@@ -62,13 +62,10 @@ class RendererGimp(object):
                 )                
                             
                 logging.info("      Processing lines")
-                
-                # TO DO: read from config
-                sketchy = False
-                
+                               
                 for svg_commands in svg_geoms:
                     
-                    if sketchy:
+                    if self.config["style"]["sketchy"]:
                     
                         line_sketched = sketchadapter.sketch_line_path(svg_commands)
     
@@ -122,18 +119,13 @@ class RendererGimp(object):
                 spacing = 30
                 angle = 30
                 
-                outline = True
-                if self.polygon_fill["outline"] is None:
-                    outline = False
-                
                 logging.info("      Querying database")
                 
                 # Import SVG data into SVG drawing from database
                 svg_geoms = self.get_svg_features(
                     bbox,
                     resolution, 
-                    style_polygon,
-                    outline
+                    style_polygon
                 )
                 
                 logging.info("      Processing polygons")
@@ -145,10 +137,23 @@ class RendererGimp(object):
                     # Adding vectors for mask
                     for svg_commands in svg_geoms:
                   
-                        # TO DO: Add if sketchy
-                  
-                        svg_path = svgwrite.path.Path(svg_commands)
-                        gimp.vectors_import(svg_path.tostring())
+                        if self.config["style"]["sketchy"]:
+                         
+                            # Getting and drawing the outline lines 
+                            outline = sketchadapter.sketch_polygon_outline(
+                                                                    svg_commands)                
+                            
+                            if outline is not None:                                         
+                                
+                                # Adding outline
+                                gimp.vectors_import(outline.tostring())                                    
+                                        
+                            else:
+                                continue
+                        
+                        else:
+                            svg_path = svgwrite.path.Path(svg_commands)
+                            gimp.vectors_import(svg_path.tostring())
                         
                     # Adding background image to use the mask on
                     mask_image = self.style_path + "/img/" + style_polygon.get_image_data()
@@ -264,27 +269,7 @@ class RendererGimp(object):
                         sql_selection + "_outline", group_polygon, -1)
                     
                     gimp.set_context(line_style)
-                    gimp.vectors_draw(layer_outline)                   
-                      
-                if self.config["style"]["sketchy"]:
-                         
-                    # Getting and drawing the outline lines 
-                    outlines = sketchadapter.sketch_polygon_outline(
-                                                            svg_commands)                
-                    
-                    if outlines is not None:
-                                 
-                        for outline in outlines:
-                             
-                            if (outline is not None):                            
-                                
-                                # Adding outline
-                                gimp.vectors_import(outline.tostring())                                    
-                                gimp.set_context(line_style)
-                                gimp.vectors_draw(layer_outline)
-                                
-                            else:
-                                continue
+                    gimp.vectors_draw(layer_outline)
                                                    
                 logging.info("\n")                             
             

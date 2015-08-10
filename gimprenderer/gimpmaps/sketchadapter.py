@@ -10,13 +10,12 @@ import svgwrite
 
 import sketching.sketch as sketch
 from sketching import hachurizer
-from _dbus_bindings import Array
 
 def sketch_line_path(path):
     
     linestring = sketch.path_to_linestring(path)
     
-    linestring_jittered = sketch.jitter_line(linestring, 2.0, "bezier")
+    linestring_jittered = sketch.jitter_line(linestring, 10.0, "curve")
     
     linestring_svg = get_curve_commands(linestring_jittered)
     
@@ -26,19 +25,24 @@ def sketch_line_path(path):
 
 def sketch_polygon_outline(path):
     
-    polygon = sketch.path_to_polygon(path)
+    # Get as multipolygon
+    polygons = sketch.path_to_polygon(path)
     
-    outlines_jittered = sketch.jitter_polygon(polygon, 2.0, "bezier")
+    polygons_svg = ""
     
-    paths_svg = []
-    for outline_jittered in outlines_jittered:
+    # Operate on sub polygons
+    for polygon in polygons:
+
+        segments = sketch.jitter_polygon([polygon], 10.0, "curve")
     
-        polygon_svg = get_curve_commands(outline_jittered)
+        # Creating polygon from jittered segments
+        polygon = get_polygon_commands_from_segments(segments)
+        
+        polygons_svg += polygon + " "
     
-        path_svg = svgwrite.path.Path(polygon_svg)
-        paths_svg.append(path_svg)
+    polygon_svg = svgwrite.path.Path(polygons_svg)
     
-    return paths_svg
+    return polygon_svg
 
 def sketch_polygon_hachure(path):
     
@@ -97,6 +101,28 @@ def get_polygon_commands(polygon):
     svg = ' Z '.join(rings_svg)
     
     return svg
+
+def get_polygon_commands_from_segments(segments):
+    
+    m = segments[0][0]
+    
+    svg = "M " + coord_string(m) + " C "
+    
+    for i in range(0, len(segments) - 1):
+        
+        for j in range(1, len(segments[i])):
+                  
+            svg += coord_string(segments[i][j])
+            svg += " "
+    
+    for i in range(0, len(segments[-1]) - 1):
+                   
+        svg += coord_string(segments[-1][i])
+        svg += " "
+    
+    svg += "Z"
+    
+    return svg    
 
 def coord_string(point):
     """

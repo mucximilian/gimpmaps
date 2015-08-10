@@ -1,0 +1,480 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "text": {
+      "id": "text",
+      "type": "object",
+      "properties": {
+        "polygons": {
+          "id": "polygons",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "id": "0",
+            "type": "object",
+            "properties": {
+              "z_order": {
+                "id": "z_order",
+                "type": "integer"
+              },
+              "zoom_min": {
+                "id": "zoom_min",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              },
+              "font_size": {
+                "id": "font_size",
+                "type": "integer"
+              },
+              "osm_tags": {
+                "id": "osm_tags",
+                "type": "array",
+                "items": {
+                  "id": "0",
+                  "type": "string"
+                }
+              },
+              "zoom_max": {
+                "id": "zoom_max",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              },
+              "color": {
+                "id": "color",
+                "type": "array",
+                "items": [
+                  {
+                    "id": "0",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  {
+                    "id": "1",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  {
+                    "id": "2",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                ]
+              },
+              "stroke_line": {
+                "id": "stroke_line",
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "id": "color",
+                    "type": "array",
+                    "items": [
+                      {
+                        "id": "0",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "1",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "2",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      }
+                    ]
+                  },
+                  "dynamics": {
+                    "id": "dynamics",
+                    "type": "string"
+                  },
+                  "brush": {
+                    "id": "brush",
+                    "type": "string"
+                  },
+                  "brush_size": {
+                    "id": "brush_size",
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "font": {
+                "id": "font",
+                "type": "string"
+              },
+              "effect": {
+                "id": "effect",
+                "type": "object",
+                "properties": {
+                  "buffer_size": {
+                    "id": "buffer_size",
+                    "type": "integer"
+                  },
+                  "name": {
+                    "id": "name",
+                    "type": "string"
+                  },
+                  "buffer_color": {
+                    "id": "buffer_color",
+                    "type": "array",
+                    "items": [
+                      {
+                        "id": "0",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "1",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "2",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "z_order",
+              "zoom_min",
+              "font_size",
+              "osm_tags",
+              "zoom_max",
+              "color",
+              "stroke_line",
+              "font",
+              "effect",
+              "fill_color"
+            ]
+          },
+          "required": [
+            "0"
+          ]
+        }
+      },
+      "required": [
+        "polygons"
+      ]
+    },
+    "name": {
+      "id": "name",
+      "type": "string"
+    },
+    "background": {
+      "id": "background",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "id": "0",
+        "type": "object",
+        "properties": {
+          "zoom_min": {
+            "id": "zoom_min",
+            "type": "integer",
+            "enum": [
+              0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+            ]
+          },
+          "image": {
+            "id": "image",
+            "type": "string"
+          },
+          "zoom_max": {
+            "id": "zoom_max",
+            "type": "integer",
+            "enum": [
+              0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+            ]
+          }
+        }
+      }
+    },
+    "features": {
+      "id": "features",
+      "type": "object",
+      "properties": {
+        "lines": {
+          "id": "lines",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "id": "0",
+            "type": "object",
+            "properties": {
+              "z_order": {
+                "id": "z_order",
+                "type": "integer"
+              },
+              "zoom_min": {
+                "id": "zoom_min",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              },
+              "stroke_line": {
+                "id": "stroke_line",
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "id": "color",
+                    "type": "array",
+                    "items": [
+                      {
+                        "id": "0",
+                        "type": "integer"
+                      },
+                      {
+                        "id": "1",
+                        "type": "integer"
+                      },
+                      {
+                        "id": "2",
+                        "type": "integer"
+                      }
+                    ]
+                  },
+                  "dynamics": {
+                    "id": "dynamics",
+                    "type": "string"
+                  },
+                  "brush": {
+                    "id": "brush",
+                    "type": "string"
+                  },
+                  "brush_size": {
+                    "id": "brush_size",
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "osm_tags": {
+                "id": "osm_tags",
+                "type": "array",
+                "items": {
+                  "id": "0",
+                  "type": "string"
+                }
+              },
+              "zoom_max": {
+                "id": "zoom_max",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              }
+            },
+            "required": [
+              "z_order",
+              "zoom_min",
+              "font_size",
+              "osm_tags",
+              "zoom_max",
+              "color",
+              "stroke_line",
+              "stroke_hachure",
+              "fill_color"
+            ]
+          }
+        },
+        "polygons": {
+          "id": "polygons",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "id": "0",
+            "type": "object",
+            "properties": {
+              "z_order": {
+                "id": "z_order",
+                "type": "integer"
+              },
+              "osm_tags": {
+                "id": "osm_tags",
+                "type": "array",
+                "items": {
+                  "id": "0",
+                  "type": "string"
+                }
+              },
+              "image": {
+                "id": "image",
+                "type": "string"
+              },
+              "zoom_min": {
+                "id": "zoom_min",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              },
+              "stroke_line": {
+                "id": "stroke_line",
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "id": "color",
+                    "type": "array",
+                    "items": [
+                      {
+                        "id": "0",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "1",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "2",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      }
+                    ]
+                  },
+                  "dynamics": {
+                    "id": "dynamics",
+                    "type": "string"
+                  },
+                  "brush": {
+                    "id": "brush",
+                    "type": "string"
+                  },
+                  "brush_size": {
+                    "id": "brush_size",
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "stroke_hachure": {
+                "id": "stroke_hachure",
+                "type": "object",
+                "properties": {
+                  "angle": {
+                    "id": "angle",
+                    "type": "integer"
+                  },
+                  "brush_size": {
+                    "id": "brush_size",
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "color": {
+                    "id": "color",
+                    "type": "array",
+                    "items":[
+                      {
+                        "id": "0",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "1",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      },
+                      {
+                        "id": "2",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                      }
+                    ]
+                  },
+                  "spacing": {
+                    "id": "spacing",
+                    "type": "integer"
+                  },
+                  "dynamics": {
+                    "id": "dynamics",
+                    "type": "string"
+                  },
+                  "brush": {
+                    "id": "brush",
+                    "type": "string"
+                  }
+                }
+              },
+              "zoom_max": {
+                "id": "zoom_max",
+                "type": "integer",
+                "enum": [
+                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+                ]
+              },
+              "fill_color": {
+                "id": "fill_color",
+                "type": "array",
+                "items": [
+                  {
+                    "id": "0",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  {
+                    "id": "1",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  {
+                    "id": "2",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                ]
+              }
+            },
+            "required": [
+              "z_order",
+              "zoom_min",
+              "font_size",
+              "osm_tags",
+              "zoom_max",
+              "color",
+              "stroke_line",
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "text",
+    "name",
+    "background",
+    "features"
+  ]
+}
+

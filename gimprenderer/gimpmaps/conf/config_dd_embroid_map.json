@@ -21,13 +21,13 @@
     },
     "style":{
     	"text":false,
-        "sketchy":false,
+        "sketchy":true,
     	"style_path":null,
     	"style_name":"embroid",
         "polygon_fill":{
-            "type":"mask",
+            "type":"fill",
             "color_fill":false,
-            "outline":false
+            "outline":true
         },
         "img_tile_span":2
     },

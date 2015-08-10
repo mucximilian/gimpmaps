@@ -431,7 +431,7 @@ class Renderer(object):
         return image
     
     ############################################################################
-    def get_svg_features(self, bbox, resolution, style_feature, outline = True):
+    def get_svg_features(self, bbox, resolution, style_feature):
         """
         Returning a list of SVG commands to draw a geometry feature
         """
@@ -488,7 +488,7 @@ class Renderer(object):
             
             # Setting brush size to 0 if no outline is drawn
             brush_size = 0
-            if outline and self.polygon_fill["type"] != "fill":
+            if self.polygon_fill["outline"]:
                 brush_size = line_style[1]                            
             
             # TO DO: Buffer first, then union
@@ -531,7 +531,7 @@ class Renderer(object):
             params = (
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1], brush_size, 
-                outline,
+                self.polygon_fill["outline"],
                 bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1],
                 resolution[0], resolution[1],
                 brush_size,
