@@ -1,52 +1,52 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "/",
+  "id": "http://jsonschema.net",
   "type": "object",
   "properties": {
     "text": {
-      "id": "text",
+      "id": "http://jsonschema.net/text",
       "type": "object",
       "properties": {
         "polygons": {
-          "id": "polygons",
+          "id": "http://jsonschema.net/text/polygons",
           "type": "array",
-          "minItems": 1,
           "items": {
-            "id": "0",
+            "id": "http://jsonschema.net/text/polygons/0",
             "type": "object",
             "properties": {
               "z_order": {
-                "id": "z_order",
+                "id": "http://jsonschema.net/text/polygons/0/z_order",
                 "type": "integer"
               },
               "zoom_min": {
-                "id": "zoom_min",
+                "id": "http://jsonschema.net/text/polygons/0/zoom_min",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               },
               "font_size": {
-                "id": "font_size",
+                "id": "http://jsonschema.net/text/polygons/0/font_size",
                 "type": "integer"
               },
               "osm_tags": {
-                "id": "osm_tags",
+                "id": "http://jsonschema.net/text/polygons/0/osm_tags",
                 "type": "array",
                 "items": {
-                  "id": "0",
+                  "id": "http://jsonschema.net/text/polygons/0/osm_tags/0",
                   "type": "string"
-                }
+                },
+                "additionalItems": false
               },
               "zoom_max": {
-                "id": "zoom_max",
+                "id": "http://jsonschema.net/text/polygons/0/zoom_max",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               },
               "color": {
-                "id": "color",
+                "id": "http://jsonschema.net/text/polygons/0/color",
                 "type": "array",
                 "items": [
                   {
@@ -67,14 +67,15 @@
                     "minimum": 0,
                     "maximum": 255
                   }
-                ]
+                ],
+                "additionalItems": false
               },
               "stroke_line": {
-                "id": "stroke_line",
+                "id": "http://jsonschema.net/text/polygons/0/stroke_line",
                 "type": "object",
                 "properties": {
                   "color": {
-                    "id": "color",
+                    "id": "http://jsonschema.net/text/polygons/0/stroke_line/color",
                     "type": "array",
                     "items": [
                       {
@@ -95,41 +96,53 @@
                         "minimum": 0,
                         "maximum": 255
                       }
-                    ]
+                    ],
+                    "additionalItems": false
                   },
                   "dynamics": {
-                    "id": "dynamics",
+                    "id": "http://jsonschema.net/text/polygons/0/stroke_line/dynamics",
                     "type": "string"
                   },
                   "brush": {
-                    "id": "brush",
+                    "id": "http://jsonschema.net/text/polygons/0/stroke_line/brush",
                     "type": "string"
                   },
                   "brush_size": {
-                    "id": "brush_size",
-                    "type": "integer",
-                    "minimum": 1
+                    "id": "http://jsonschema.net/text/polygons/0/stroke_line/brush_size",
+                    "type": "integer"
                   }
                 }
               },
               "font": {
-                "id": "font",
+                "id": "http://jsonschema.net/text/polygons/0/font",
                 "type": "string"
               },
               "effect": {
-                "id": "effect",
+                "id": "http://jsonschema.net/text/polygons/0/effect",
                 "type": "object",
                 "properties": {
                   "buffer_size": {
-                    "id": "buffer_size",
+                    "id": "http://jsonschema.net/text/polygons/0/effect/buffer_size",
                     "type": "integer"
                   },
                   "name": {
-                    "id": "name",
-                    "type": "string"
+                    "id": "http://jsonschema.net/text/polygons/0/effect/name",
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "text_buffercolor",
+                      "text_buffermask",
+                      "text_outline",
+                      "text_outline_buffermask",
+                      "text_outline_buffercolor",
+                      "outline_text",
+                      "outline",
+                      "outline_buffercolor",
+                      "outline_buffermask"
+                    ]
                   },
                   "buffer_color": {
-                    "id": "buffer_color",
+                    "id": "http://jsonschema.net/text/polygons/0/effect/buffer_color",
                     "type": "array",
                     "items": [
                       {
@@ -150,7 +163,8 @@
                         "minimum": 0,
                         "maximum": 255
                       }
-                    ]
+                    ],
+                    "additionalItems": false
                   }
                 }
               }
@@ -164,10 +178,10 @@
               "color",
               "stroke_line",
               "font",
-              "effect",
-              "fill_color"
+              "effect"
             ]
           },
+          "additionalItems": false,
           "required": [
             "0"
           ]
@@ -178,164 +192,160 @@
       ]
     },
     "name": {
-      "id": "name",
+      "id": "http://jsonschema.net/name",
       "type": "string"
     },
     "background": {
-      "id": "background",
+      "id": "http://jsonschema.net/background",
       "type": "array",
-      "minItems": 1,
       "items": {
-        "id": "0",
+        "id": "http://jsonschema.net/background/0",
         "type": "object",
         "properties": {
           "zoom_min": {
-            "id": "zoom_min",
+            "id": "http://jsonschema.net/background/0/zoom_min",
             "type": "integer",
             "enum": [
               0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
             ]
           },
           "image": {
-            "id": "image",
+            "id": "http://jsonschema.net/background/0/image",
             "type": "string"
           },
           "zoom_max": {
-            "id": "zoom_max",
+            "id": "http://jsonschema.net/background/0/zoom_max",
             "type": "integer",
             "enum": [
               0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
             ]
           }
         }
-      }
+      },
+      "additionalItems": false
     },
     "features": {
-      "id": "features",
+      "id": "http://jsonschema.net/features",
       "type": "object",
       "properties": {
         "lines": {
-          "id": "lines",
+          "id": "http://jsonschema.net/features/lines",
           "type": "array",
-          "minItems": 1,
           "items": {
-            "id": "0",
+            "id": "http://jsonschema.net/features/lines/0",
             "type": "object",
             "properties": {
               "z_order": {
-                "id": "z_order",
+                "id": "http://jsonschema.net/features/lines/0/z_order",
                 "type": "integer"
               },
               "zoom_min": {
-                "id": "zoom_min",
+                "id": "http://jsonschema.net/features/lines/0/zoom_min",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               },
               "stroke_line": {
-                "id": "stroke_line",
+                "id": "http://jsonschema.net/features/lines/0/stroke_line",
                 "type": "object",
                 "properties": {
                   "color": {
-                    "id": "color",
+                    "id": "http://jsonschema.net/features/lines/0/stroke_line/color",
                     "type": "array",
                     "items": [
                       {
                         "id": "0",
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
                       },
                       {
                         "id": "1",
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
                       },
                       {
                         "id": "2",
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
                       }
-                    ]
+                    ],
+                    "additionalItems": false
                   },
                   "dynamics": {
-                    "id": "dynamics",
+                    "id": "http://jsonschema.net/features/lines/0/stroke_line/dynamics",
                     "type": "string"
                   },
                   "brush": {
-                    "id": "brush",
+                    "id": "http://jsonschema.net/features/lines/0/stroke_line/brush",
                     "type": "string"
                   },
                   "brush_size": {
-                    "id": "brush_size",
-                    "type": "integer",
-                    "minimum": 1
+                    "id": "http://jsonschema.net/features/lines/0/stroke_line/brush_size",
+                    "type": "integer"
                   }
                 }
               },
               "osm_tags": {
-                "id": "osm_tags",
+                "id": "http://jsonschema.net/features/lines/0/osm_tags",
                 "type": "array",
                 "items": {
-                  "id": "0",
+                  "id": "http://jsonschema.net/features/lines/0/osm_tags/0",
                   "type": "string"
-                }
+                },
+                "additionalItems": false
               },
               "zoom_max": {
-                "id": "zoom_max",
+                "id": "http://jsonschema.net/features/lines/0/zoom_max",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               }
-            },
-            "required": [
-              "z_order",
-              "zoom_min",
-              "font_size",
-              "osm_tags",
-              "zoom_max",
-              "color",
-              "stroke_line",
-              "stroke_hachure",
-              "fill_color"
-            ]
-          }
+            }
+          },
+          "additionalItems": false
         },
         "polygons": {
-          "id": "polygons",
+          "id": "http://jsonschema.net/features/polygons",
           "type": "array",
-          "minItems": 1,
           "items": {
-            "id": "0",
+            "id": "http://jsonschema.net/features/polygons/0",
             "type": "object",
             "properties": {
               "z_order": {
-                "id": "z_order",
+                "id": "http://jsonschema.net/features/polygons/0/z_order",
                 "type": "integer"
               },
               "osm_tags": {
-                "id": "osm_tags",
+                "id": "http://jsonschema.net/features/polygons/0/osm_tags",
                 "type": "array",
                 "items": {
-                  "id": "0",
+                  "id": "http://jsonschema.net/features/polygons/0/osm_tags/0",
                   "type": "string"
-                }
+                },
+                "additionalItems": false
               },
               "image": {
-                "id": "image",
+                "id": "http://jsonschema.net/features/polygons/0/image",
                 "type": "string"
               },
               "zoom_min": {
-                "id": "zoom_min",
+                "id": "http://jsonschema.net/features/polygons/0/zoom_min",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               },
               "stroke_line": {
-                "id": "stroke_line",
+                "id": "http://jsonschema.net/features/polygons/0/stroke_line",
                 "type": "object",
                 "properties": {
                   "color": {
-                    "id": "color",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_line/color",
                     "type": "array",
                     "items": [
                       {
@@ -356,40 +366,39 @@
                         "minimum": 0,
                         "maximum": 255
                       }
-                    ]
+                    ],
+                    "additionalItems": false
                   },
                   "dynamics": {
-                    "id": "dynamics",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_line/dynamics",
                     "type": "string"
                   },
                   "brush": {
-                    "id": "brush",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_line/brush",
                     "type": "string"
                   },
                   "brush_size": {
-                    "id": "brush_size",
-                    "type": "integer",
-                    "minimum": 1
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_line/brush_size",
+                    "type": "integer"
                   }
                 }
               },
               "stroke_hachure": {
-                "id": "stroke_hachure",
+                "id": "http://jsonschema.net/features/polygons/0/stroke_hachure",
                 "type": "object",
                 "properties": {
                   "angle": {
-                    "id": "angle",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/angle",
                     "type": "integer"
                   },
                   "brush_size": {
-                    "id": "brush_size",
-                    "type": "integer",
-                    "minimum": 1
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/brush_size",
+                    "type": "integer"
                   },
                   "color": {
-                    "id": "color",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/color",
                     "type": "array",
-                    "items":[
+                    "items": [
                       {
                         "id": "0",
                         "type": "integer",
@@ -408,31 +417,32 @@
                         "minimum": 0,
                         "maximum": 255
                       }
-                    ]
+                    ],
+                    "additionalItems": false
                   },
                   "spacing": {
-                    "id": "spacing",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/spacing",
                     "type": "integer"
                   },
                   "dynamics": {
-                    "id": "dynamics",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/dynamics",
                     "type": "string"
                   },
                   "brush": {
-                    "id": "brush",
+                    "id": "http://jsonschema.net/features/polygons/0/stroke_hachure/brush",
                     "type": "string"
                   }
                 }
               },
               "zoom_max": {
-                "id": "zoom_max",
+                "id": "http://jsonschema.net/features/polygons/0/zoom_max",
                 "type": "integer",
                 "enum": [
                   0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
                 ]
               },
               "fill_color": {
-                "id": "fill_color",
+                "id": "http://jsonschema.net/features/polygons/0/fill_color",
                 "type": "array",
                 "items": [
                   {
@@ -453,19 +463,12 @@
                     "minimum": 0,
                     "maximum": 255
                   }
-                ]
+                ],
+                "additionalItems": false
               }
-            },
-            "required": [
-              "z_order",
-              "zoom_min",
-              "font_size",
-              "osm_tags",
-              "zoom_max",
-              "color",
-              "stroke_line",
-            ]
-          }
+            }
+          },
+          "additionalItems": false
         }
       }
     }
@@ -477,4 +480,3 @@
     "features"
   ]
 }
-

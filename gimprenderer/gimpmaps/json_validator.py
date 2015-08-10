@@ -34,7 +34,7 @@ def validate_config(file_in):
     
 def validate_style(style_name):
 
-    read_file = open(get_filepath() + "/div/schema_style_0.json", "r")              
+    read_file = open(get_filepath() + "/div/schema_style.json", "r")              
     schema = json.load(read_file)
     
     read_file = open(get_filepath() + "/styles/" + style_name + "/style.json", "r")            
