@@ -8,12 +8,17 @@ from __future__ import division
 import math
 import random
 
-from geometry import LineSimple, LineString
+from geometry import LineSimple
 
 seed = 1
 seed_loop = 1
 
 # Random distribution functions
+
+def set_seed(seed):
+    
+    random.seed(seed)
+   
 def reset_seed_loop():    
     global seed_loop 
     seed_loop = 1
@@ -192,8 +197,6 @@ def displace_line(line, r):
     if (length <= r):
         r =  length/2               
     
-    random.seed(length + seed_loop)
-    
     point1 = displace_point(a, r, method = "circle")
     point2 = displace_point(b, r, method = "circle")
     
@@ -317,8 +320,6 @@ def jitter_line_bezier(line):
     
     line = LineSimple(line)
     
-    random.seed(1)
-    
     curve = []
     curve.append(line.coords[0])
     
@@ -412,8 +413,6 @@ def random_controlpoints(line, d, method = "polar_beta"):
         --> smoother line
     """
     
-    # 
-    
     line = LineSimple(line)
             
     line_length_half = line.length()/2
@@ -487,7 +486,6 @@ def random_controlpoints(line, d, method = "polar_beta"):
                 point = add_random_point_to_line((point1, point2), "uniform")
                 cp1 = displace_point(point, d, "polar")
                 cp2 = displace_point(point, d, "polar")
-            
         
     controlpoints = (cp1, cp2)
                 

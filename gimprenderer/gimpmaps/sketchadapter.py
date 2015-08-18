@@ -15,7 +15,7 @@ def sketch_line_path(path):
     
     linestring = sketch.path_to_linestring(path)
     
-    linestring_jittered = sketch.jitter_line(linestring, 10.0, "curve")
+    linestring_jittered = sketch.jitter_line(linestring, 5.0, "curve")
     
     linestring_svg = get_curve_commands(linestring_jittered)
     
@@ -33,7 +33,7 @@ def sketch_polygon_outline(path):
     # Operate on sub polygons
     for polygon in polygons:
 
-        segments = sketch.jitter_polygon([polygon], 10.0, "curve")
+        segments = sketch.jitter_polygon([polygon], 5.0)
     
         # Creating polygon from jittered segments
         polygon = get_polygon_commands_from_segments(segments)
@@ -45,14 +45,14 @@ def sketch_polygon_outline(path):
     return polygon_svg
 
 def sketch_polygon_hachure(path):
+      
     
-    svg_path = svgwrite.path.Path(path)    
+    hachurize = hachurizer.Hachurizer(8.0, 35.0)
     
-    hachurizer_svg = hachurizer.Hachurizer(8.0, 35.0)
+    polygons = sketch.path_to_polygon(path)
     
-    # TO DO: Update function input parameter !!!!!!
-    
-    hachures = hachurizer_svg.get_hachure(svg_path)
+    # TO DO: Update function input parameter !!!!!!    
+    hachures = hachurize.get_hachure(polygons)
     
     if (hachures is not None):
     

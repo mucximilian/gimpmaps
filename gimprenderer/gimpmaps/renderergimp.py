@@ -161,7 +161,6 @@ class RendererGimp(object):
                     img_layer = self.image_mask(gimp, mask_image, group_polygon,
                                                 resolution)
                     
-                    
                     remove_vectors = True
                     if self.polygon_fill["outline"]:
                         remove_vectors = False
@@ -177,12 +176,14 @@ class RendererGimp(object):
                         gimp.set_context(line_style)
                         gimp.vectors_draw(layer_outline)
                 
-                elif self.polygon_fill["type"] == "hachure":
+                elif self.polygon_fill["type"] == "hachure" or self.polygon_fill["type"] == "hachure_fill":
                     
                     group = gimp.create_layer_group(group_polygon, -1)
                 
-                    layer_fill = gimp.create_layer(resolution, 
-                            sql_selection + "_fill", group, -1)
+                    if self.polygon_fill["type"] == "hachure_fill":
+                
+                        layer_fill = gimp.create_layer(resolution, 
+                                sql_selection + "_fill", group, -1)
                 
                     layer_hachure = gimp.create_layer(resolution, 
                             sql_selection + "_hachure", group, -1)
@@ -191,15 +192,15 @@ class RendererGimp(object):
                             sql_selection + "_outline", group, -1)
                 
                     for svg_commands in svg_geoms:                        
-                        
-                        logging.info("      Processing fill")
                                                
-                        if style_polygon.fill is not None:
+                        if self.polygon_fill["type"] == "hachure_fill":
+                            
+                            logging.info("      Processing fill")
                             
                             # TO DO: Add if sketchy
                             
                             path = svgwrite.path.Path(svg_commands)
-                            gimp.vectors_import(path.tostring())                           
+                            gimp.vectors_import(path.tostring())
                                                         
                             gimp.vectors_select()                                    
                             gimp.fill_selection(layer_fill, style_polygon.fill)
@@ -255,6 +256,7 @@ class RendererGimp(object):
                         gimp.vectors_import(path.tostring())
                     
                     remove_vectors = True
+                    
                     if self.polygon_fill["outline"]:
                         remove_vectors = False
                     
@@ -267,6 +269,36 @@ class RendererGimp(object):
                     
                         layer_outline = gimp.create_layer(resolution, 
                         sql_selection + "_outline", group_polygon, -1)
+                    
+                    gimp.set_context(line_style)
+                    gimp.vectors_draw(layer_outline)
+                    
+                elif self.polygon_fill["type"] is None and self.polygon_fill["outline"]:
+                    
+                    layer_outline = gimp.create_layer(resolution, 
+                        sql_selection + "_outline", group_polygon, -1)
+                    
+                    logging.info("      Processing outline")
+                
+                    for svg_commands in svg_geoms:
+
+                        if self.config["style"]["sketchy"]:
+                         
+                            # Getting and drawing the outline lines 
+                            outline = sketchadapter.sketch_polygon_outline(
+                                                                    svg_commands)                
+                            
+                            if outline is not None:                                         
+                                
+                                # Adding outline
+                                gimp.vectors_import(outline.tostring())                                    
+                                        
+                            else:
+                                continue
+                        
+                        else:
+                            svg_path = svgwrite.path.Path(svg_commands)
+                            gimp.vectors_import(svg_path.tostring())
                     
                     gimp.set_context(line_style)
                     gimp.vectors_draw(layer_outline)
@@ -342,12 +374,15 @@ class MapRendererGimp(MapRenderer, RendererGimp):
         parent = gimp.create_layer_group(None, 0)
         
         # Background image
-        bg_image = self.get_bg_img(zoom) 
-        background = gimp.image_insert_tiled(resolution, bg_image, parent)
-        gimp.background = background
+        bg_image = self.get_bg_img(zoom)
         
-        logging.info("Inserting background")
-        logging.info(bg_image)    
+        if bg_image is not None:
+            
+            background = gimp.image_insert_tiled(resolution, bg_image, parent)
+            gimp.background = background
+            
+            logging.info("Inserting background")
+            logging.info(bg_image)    
         
         # Drawing features
         feature_styles = self.get_feature_styles(zoom)

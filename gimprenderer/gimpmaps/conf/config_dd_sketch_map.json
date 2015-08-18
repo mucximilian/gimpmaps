@@ -7,26 +7,26 @@
     },
     "map":{
         "bounding_box":[
-            [1526000, 6633000],
-            [1533000, 6627000]
+            [1528600, 6631200],
+            [1530300, 6630000]
             ],
         "image":{
-        	"scale":10000
+        	"scale":1000
         },
         "tiles":{
-        	"zoom_level_min":14,
-        	"zoom_level_max":15
+        	"zoom_level_min":15,
+        	"zoom_level_max":16
         },
         "create_xcf":false
     },
     "style":{
-        "text":false,
-        "sketchy":false,
+    	"text":false,
+        "sketchy":true,
     	"style_path":null,
-    	"style_name":"chalk_demo_tiles",
+    	"style_name":"sketch",
         "polygon_fill":{
-        	"type":"fill",
-        	"outline":false
+            "type":"hachure",
+            "outline":true
         },
         "img_tile_span":1
     },

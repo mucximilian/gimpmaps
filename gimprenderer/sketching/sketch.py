@@ -34,6 +34,8 @@ def handy_hachures(hachures, d):
     :param hachures: List of hachure lines
     """
     
+    # randomize.set_seed(1)
+    
     hachures_handy = []
     
     for hachure in hachures:
@@ -81,6 +83,8 @@ def jitter_line(line, d = 10.0, method = "curve"):
     line = LineString(line)
     
     line_points = []    
+    
+    randomize.set_seed(1)
     
     # First step: Adding random points
     line_points.append(line.coords[0]) # Adding the first point to result   
@@ -131,9 +135,15 @@ def jitter_line(line, d = 10.0, method = "curve"):
         for i in range(0, len(line.coords) - 1):
         
             a = line.coords[i]
-            b = line.coords[i + 1]    
+            b = line.coords[i + 1]
+            
+            if a == b:
                 
-            controlpoints += randomize.random_controlpoints((a, b), d)
+                continue
+            
+            else:
+                
+                controlpoints += randomize.random_controlpoints((a, b), d)
         
         line_jittered = line.get_curve(controlpoints)
     
@@ -146,12 +156,10 @@ def jitter_polygon(polygon, d, method = "curve"):
     segments = polygon.disjoin(120)
     
     segments_jittered = []
-    
-    randomize.seed = 1
 
     for segment in segments:
         
-        segment_jittered = jitter_line(segment, d, method)
+        segment_jittered = jitter_line(segment, d)
         segments_jittered.append(segment_jittered)
           
     return segments_jittered

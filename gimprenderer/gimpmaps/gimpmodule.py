@@ -11,6 +11,17 @@ class GimpImageManager():
     def __init__(self):
         pass
     
+    def image_insert(self, resolution, image, parent, pos_x, pos_y, pos = -1):
+        
+        layer_image = pdb.gimp_file_load_layer(self.image, image)
+                
+        pdb.gimp_image_insert_layer(self.image, layer_image, parent, -1)
+        pdb.gimp_layer_set_offsets(layer_image, pos_x , pos_y)
+        
+        layer = self.get_active_layer()
+        
+        return layer
+    
     def image_insert_tiled(self, resolution, image, parent,
                            pos = -1, img_span = 1):
         

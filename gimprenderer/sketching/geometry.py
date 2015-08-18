@@ -415,8 +415,10 @@ class LineString(Line):
         
         # Checking every linepoint after the start point for two control points 
         if (len(self.coords) - 1) != (len(cps) / 2):
+            
             print "coords: " + str(len(self.coords))
             print "cps: " + str(len(cps))
+            
             sys.exit("Curve cannot be created - control point error:")
         else:      
             
@@ -466,28 +468,36 @@ class Polygon(object):
             (vertex behind, vertex, vertex ahead)
             """
             
-            p0 = points[0] # point_behind
-            p1 = points[1] # point_center
-            p2 = points[2] # point_ahead
+            angle = 0
             
-            a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
-            b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
-            c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
+            try:
             
-            angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
-        
-            """
-            # Determine whether the edges are convex or concave
-            v1 = LineSimple([p0, p1]).vector()
-            v2 = LineSimple([p1, p2]).vector()
-            
-            det = v1[0]*v2[1] - v2[0]*v1[1] # det is negative if concave
-            
-            if det < 0:
-                angle = 360 - angle
+                p0 = points[0] # point_behind
+                p1 = points[1] # point_center
+                p2 = points[2] # point_ahead
                 
-            Great but useless...
-            """
+                a = (p1[0] - p0[0])**2 + (p1[1] - p0[1])**2
+                b = (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+                c = (p2[0] - p0[0])**2 + (p2[1] - p0[1])**2
+                
+                angle = math.acos((a + b - c) / math.sqrt(4 * a * b)) * 180/math.pi
+            
+                """
+                # Determine whether the edges are convex or concave
+                v1 = LineSimple([p0, p1]).vector()
+                v2 = LineSimple([p1, p2]).vector()
+                
+                det = v1[0]*v2[1] - v2[0]*v1[1] # det is negative if concave
+                
+                if det < 0:
+                    angle = 360 - angle
+                    
+                Nice but useless...
+                """
+                
+            except ZeroDivisionError:
+                
+                print "Angle is zero...probably duplicate points"
         
             return angle
         
@@ -511,6 +521,15 @@ class Polygon(object):
                 points.append(linearring[i + 1])
                 
                 angle = three_point_angle(points)
+                
+                # Check if duplicate points exist (due to coordinate rounding) 
+                if (angle == 0):
+                    
+                    # Skipping duplicate points
+                    if linearring[i] == linearring[i + 1]:
+                        continue                    
+                    if linearring[i] == linearring[i - 1]:
+                        continue                    
                 
                 # Continue segment
                 if (angle > angle_disjoin):

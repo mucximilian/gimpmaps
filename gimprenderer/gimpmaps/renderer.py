@@ -420,7 +420,13 @@ class Renderer(object):
             if (zoom_level >= zoom_min or zoom_level <= zoom_max):
                 
                 img = bg_img["image"]
-                img_path = self.style_path + "/img/" + img
+                
+                img_path = None
+                
+                if img is not None:
+                
+                    img_path = self.style_path + "/img/" + img
+                    
                 images.append(img_path)
 
         image = images[0]

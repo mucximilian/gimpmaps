@@ -136,10 +136,6 @@
                 "mask", "fill", "hachure"
               ]
             },
-            "color_fill": {
-              "id": "color_fill",
-              "type": "boolean"
-            },
             "outline": {
               "id": "outline",
               "type": "boolean"

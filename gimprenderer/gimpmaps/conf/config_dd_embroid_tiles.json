@@ -26,8 +26,7 @@
     	"style_name":"embroid",
         "polygon_fill":{
             "type":"mask",
-            "color_fill":false,
-            "outline":null
+            "outline":false
         },
         "img_tile_span":2
     },

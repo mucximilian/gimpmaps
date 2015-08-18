@@ -11,11 +11,11 @@
             [1533000, 6627000]
             ],
         "image":{
-        	"scale":10000
+        	"scale":1000
         },
         "tiles":{
         	"zoom_level_min":14,
-        	"zoom_level_max":15
+        	"zoom_level_max":18
         },
         "create_xcf":false
     },
@@ -23,10 +23,10 @@
         "text":false,
         "sketchy":false,
     	"style_path":null,
-    	"style_name":"chalk_demo_tiles",
+    	"style_name":"chalk",
         "polygon_fill":{
-        	"type":"fill",
-        	"outline":false
+            "type":"fill",
+            "outline":true
         },
         "img_tile_span":1
     },
