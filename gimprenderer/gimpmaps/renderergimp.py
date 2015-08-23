@@ -208,6 +208,7 @@ class RendererGimp(object):
                         logging.info("      Processing hachure")              
                         
                         # Getting and drawing the hachure lines
+                        # TO DO: Add hachure parameters (angle spacing)
                         hachures = sketchadapter.sketch_polygon_hachure(
                                                                 svg_commands)
                         if hachures is not None:
@@ -231,9 +232,23 @@ class RendererGimp(object):
                 
                         for svg_commands in svg_geoms:
 
-                            # TO DO: Add if sketchy
-                            svg_path = svgwrite.path.Path(svg_commands)
-                            gimp.vectors_import(svg_path.tostring())                                   
+                            if self.config["style"]["sketchy"]:
+                         
+                                # Getting and drawing the outline lines 
+                                outline = sketchadapter.sketch_polygon_outline(
+                                                                        svg_commands)                
+                                
+                                if outline is not None:                                         
+                                    
+                                    # Adding outline
+                                    gimp.vectors_import(outline.tostring())                                    
+                                            
+                                else:
+                                    continue
+                            
+                            else:
+                                svg_path = svgwrite.path.Path(svg_commands)
+                                gimp.vectors_import(svg_path.tostring())                     
                         
                         gimp.set_context(line_style)
                         gimp.vectors_draw(layer_outline)

@@ -14,7 +14,7 @@
         	"scale":1000
         },
         "tiles":{
-        	"zoom_level_min":17,
+        	"zoom_level_min":14,
         	"zoom_level_max":18
         },
         "create_xcf":false
