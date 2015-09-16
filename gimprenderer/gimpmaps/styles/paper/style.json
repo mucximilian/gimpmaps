@@ -2,148 +2,46 @@
     "text": {
         "polygons": [
             {
-                "z_order": 4, 
-                "zoom_min": 15, 
-                "font_size": 10, 
-                "osm_tags": [
-                    "building='cathedral'"
-                ], 
-                "zoom_max": 20, 
-                "color": [
-                    255, 
-                    255, 
-                    255
-                ], 
-                "stroke_line": {
-                    "color": [
-                        240, 
-                        240, 
-                        240
-                    ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
-                }, 
-                "font": "Arial", 
-                "effect": {
-                    "buffer_size": 3, 
-                    "name": "outline_buffermask", 
-                    "buffer_color": [
-                        160, 
-                        160, 
-                        160
-                    ]
-                }
-            }, 
-            {
                 "z_order": 3, 
                 "zoom_min": 15, 
-                "font_size": 10, 
-                "osm_tags": [
-                    "tourism='attraction'"
-                ], 
-                "zoom_max": 20, 
-                "color": [
-                    255, 
-                    255, 
-                    255
-                ], 
-                "stroke_line": {
-                    "color": [
-                        240, 
-                        240, 
-                        240
-                    ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
-                }, 
-                "font": "Arial", 
-                "effect": {
-                    "buffer_size": 3, 
-                    "name": "outline_buffermask", 
-                    "buffer_color": [
-                        160, 
-                        160, 
-                        160
-                    ]
-                }
-            }, 
-            {
-                "z_order": 2, 
-                "zoom_min": 14, 
-                "font_size": 10, 
+                "font_size": 96, 
                 "osm_tags": [
                     "admin_level='9' OR admin_level='10'"
                 ], 
                 "zoom_max": 20, 
                 "color": [
-                    255, 
-                    255, 
-                    255
+                    10, 
+                    10, 
+                    10
                 ], 
                 "stroke_line": {
                     "color": [
+                        120, 
+                        120, 
+                        120
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 6
+                }, 
+                "font": "Short Stack", 
+                "effect": {
+                    "buffer_size": 6, 
+                    "name": "text_outline_buffermask", 
+                    "buffer_color": [
                         240, 
                         240, 
                         240
-                    ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
-                }, 
-                "font": "Arial", 
-                "effect": {
-                    "buffer_size": 3, 
-                    "name": "outline_buffermask", 
-                    "buffer_color": [
-                        160, 
-                        160, 
-                        160
-                    ]
-                }
-            }, 
-            {
-                "z_order": 1, 
-                "zoom_min": 10, 
-                "font_size": 10, 
-                "osm_tags": [
-                    "admin_level='6'"
-                ], 
-                "zoom_max": 20, 
-                "color": [
-                    255, 
-                    255, 
-                    255
-                ], 
-                "stroke_line": {
-                    "color": [
-                        240, 
-                        240, 
-                        240
-                    ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
-                }, 
-                "font": "Arial", 
-                "effect": {
-                    "buffer_size": 3, 
-                    "name": "outline_buffermask", 
-                    "buffer_color": [
-                        160, 
-                        160, 
-                        160
                     ]
                 }
             }
         ]
     }, 
-    "name": "Test Tiles", 
+    "name": "Chalk", 
     "background": [
         {
             "zoom_min": 0, 
-            "image": "paper.png", 
+            "image": "karo_seamless.png", 
             "zoom_max": 20
         }
     ], 
@@ -158,30 +56,30 @@
                         160, 
                         255
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
                     "brush_size": 6
                 }, 
                 "osm_tags": [
                     "waterway='river'"
                 ], 
-                "zoom_max": 20
+                "zoom_max": 14
             }, 
             {
                 "z_order": 5, 
-                "zoom_min": 14, 
+                "zoom_min": 15, 
                 "stroke_line": {
                     "color": [
-                        20, 
-                        20, 
-                        20
+                        140, 
+                        140, 
+                        140
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 3
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
                 }, 
                 "osm_tags": [
-                    "highway='tertiary' OR highway='tertiary_link'"
+                    "highway='tertiary' OR highway='tertiary_link' OR highway='residential' OR highway='living_street'"
                 ], 
                 "zoom_max": 20
             }, 
@@ -190,13 +88,13 @@
                 "zoom_min": 12, 
                 "stroke_line": {
                     "color": [
-                        20, 
-                        20, 
-                        20
+                        140, 
+                        140,
+                        140
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 4
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 6
                 }, 
                 "osm_tags": [
                     "highway='secondary' OR highway='secondary_link'"
@@ -208,13 +106,13 @@
                 "zoom_min": 9, 
                 "stroke_line": {
                     "color": [
-                        20, 
-                        20, 
-                        20
+                        240, 
+                        80, 
+                        40
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 5
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 8
                 }, 
                 "osm_tags": [
                     "highway='primary' OR highway='primary_link'"
@@ -226,13 +124,13 @@
                 "zoom_min": 5, 
                 "stroke_line": {
                     "color": [
-                        20, 
-                        20, 
-                        20
+                        240, 
+                        80, 
+                        40
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 6
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 10
                 }, 
                 "osm_tags": [
                     "highway='trunk' OR highway='trunk_link'"
@@ -244,16 +142,34 @@
                 "zoom_min": 5, 
                 "stroke_line": {
                     "color": [
-                        255, 
-                        180, 
+                        240, 
+                        160, 
                         100
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 6
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 10
                 }, 
                 "osm_tags": [
                     "highway='motorway' OR highway='motorway_link'"
+                ], 
+                "zoom_max": 20
+            },
+            {
+                "z_order": 10, 
+                "zoom_min": 16, 
+                "stroke_line": {
+                    "color": [
+                        200, 
+                        200, 
+                        200
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
+                }, 
+                "osm_tags": [
+                    "highway='pedestrian' OR highway='service' OR highway='footway' OR highway='cycleway'"
                 ], 
                 "zoom_max": 20
             }
@@ -264,128 +180,216 @@
                 "osm_tags": [
                     "waterway='riverbank'"
                 ], 
-                "image": "hachure_blue_050708.png", 
-                "zoom_min": 17, 
+                "image": "river.png", 
+                "zoom_min": 13, 
                 "stroke_line": {
                     "color": [
                         100, 
                         160, 
                         255
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 6
                 }, 
                 "stroke_hachure": {
-                    "angle": 35, 
-                    "brush_size": 2, 
+                    "angle": 1, 
+                    "brush_size": 4, 
                     "color": [
                         100, 
                         160, 
                         255
                     ], 
                     "spacing": 10, 
-                    "brush": "Acrylic 02", 
-                    "dynamics": "Det3"
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
                 }, 
                 "zoom_max": 20, 
-                "fill_color": null
+                "fill_color": [
+                    60, 
+                    140, 
+                    200
+                ]
+            },
+            {
+                "z_order": 3, 
+                "osm_tags": [
+                    "\"natural\"='water'"
+                ], 
+                "image": "lake.png", 
+                "zoom_min": 15, 
+                "stroke_line": {
+                    "color": [
+                        120, 
+                        140, 
+                        255
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
+                }, 
+                "stroke_hachure": {
+                    "angle": 35, 
+                    "brush_size": 4, 
+                    "color": [
+                        140, 
+                        180, 
+                        255
+                    ], 
+                    "spacing": 10, 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
+                }, 
+                "zoom_max": 20, 
+                "fill_color": [
+                    160, 
+                    200, 
+                    230
+                ]
             }, 
             {
                 "z_order": 3, 
                 "osm_tags": [
                     "landuse='forest' OR leisure='park'"
                 ], 
-                "image": "hachure_green_040504.png", 
-                "zoom_min": 10, 
+                "image": "nature.png", 
+                "zoom_min": 12, 
                 "stroke_line": {
                     "color": [
-                        80, 
-                        120, 
+                        100, 
+                        140, 
                         60
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 6
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
                 }, 
                 "stroke_hachure": {
-                    "angle": 35, 
-                    "brush_size": 6, 
+                    "angle": 1, 
+                    "brush_size": 4, 
                     "color": [
                         100, 
                         140, 
                         60
                     ], 
                     "spacing": 10, 
-                    "brush": "Acrylic 02", 
-                    "dynamics": "Det3"
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
                 }, 
                 "zoom_max": 20, 
-                "fill_color": null
+                "fill_color": [
+                    50, 
+                    190, 
+                    60
+                ]
             }, 
             {
                 "z_order": 2, 
                 "osm_tags": [
-                    "landuse='village_green'"
+                    "landuse='village_green' OR landuse='grass' OR landuse='recreation_ground'"
                 ], 
-                "image": "hachure_green_060705.png", 
-                "zoom_min": 14, 
+                "image": "recreation.png", 
+                "zoom_min": 12, 
                 "stroke_line": {
                     "color": [
                         100, 
                         140, 
                         60
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
                 }, 
                 "stroke_hachure": {
-                    "angle": 35, 
-                    "brush_size": 2, 
+                    "angle": 1, 
+                    "brush_size": 4, 
                     "color": [
                         100, 
                         140, 
                         60
                     ], 
                     "spacing": 10, 
-                    "brush": "Acrylic 02", 
-                    "dynamics": "Det3"
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
                 }, 
                 "zoom_max": 20, 
-                "fill_color": null
+                "fill_color": [
+                    180, 
+                    240, 
+                    150
+                ]
             }, 
             {
                 "z_order": 1, 
                 "osm_tags": [
-                    "building='yes'"
+                    "building IS NOT NULL"
                 ], 
-                "image": "hachure_grey_05.png", 
-                "zoom_min": 14, 
+                "image": "buildings.png", 
+                "zoom_min": 16, 
                 "stroke_line": {
                     "color": [
-                        100, 
-                        100, 
-                        100
+                        80, 
+                        80, 
+                        80
                     ], 
-                    "dynamics": "Det3", 
-                    "brush": "Acrylic 02", 
-                    "brush_size": 2
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
                 }, 
                 "stroke_hachure": {
-                    "angle": 35, 
-                    "brush_size": 2, 
+                    "angle": 1, 
+                    "brush_size": 4, 
                     "color": [
-                        100, 
-                        100, 
-                        100
+                        80, 
+                        80, 
+                        80
                     ], 
                     "spacing": 10, 
-                    "brush": "Acrylic 02", 
-                    "dynamics": "Det3"
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
                 }, 
                 "zoom_max": 20, 
-                "fill_color": null
+                "fill_color": [
+                    90, 
+                    120, 
+                    140
+                ]
+            },
+            {
+                "z_order": 1, 
+                "osm_tags": [
+                    "area='yes'"
+                ], 
+                "image": "area.png", 
+                "zoom_min": 16, 
+                "stroke_line": {
+                    "color": [
+                        200, 
+                        200, 
+                        200
+                    ], 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02", 
+                    "brush_size": 4
+                }, 
+                "stroke_hachure": {
+                    "angle": 1, 
+                    "brush_size": 4, 
+                    "color": [
+                        200, 
+                        200, 
+                        200
+                    ], 
+                    "spacing": 10, 
+                    "dynamics": "Dynamics Off", 
+                    "brush": "Oils 02"
+                }, 
+                "zoom_max": 20, 
+                "fill_color": [
+                    220, 
+                    220, 
+                    220
+                ]
             }
         ]
     }

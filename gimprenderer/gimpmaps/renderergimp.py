@@ -283,10 +283,10 @@ class RendererGimp(object):
                     if self.polygon_fill["outline"]:
                     
                         layer_outline = gimp.create_layer(resolution, 
-                        sql_selection + "_outline", group_polygon, -1)
+                            sql_selection + "_outline", group_polygon, -1)
                     
-                    gimp.set_context(line_style)
-                    gimp.vectors_draw(layer_outline)
+                        gimp.set_context(line_style)
+                        gimp.vectors_draw(layer_outline)
                     
                 elif self.polygon_fill["type"] is None and self.polygon_fill["outline"]:
                     
